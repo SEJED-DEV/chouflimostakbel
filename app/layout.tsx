@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Patrick_Hand } from "next/font/google";
 import "./globals.css";
@@ -6,6 +6,8 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import LanguagePicker from "@/components/LanguagePicker";
+import WelcomePopup from "@/components/WelcomePopup";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -82,7 +84,20 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  icons: { icon: "/favicon.png" },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Choufli Mosta9bel",
+    statusBarStyle: "default",
+  },
+  formatDetection: { telephone: false },
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "any" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
 };
 
 /**
@@ -123,6 +138,16 @@ const jsonLd = {
   ],
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#ffffff" },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -138,7 +163,9 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
           <LanguagePicker />
+          <WelcomePopup />
         </LanguageProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

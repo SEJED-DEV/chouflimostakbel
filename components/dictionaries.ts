@@ -81,6 +81,14 @@ export const en = {
     continue: "Continue",
   },
 
+  welcome: {
+    title: "Welcome.",
+    body: "Real options for Tunisian youth, with or without a Bac - vocational training, high school divisions, and what to do after graduating.",
+    cta: "Find your path",
+    ctaHref: "/dropouts",
+    later: "Maybe later",
+  },
+
   home: {
     eyebrow: "Guidance for Tunisian youth",
     sub: "Choufli Mosta9bel helps school dropouts, undecided students, and graduates find real, practical paths to a stable future.",
@@ -216,6 +224,14 @@ export const fr: Dictionary = {
     continue: "Continuer",
   },
 
+  welcome: {
+    title: "Bienvenue.",
+    body: "Des options concrètes pour la jeunesse tunisienne, avec ou sans Bac - formation professionnelle, filières du lycée, et quoi faire après le baccalauréat.",
+    cta: "Trouvez votre voie",
+    ctaHref: "/dropouts",
+    later: "Plus tard",
+  },
+
   home: {
     eyebrow: "Orientation pour la jeunesse tunisienne",
     sub: "Choufli Mosta9bel aide les décrochés scolaires, les élèves indécis et les bacheliers à trouver des chemins concrets vers un avenir stable.",
@@ -339,6 +355,14 @@ export const ar: Dictionary = {
     title: "اختر لغتك",
     subtitle: "يمكنك تغييرها في أي وقت.",
     continue: "متابعة",
+  },
+
+  welcome: {
+    title: "أهلاً بك.",
+    body: "خيارات حقيقية للشباب التونسي، مع البكالوريا أو بدونها - التكوين المهني، وأقسام الثانوية، وماذا تفعل بعد التخرج.",
+    cta: "اعثر على طريقك",
+    ctaHref: "/dropouts",
+    later: "لاحقاً",
   },
 
   home: {

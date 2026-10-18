@@ -38,6 +38,36 @@ npm run start
 | `npm run start` | Serve the production build |
 | `npm run sync:site` | Refresh `lib/site.generated.json` from sejed.dev |
 | `npm run check:site` | Fail if the generated profile is out of date (CI) |
+| `npm run icons` | Regenerate `public/icons/` from `favicon.png` |
+
+---
+
+## PWA
+
+Installable to the home screen on iOS, Android and desktop.
+
+- **`app/manifest.ts`** — name, icons, `standalone` display, theme colour,
+  generated at `/manifest.webmanifest`
+- **`public/sw.js`** — service worker, registered only in production builds
+- **`public/offline.html`** — offline fallback, Apple-style
+- **`public/icons/`** — 192/512 standard, maskable variants, and a 180px
+  Apple touch icon, generated from `favicon.png` via `npm run icons`
+
+### The service worker will never serve stale HTML
+
+This is the one rule that matters. Navigation requests are **network-first**
+and only fall back to cache when genuinely offline. Only content-hashed assets
+under `/_next/static/`, plus icons and images, are served cache-first — those
+are immutable by definition.
+
+Old caches are purged on activate. To invalidate everything, bump
+`CACHE_VERSION` in `public/sw.js`.
+
+> Registration is skipped in `npm run dev` on purpose: a cached bundle fights
+> hot reloading, and dev serves everything un-cached anyway.
+
+> **Service workers require HTTPS** (or `localhost`). Over plain HTTP on a
+> deployed domain the browser will silently decline to register it.
 
 ---
 
@@ -47,11 +77,16 @@ English, French and Arabic, with full RTL support for Arabic.
 
 - **First visit** — an Apple-style sheet asks for the language, then saves the
   choice to `localStorage`
-- **Desktop** — a globe menu in the top capsule
-- **Mobile** — the globe button in the nav cluster (tap to cycle)
+- **After that** — a welcome sheet appears once, 700ms later, and is dismissed
+  permanently via the `cmb-welcome-seen` flag
+- **Desktop** — a language menu in the top capsule
+- **Mobile** — the language button in the nav cluster (tap to cycle)
 - Switching is **entirely client-side**: no page reload, no route change. The
   tree cross-fades over ~220ms so text morphs rather than popping
 - Arabic flips `dir="rtl"` on `<html>`, which mirrors the entire layout
+
+The two modals are sequenced rather than concurrent — the language sheet always
+wins the first visit, so the welcome message can never appear underneath it.
 
 Translations live in one file: `components/dictionaries.ts`. English is the
 source of truth and TypeScript enforces that French and Arabic mirror its shape.
@@ -233,6 +268,10 @@ app/
 components/
   Nav.tsx             Top capsule + mobile bottom tab bar
   Hero.tsx            Typographic hero (photo-through-letters)
+  Publisher.tsx       Publisher block for the legal notices
+  SocialLinks.tsx     Shared social glyphs + icon row
+  ServiceWorkerRegister.tsx  Registers the PWA service worker (prod only)
+  WelcomePopup.tsx    First-visit welcome sheet (once, localStorage)
   Kinetic.tsx         Word-by-word reveal animation
   Reveal.tsx          Scroll-triggered reveal, Rule, ZoomFrame
   ScrubText.tsx       Text that fills in as you scroll

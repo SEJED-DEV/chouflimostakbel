@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "sync:site": "node scripts/sync-site.mjs",
-    "check:site": "node scripts/sync-site.mjs --check"
+    "check:site": "node scripts/sync-site.mjs --check",
+    "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
