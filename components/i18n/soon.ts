@@ -31,10 +31,13 @@ export interface SoonCopy {
   questions: {
     title: string;
     sub: string;
+    /** The calls already made - currently just the backend choice. */
+    decided: { label: string; title: string; body: string };
     items: { q: string; why: string }[];
   };
   stack: {
     title: string;
+    sub: string;
     items: { label: string; value: string }[];
   };
   phases: {
@@ -84,15 +87,16 @@ export const soon: Slice<SoonCopy> = {
 
     questions: {
       title: "Decisions still open",
-      sub: "Four calls we have not made yet.",
+      sub: "Three calls we have not made yet.",
+      decided: {
+        label: "Decided",
+        title: "Supabase, for the whole backend.",
+        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.",
+      },
       items: [
         {
           q: "How much of this do we build ourselves?",
           why: "A ready-made CMS gives us auth, uploads and an admin panel immediately, but it is opinionated. Hand-rolling everything takes longer and keeps full control.",
-        },
-        {
-          q: "Is there a database available on our own infrastructure?",
-          why: "Everything above depends on Postgres. If it is not there yet, that is the only thing that matters right now.",
         },
         {
           q: "Who is allowed to publish?",
@@ -107,17 +111,40 @@ export const soon: Slice<SoonCopy> = {
 
     stack: {
       title: "What it would run on",
+      sub: "Supabase bundles the database, sign-in, file storage and live updates into one coherent stack, instead of bolting four unrelated services together. But since we host it ourselves, running it, upgrading it, backing it up and keeping it patched land on us too: the saving is the assembly, the cost is the operations.",
       items: [
-        { label: "Database", value: "Postgres with pgvector for semantic search" },
+        {
+          label: "Platform",
+          value:
+            "Supabase - Postgres, sign-in, file storage and live updates in one place, self-hosted on our own infrastructure",
+        },
+        {
+          label: "Database",
+          value: "Supabase Postgres with the pgvector extension, for semantic search",
+        },
         {
           label: "Data access",
-          value: "Drizzle - thin SQL, and we need real queries for ranking",
+          value: "Drizzle, over the Supabase connection pool",
         },
-        { label: "Accounts", value: "Email and Google or GitHub sign-in" },
-        { label: "Media", value: "Object storage on our own CDN, resized on upload" },
         {
-          label: "Email",
-          value: "A transactional provider, for verification and notifications",
+          label: "Accounts",
+          value: "Supabase Auth - email, with Google or GitHub as social sign-in",
+        },
+        {
+          label: "Media",
+          value: "Supabase Storage, with images resized on upload",
+        },
+        {
+          label: "Live updates",
+          value: "Supabase Realtime, one subscription per signed-in reader",
+        },
+        {
+          label: "Permissions",
+          value: "Row Level Security, so the database enforces who may do what",
+        },
+        {
+          label: "Transactional email",
+          value: "A separate provider, for verification and notifications",
         },
       ],
     },
@@ -251,6 +278,10 @@ export const soon: Slice<SoonCopy> = {
           risk: "Costs creep upward",
           mitigation: "Embeddings only; optional AI tagging stays off by default",
         },
+        {
+          risk: "We operate the backend ourselves, so an unattended major upgrade can take the whole platform down at once - accounts, reads and writes together.",
+          mitigation: "A staging instance to rehearse upgrades on, and a restore path tested before every production change. With a managed service this is the vendor's problem; here it is ours.",
+        },
       ],
     },
 
@@ -280,15 +311,16 @@ export const soon: Slice<SoonCopy> = {
 
     questions: {
       title: "Décisions encore ouvertes",
-      sub: "Quatre choix que nous n'avons pas encore faits.",
+      sub: "Trois choix que nous n'avons pas encore faits.",
+      decided: {
+        label: "Décidé",
+        title: "Supabase, pour toute la partie serveur.",
+        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.",
+      },
       items: [
         {
           q: "Quelle part construisons-nous nous-mêmes ?",
           why: "Un CMS prêt à l'emploi nous donne immédiatement l'authentification, les envois de fichiers et un panneau d'administration, mais il est directeur. Tout construire à la main prend plus de temps et garde le contrôle total.",
-        },
-        {
-          q: "Avons-nous une base de données sur notre propre infrastructure ?",
-          why: "Tout ce qui précède dépend de Postgres. Si elle n'existe pas encore, c'est la seule chose qui compte pour l'instant.",
         },
         {
           q: "Qui a le droit de publier ?",
@@ -303,23 +335,43 @@ export const soon: Slice<SoonCopy> = {
 
     stack: {
       title: "Sur quoi cela tournerait",
+      sub: "Supabase réunit la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct dans une pile cohérente, au lieu d'assembler quatre services sans lien entre eux. Mais puisque nous l'hébergeons nous-mêmes, l'exploiter, le mettre à niveau, en assurer les sauvegardes et les correctifs revient aussi à nous : l'économie porte sur l'assemblage, le coût porte sur l'exploitation.",
       items: [
         {
+          label: "Plateforme",
+          value:
+            "Supabase - Postgres, authentification, stockage des fichiers et mises à jour en direct au même endroit, auto-hébergé sur notre propre infrastructure",
+        },
+        {
           label: "Base de données",
-          value: "Postgres avec pgvector pour la recherche sémantique",
+          value:
+            "Postgres de Supabase avec l'extension pgvector, pour la recherche sémantique",
         },
         {
           label: "Accès aux données",
-          value: "Drizzle - du SQL direct, et nous avons besoin de vraies requêtes pour le classement",
+          value: "Drizzle, par-dessus le pool de connexions de Supabase",
         },
-        { label: "Comptes", value: "E-mail et connexion Google ou GitHub" },
+        {
+          label: "Comptes",
+          value:
+            "Supabase Auth - adresse e-mail, avec Google ou GitHub comme connexion sociale",
+        },
         {
           label: "Médias",
-          value: "Stockage objet sur notre propre CDN, redimensionné à l'envoi",
+          value: "Supabase Storage, avec redimensionnement des images à l'envoi",
         },
         {
-          label: "E-mails",
-          value: "Un fournisseur transactionnel, pour la vérification et les notifications",
+          label: "Mises à jour en direct",
+          value: "Supabase Realtime, un abonnement par lecteur connecté",
+        },
+        {
+          label: "Permissions",
+          value:
+            "Row Level Security, pour que la base de données applique qui peut faire quoi",
+        },
+        {
+          label: "E-mails transactionnels",
+          value: "Un fournisseur distinct, pour la vérification et les notifications",
         },
       ],
     },
@@ -453,6 +505,10 @@ export const soon: Slice<SoonCopy> = {
           risk: "Les coûts grisent vers le haut",
           mitigation: "Des vecteurs uniquement ; l'étiquetage par IA facultatif reste désactivé par défaut",
         },
+        {
+          risk: "Nous exploitons le backend nous-mêmes : une mise à niveau majeure lancée sans surveillance peut faire tomber toute la plateforme d'un coup - comptes, lectures et écritures ensemble.",
+          mitigation: "Une instance de préproduction pour répéter les mises à niveau, et une procédure de restauration testée avant chaque changement en production. Avec un service géré, c'est le problème du fournisseur ; ici, c'est le nôtre.",
+        },
       ],
     },
 
@@ -482,15 +538,16 @@ export const soon: Slice<SoonCopy> = {
 
     questions: {
       title: "قرارات لم تُتخذ بعد",
-      sub: "أربعة اختيارات لم نُقرّرها بعد.",
+      sub: "ثلاثة اختيارات لم نُقرّرها بعد.",
+      decided: {
+        label: "قرّر",
+        title: "Supabase، من أجل كلّ ما في الخلفية.",
+        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».",
+      },
       items: [
         {
           q: "كم نبنيه بأنفسنا؟",
           why: "نظام إدارة محتوى جاهز يمنحنا المصادقة ورفع الملفات ولوحة تحكّم فوراً، لكنه يفرض مقاربة خاصة به. وبناء كل شيء يدوياً يستغرق وقتاً أطول ويحافظ على التحكّم الكامل.",
-        },
-        {
-          q: "هل تتوفّر لنا قاعدة بيانات على بنيتنا التحتية الخاصة؟",
-          why: "كل ما سبق يعتمد على Postgres. وإن لم تكن متوفّرة بعد، فهذه هي المسألة الوحيدة التي تهمّ الآن.",
         },
         {
           q: "من يحقّ له النشر؟",
@@ -505,26 +562,41 @@ export const soon: Slice<SoonCopy> = {
 
     stack: {
       title: "ما الذي سيُبنى عليه",
+      sub: "Supabase لا يزال يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في منظومة واحدة متجانسة، بدل تجميع أربع خدمات لا صلة بينها. لكن بما أننا نستضيفه بأنفسنا، فإن تشغيله وترقيته وأخذ النسخ الاحتياطي منه وتصحيح ثغراته تقع علينا نحن أيضاً: التوفير في التجميع، والتكلفة في التشغيل.",
       items: [
         {
+          label: "المنصّة",
+          value:
+            "Supabase - Postgres وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، باستضافة ذاتية على بنيتنا التحتية",
+        },
+        {
           label: "قاعدة البيانات",
-          value: "Postgres مع pgvector للبحث الدلالي",
+          value: "Postgres من Supabase مع إضافة pgvector، للبحث الدلالي",
         },
         {
           label: "الوصول إلى البيانات",
-          value: "Drizzle - SQL مباشر، ونحتاج إلى استعلامات حقيقية للترتيب",
+          value: "Drizzle، فوق مجمّع اتصالات Supabase",
         },
         {
           label: "الحسابات",
-          value: "بريد إلكتروني وتسجيل دخول عبر Google أو GitHub",
+          value:
+            "مصادقة Supabase - بالبريد الإلكتروني، مع Google أو GitHub دخولاً اجتماعياً",
         },
         {
           label: "الوسائط",
-          value: "تخزين كائنات على شبكة توزيع خاصة بنا، مع تغيير الحجم عند الرفع",
+          value: "تخزين الملفات في Supabase، مع تغيير حجم الصور عند الرفع",
         },
         {
-          label: "البريد",
-          value: "مزوّد خدمة بريد للمعاملات، من أجل التحقّق والإشعارات",
+          label: "التحديثات المباشرة",
+          value: "التحديثات المباشرة في Supabase، اشتراك واحد لكل قارئ مسجَّل الدخول",
+        },
+        {
+          label: "الصلاحيات",
+          value: "أمان مستوى الصفوف، فتطبّق قاعدة البيانات نفسها من يحقّ له فعل ماذا",
+        },
+        {
+          label: "بريد المعاملات",
+          value: "مزوّد منفصل، من أجل التحقّق والإشعارات",
         },
       ],
     },
@@ -657,6 +729,10 @@ export const soon: Slice<SoonCopy> = {
         {
           risk: "تضخّم التكاليف تدريجياً",
           mitigation: "التضمينات فقط؛ وتحليل الموضوعات بالذكاء الاصطناعي يبقى معطّلاً افتراضياً",
+        },
+        {
+          risk: "إدارة الواجهة الخلفية مسؤوليتنا وحدنا، لذلك يمكن أن تُسقط ترقيةٌ كبرى غيرُ مراقبة المنصّة كلّها مرّة واحدة - الحسابات والقراءة والكتابة معاً.",
+          mitigation: "بيئة اختبار لتدريب الترقيات عليها، ومسار استعادة نُختبَر قبل كل تغيير في بيئة الإنتاج. مع خدمة مُدارة يكون ذلك مشكلةَ المزوّد؛ أمّا هنا فهو مسؤوليّتنا.",
         },
       ],
     },

@@ -88,6 +88,21 @@ export default function SoonContent() {
             </p>
           </Reveal>
 
+          {/* What has already been settled - kept visible, not buried. */}
+          <Reveal delay={0.05}>
+            <div className="mt-9 rounded-2xl border border-blue/25 bg-blue/[0.06] p-6 sm:p-7">
+              <span className="inline-flex items-center rounded-full bg-blue/10 px-3 py-1 text-[12px] font-semibold text-blue">
+                {t.questions.decided.label}
+              </span>
+              <h3 className="mt-3.5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
+                {t.questions.decided.title}
+              </h3>
+              <p className="mt-2.5 max-w-2xl text-[16px] leading-relaxed text-gray-2">
+                {t.questions.decided.body}
+              </p>
+            </div>
+          </Reveal>
+
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {t.questions.items.map((item, i) => (
               <Reveal key={item.q} delay={i * 0.05}>
@@ -119,6 +134,11 @@ export default function SoonContent() {
             <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-semibold tracking-[-0.025em] text-ink">
               {t.stack.title}
             </h2>
+            {t.stack.sub && (
+              <p className="mt-4 max-w-2xl text-[17px] leading-relaxed text-gray-2">
+                {t.stack.sub}
+              </p>
+            )}
           </Reveal>
 
           <dl className="mt-9 divide-y divide-sep border-y border-sep">
