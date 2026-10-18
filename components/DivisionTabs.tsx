@@ -5,154 +5,17 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { Minus } from "@phosphor-icons/react/dist/ssr/Minus";
 import Card from "./SpotlightCard";
+import type { DivisionTabsCopy } from "./i18n/divisions";
 
-type Division = {
-  name: string;
-  tagline: string;
-  pros: string[];
-  cons: string[];
-  subjects: string[];
-};
-
-const secondYear: Division[] = [
-  {
-    name: "Sciences",
-    tagline:
-      "If you are interested in pursuing any STEM-related career, this is the division for you, one of the most flexible tracks.",
-    pros: [
-      "Extra year to decide your career path",
-      "Highly competitive, motivating environment",
-    ],
-    cons: [
-      "Requires hard work and logical reasoning",
-      "High stress, not suitable for every student",
-    ],
-    subjects: [
-      "Mathematics",
-      "Physics & Chemistry",
-      "Life & Earth Sciences",
-      "Technology",
-    ],
-  },
-  {
-    name: "Computer Science",
-    tagline:
-      "Passionate about coding, digital logic, and building tech? Get an early head start into the digital world.",
-    pros: [
-      "Practical modern skills: algorithms and databases",
-      "Interactive, like solving real-world puzzles",
-    ],
-    cons: [
-      "Requires a strict, meticulous mindset",
-      "Debugging during timed exams is very stressful",
-    ],
-    subjects: ["Algorithms & Programming", "ICT", "Mathematics", "Physics"],
-  },
-  {
-    name: "Economics & Services",
-    tagline:
-      "Interested in how businesses operate, financial markets, and global events? This is the perfect branch for you.",
-    pros: [
-      "Immediately applicable to real-world situations",
-      "Great balance of math without intense lab sciences",
-    ],
-    cons: [
-      "Requires both math and strong writing skills",
-      "Must balance calculations with long analytical essays",
-    ],
-    subjects: ["Economics", "Management", "Mathematics", "History-Geography"],
-  },
-  {
-    name: "Literature",
-    tagline:
-      "For creative and critical thinkers who love reading, debating, and mastering languages.",
-    pros: [
-      "Master multiple languages and develop your voice",
-      "Heavy analytical reading, discussion, self-expression",
-    ],
-    cons: [
-      "Grading is highly subjective",
-      "Grades depend on how convincingly you argue your points",
-    ],
-    subjects: ["Philosophy", "Arabic", "French", "English", "History-Geography"],
-  },
-];
-
-const thirdYear: Division[] = [
-  {
-    name: "Mathematics",
-    tagline:
-      "For those with a deep love for logic and abstract reasoning, the golden key to elite universities.",
-    pros: [
-      "Highest priority for engineering, architecture, medicine",
-      "Grade based strictly on objective reasoning",
-    ],
-    cons: [
-      "Incredibly fast-paced and abstract",
-      "Zero room for slacking, full dedication required",
-    ],
-    subjects: ["Advanced Mathematics", "Physics & Chemistry"],
-  },
-  {
-    name: "Experimental Sciences",
-    tagline:
-      "Fascinated by biology, anatomy, and chemistry? Best foundation if your dream is medical school.",
-    pros: [
-      "Best path to medicine, pharmacy, dentistry, nursing",
-      "Grounded in real-world observations, highly engaging",
-    ],
-    cons: [
-      "Massive amount of memory retention required",
-      "Must master huge volumes of scientific terminology",
-    ],
-    subjects: ["Life & Earth Sciences", "Physics & Chemistry", "Mathematics"],
-  },
-  {
-    name: "Technical Sciences",
-    tagline:
-      "Prefer engineering labs and understanding how machines operate? This is your branch.",
-    pros: [
-      "Highly practical, schematics and automated logic",
-      "Massive head start for civil or mechanical engineering",
-    ],
-    cons: [
-      "Lab exams require absolute geometric precision",
-      "Strong spatial visualization is essential",
-    ],
-    subjects: [
-      "Technology (Mechanical & Electrical)",
-      "Mathematics",
-      "Physics",
-    ],
-  },
-  {
-    name: "Sports",
-    tagline:
-      "An elite athlete who wants to turn their passion for athleticism into a structured academic career.",
-    pros: [
-      "Designed to balance training with education",
-      "Opens paths to sports science, coaching, physical therapy",
-    ],
-    cons: [
-      "Highly exclusive and physically exhausting",
-      "Injury can completely disrupt your academic path",
-    ],
-    subjects: [
-      "Physical Education Specialties",
-      "Biological Sciences",
-      "Anatomy",
-    ],
-  },
-];
-
-const tabs = [
-  { id: "second", label: "2nd Year", intro: "The first choice, made at the end of a common year.", items: secondYear },
-  { id: "third", label: "3rd Year", intro: "Sciences branch splits into specialized tracks.", items: thirdYear },
-] as const;
-
-export default function DivisionTabs() {
+/**
+ * Pure renderer: every string - tab labels, intros, division names, pros, cons,
+ * subjects - arrives through `data` from the divisions slice, so switching the
+ * language re-renders the whole control in place.
+ */
+export default function DivisionTabs({ data }: { data: DivisionTabsCopy }) {
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
+  const tabs = data.tabs;
   const tab = tabs[active];
 
   return (
@@ -160,7 +23,7 @@ export default function DivisionTabs() {
       {/* iOS segmented control */}
       <div
         role="tablist"
-        aria-label="High school year"
+        aria-label={data.ariaLabel}
         className="seg-track inline-flex"
       >
         {tabs.map((t, i) => (
@@ -227,7 +90,9 @@ export default function DivisionTabs() {
 
                   <div className="mt-7 grid gap-7 sm:grid-cols-2">
                     <div>
-                      <h4 className="text-[13px] font-semibold text-ink">Pros</h4>
+                      <h4 className="text-[13px] font-semibold text-ink">
+                        {data.prosLabel}
+                      </h4>
                       <ul className="mt-3 space-y-2.5">
                         {d.pros.map((p) => (
                           <li key={p} className="flex items-start gap-2.5">
@@ -244,7 +109,9 @@ export default function DivisionTabs() {
                       </ul>
                     </div>
                     <div>
-                      <h4 className="text-[13px] font-semibold text-ink">Cons</h4>
+                      <h4 className="text-[13px] font-semibold text-ink">
+                        {data.consLabel}
+                      </h4>
                       <ul className="mt-3 space-y-2.5">
                         {d.cons.map((c) => (
                           <li key={c} className="flex items-start gap-2.5">
@@ -264,7 +131,7 @@ export default function DivisionTabs() {
 
                   <div className="mt-7 border-t border-sep pt-5">
                     <h4 className="text-[13px] font-semibold text-ink">
-                      Major subjects
+                      {data.subjectsLabel}
                     </h4>
                     <ul className="mt-3.5 flex flex-wrap gap-2">
                       {d.subjects.map((s) => (

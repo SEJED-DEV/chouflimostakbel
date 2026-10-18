@@ -4,6 +4,8 @@ import { Patrick_Hand } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import LanguagePicker from "@/components/LanguagePicker";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -131,9 +133,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LanguageProvider>
+          <Nav />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <LanguagePicker />
+        </LanguageProvider>
       </body>
     </html>
   );

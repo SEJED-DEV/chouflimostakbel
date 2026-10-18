@@ -13,7 +13,13 @@ export type AtfpLevel = {
  * Swipe (or trackpad) through the four certifications - calm and gesture-
  * driven rather than hijacking vertical scroll.
  */
-export default function AtfpCarousel({ levels }: { levels: AtfpLevel[] }) {
+export default function AtfpCarousel({
+  levels,
+  fieldsLabel,
+}: {
+  levels: AtfpLevel[];
+  fieldsLabel: string;
+}) {
   return (
     <div className="snap-cara px-6 pb-4 sm:px-8" style={{ scrollPaddingInline: "24px" }}>
       {levels.map((lv, i) => (
@@ -35,7 +41,7 @@ export default function AtfpCarousel({ levels }: { levels: AtfpLevel[] }) {
           <p className="mt-3 text-[16px] leading-relaxed text-gray-2">{lv.body}</p>
 
           <div className="mt-6 border-t border-sep pt-5">
-            <p className="text-[13px] font-semibold text-gray">Fields</p>
+            <p className="text-[13px] font-semibold text-gray">{fieldsLabel}</p>
             <p className="mt-2 text-[14.5px] leading-relaxed text-gray-2">
               {lv.fields}
             </p>

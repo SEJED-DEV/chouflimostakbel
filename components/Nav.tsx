@@ -8,13 +8,15 @@ import { Books } from "@phosphor-icons/react/dist/ssr/Books";
 import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
 import { MailIcon, InfoIcon } from "./SiteIcons";
 import Logo from "./Logo";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useLanguage } from "./LanguageProvider";
 
 const links = [
-  { href: "/", label: "Home", Icon: House },
-  { href: "/dropouts", label: "Dropouts", Icon: Signpost },
-  { href: "/divisions", label: "Divisions", Icon: Books },
-  { href: "/graduates", label: "Graduates", Icon: GraduationCap },
-];
+  { href: "/", labelKey: "home", Icon: House },
+  { href: "/dropouts", labelKey: "dropouts", Icon: Signpost },
+  { href: "/divisions", labelKey: "divisions", Icon: Books },
+  { href: "/graduates", labelKey: "graduates", Icon: GraduationCap },
+] as const;
 
 /**
  * Desktop: a floating frosted capsule with links. Mobile: the capsule shows
@@ -23,6 +25,7 @@ const links = [
  */
 export default function Nav() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -58,7 +61,7 @@ export default function Nav() {
                     active ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
                   }`}
                 >
-                  {l.label}
+                  {t.nav[l.labelKey]}
                 </Link>
               );
             })}
@@ -70,21 +73,25 @@ export default function Nav() {
                   : "text-gray-2 hover:text-ink"
               }`}
             >
-              About
+              {t.nav.about}
             </Link>
             <Link
               href="/dropouts"
               className="ml-2 rounded-full bg-blue px-4 py-2 text-[14px] font-medium text-white transition-colors duration-200 hover:bg-blue-hi"
             >
-              Get started
+              {t.nav.getStarted}
             </Link>
+            <div className="ms-1 border-s border-sep ps-1">
+              <LanguageSwitcher />
+            </div>
           </div>
 
-          {/* Small-screen utilities: info + contact */}
+          {/* Small-screen utilities: language + info + contact */}
           <div className="flex items-center gap-1 md:hidden">
+            <LanguageSwitcher variant="compact" />
             <Link
               href="/about"
-              aria-label="About us"
+              aria-label={t.nav.aboutUs}
               className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
                 pathname === "/about" ? "bg-ink/[0.06] text-ink" : "text-gray-2"
               }`}
@@ -93,7 +100,7 @@ export default function Nav() {
             </Link>
             <Link
               href="/about#contact"
-              aria-label="Contact us"
+              aria-label={t.nav.contactUs}
               className="flex h-9 w-9 items-center justify-center rounded-full text-gray-2 transition-colors"
             >
               <MailIcon size={20} />
@@ -128,7 +135,7 @@ export default function Nav() {
                   active ? "font-medium text-blue" : "text-gray"
                 }`}
               >
-                {l.label}
+                {t.nav[l.labelKey]}
               </span>
             </Link>
           );

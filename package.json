@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync:site": "node scripts/sync-site.mjs",
+    "check:site": "node scripts/sync-site.mjs --check"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
