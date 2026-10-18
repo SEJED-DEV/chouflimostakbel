@@ -8,6 +8,7 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { useLanguage } from "./LanguageProvider";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog } from "@/components/i18n/changelog";
+import ChangelogCommits from "@/components/ChangelogCommits";
 
 const STORAGE_KEY = "cmb-version";
 
@@ -173,6 +174,8 @@ export default function WhatsNewPopup() {
                 </div>
               ))}
             </div>
+
+            <ChangelogCommits entry={headline} label={c.commitsLabel} />
 
             <div className="mt-6 flex flex-col gap-2.5 sm:flex-row-reverse sm:justify-between">
               <Link

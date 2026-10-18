@@ -165,3 +165,6 @@ export const contact = {
   phoneHref: site.phoneHref,
   phoneDisplay: site.phoneDisplay,
 } as const;
+
+/** Source repository, used to link changelog entries to their commits. */
+export const REPO_URL = "https://github.com/SEJED-DEV/chouflimostakbel";

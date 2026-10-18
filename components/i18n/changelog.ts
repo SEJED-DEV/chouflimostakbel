@@ -35,6 +35,8 @@ export interface ChangelogCopy {
   };
   latest: string;
   changesLabel: string;
+  /** Heading above the commit links for a release. */
+  commitsLabel: string;
   /** Copy for the version-gated "what's new" sheet. */
   popup: { title: string; seeAll: string; close: string };
   note: {
@@ -46,6 +48,24 @@ export interface ChangelogCopy {
 export const changelog: Slice<ChangelogCopy> = {
   en: {
     entries: [
+      {
+        version: "v1.1.1",
+        date: "18 October 2026",
+        summary:
+          "Fixes: the install buttons did nothing on phones, and iOS had no honest answer.",
+        changes: [
+          "The download buttons in the mobile menu and the footer now work. They were silently broken for anyone who had dismissed the install sheet in the previous week.",
+          "The install sheet no longer offers a lone “Not now”. When a browser cannot prompt, it explains what to do instead.",
+          "On iOS the sheet now says plainly that a website cannot install itself, and gives the three taps that work: Share, Add to Home Screen, Add.",
+          "Everywhere else, it explains the reload-once step browsers require before they will offer installation.",
+          "The service worker now registers early enough that a first visit can become installable.",
+        ],
+        commits: [
+          { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
+          { hash: "b6ef424", summary: "Explain the install flow on iOS instead of silently failing" },
+          { hash: "279af42", summary: "Add install buttons to the mobile nav and the footer" },
+        ],
+      },
       {
         version: "v1.1.0",
         date: "18 October 2026",
@@ -90,6 +110,7 @@ export const changelog: Slice<ChangelogCopy> = {
     },
     latest: "Current version",
     changesLabel: "What changed",
+    commitsLabel: "Commits",
     popup: {
       title: "What's new",
       seeAll: "See everything",
@@ -103,6 +124,24 @@ export const changelog: Slice<ChangelogCopy> = {
 
   fr: {
     entries: [
+      {
+        version: "v1.1.1",
+        date: "18 octobre 2026",
+        summary:
+          "Correctifs : les boutons d'installation ne faisaient rien sur mobile, et iOS n'avait pas de vraie réponse.",
+        changes: [
+          "Les boutons de téléchargement du menu mobile et du pied de page fonctionnent enfin. Ils étaient cassés sans rien dire à qui avait fermé la fenêtre d'installation la semaine précédente.",
+          "La fenêtre d'installation n'affiche plus un simple « Pas maintenant ». Lorsqu'un navigateur ne peut pas proposer l'installation, elle explique quoi faire à la place.",
+          "Sur iOS, elle dit clairement qu'un site ne peut pas s'installer lui-même, et donne les trois gestes qui marchent : Partager, Sur l'écran d'accueil, Ajouter.",
+          "Partout ailleurs, elle explique l'étape de rechargement que les navigateurs exigent avant de proposer l'installation.",
+          "Le service worker s'enregistre suffisamment tôt pour qu'une première visite devienne installable.",
+        ],
+        commits: [
+          { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
+          { hash: "b6ef424", summary: "Explain the install flow on iOS instead of silently failing" },
+          { hash: "279af42", summary: "Add install buttons to the mobile nav and the footer" },
+        ],
+      },
       {
         version: "v1.1.0",
         date: "18 octobre 2026",
@@ -147,6 +186,7 @@ export const changelog: Slice<ChangelogCopy> = {
     },
     latest: "Version actuelle",
     changesLabel: "Ce qui a changé",
+    commitsLabel: "Commits",
     popup: {
       title: "Nouveautés",
       seeAll: "Tout voir",
@@ -160,6 +200,24 @@ export const changelog: Slice<ChangelogCopy> = {
 
   ar: {
     entries: [
+      {
+        version: "v1.1.1",
+        date: "18 أكتوبر 2026",
+        summary:
+          "إصلاحات: أزرار التثبيت لم يفعلوا شيءاً على الهواتف، وخالفت الموابيس الخاسة.",
+        changes: [
+          "أصبحت أزرار التحميل في القائمة وفي أسفل الصفحة. كانت معطلة بصمة دون شيءاً لمن أغلقت نافذة التثبيت في الأسبوع الماضي.",
+          "لم عد تعرض النافذة سبب زر «ليس الآن» وحدها وحدها. عندما يمكن المتصفح اقتراح التثبيت، فيشرح بماذا تفعل ما دخلتك أولا.",
+          "على iOS، تقول النافذة بصراحة أن الموقع لا يستطيع تثبيت نفسه، تم تعطي الثلاث ضغطات التي تعمل: المشاركة، إضافة إلى الشاشة الرئيسية، إضافة.",
+          "في بقي طرف ذلك، تشرح خطوة إعادة الصفحة التي تطلبها المتصفحات قبل طرح التثبيت.",
+          "عمال الخدمة سيسجل مبكّراً ليتمكن الزيارة الأولى من أن تصبح للمزارة.",
+        ],
+        commits: [
+          { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
+          { hash: "b6ef424", summary: "Explain the install flow on iOS instead of silently failing" },
+          { hash: "279af42", summary: "Add install buttons to the mobile nav and the footer" },
+        ],
+      },
       {
         version: "v1.1.0",
         date: "18 أكتوبر 2026",
@@ -204,6 +262,7 @@ export const changelog: Slice<ChangelogCopy> = {
     },
     latest: "الإصدار الحالي",
     changesLabel: "ما الذي تغيّر",
+    commitsLabel: "التغييرات",
     popup: {
       title: "ما الجديد",
       seeAll: "عرض الكل",

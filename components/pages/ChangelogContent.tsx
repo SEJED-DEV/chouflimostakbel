@@ -4,6 +4,7 @@ import Reveal, { Rule } from "@/components/Reveal";
 import Card from "@/components/SpotlightCard";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog } from "@/components/i18n/changelog";
+import ChangelogCommits from "@/components/ChangelogCommits";
 
 export default function ChangelogContent() {
   const t = useSlice(changelog);
@@ -68,6 +69,8 @@ export default function ChangelogContent() {
                         </li>
                       ))}
                     </ul>
+
+                    <ChangelogCommits entry={e} label={t.commitsLabel} />
                   </Card>
                 </Reveal>
               </li>
