@@ -18,6 +18,11 @@ export interface ChangelogEntry {
   summary: string;
   /** Individual changes, most important first. */
   changes: string[];
+  /**
+   * Commits this release was built from. Short hashes only - the full hash is
+   * resolved against the repository at render time.
+   */
+  commits?: { hash: string; summary: string }[];
 }
 
 export interface ChangelogCopy {
