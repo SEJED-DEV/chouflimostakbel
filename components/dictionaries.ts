@@ -108,6 +108,14 @@ export const en = {
     step3: "Your browser will offer to install it.",
     gotIt: "Got it",
   },
+  help: {
+    title: "Help build what is next?",
+    body: "We are turning this into something you can sign into, write on, and be shown things that matter to you. It is all still to come - and the whole plan is public.",
+    yes: "Show me the plan",
+    no: "Not now",
+    repo: "or follow along on GitHub",
+  },
+
 
 
   home: {
@@ -207,6 +215,7 @@ export const en = {
     contact: "Contact",
     legal: "Legal",
     changelog: "What's new",
+    soon: "What we're building",
     rights: {
       copyright: "© 2026",
       brand: "Choufli Mosta9bel",
@@ -275,6 +284,14 @@ export const fr: Dictionary = {
     step3: "Votre navigateur vous proposera de l'installer.",
     gotIt: "J'ai compris",
   },
+  help: {
+    title: "Aidez-nous à construire la suite ?",
+    body: "Nous transformons ce site en quelque chose où l'on peut se connecter, écrire, et voir ce qui compte vraiment pour soi. Tout cela reste à venir - et le projet complet est public.",
+    yes: "Voir le plan",
+    no: "Pas maintenant",
+    repo: "ou suivez l’avancement sur GitHub",
+  },
+
 
 
   home: {
@@ -374,6 +391,7 @@ export const fr: Dictionary = {
     contact: "Contact",
     legal: "Légal",
     changelog: "Nouveautés",
+    soon: "Ce que nous construisons",
     rights: {
       copyright: "© 2026",
       brand: "Choufli Mosta9bel",
@@ -432,6 +450,14 @@ export const ar: Dictionary = {
     step3: "سيعرض لديك متصفّح بتثبيته.",
     gotIt: "فهمت",
   },
+  help: {
+    title: "اساعدنا نفي نبنيها؟",
+    body: "نجمل هذا الموقع إلى شيء تستطيع إليه تسجيل، وتكتب عليه، وترى لك ما يهمهك حقيقيًا. كل ذلك لا يزال البعد والمشروع كاملً عنانيًا.",
+    yes: "اعرض عليّ الخطة",
+    no: "ليس الآن",
+    repo: "أو تابع التطوير على GitHub",
+  },
+
 
 
   home: {
@@ -530,6 +556,7 @@ export const ar: Dictionary = {
     contact: "اتصل بنا",
     legal: "قانوني",
     changelog: "ما الجديد",
+    soon: "ما نبنيه",
     rights: {
       copyright: "© 2026",
       brand: "شوفلي مستقبلك",

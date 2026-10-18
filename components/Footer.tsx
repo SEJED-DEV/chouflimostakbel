@@ -81,6 +81,14 @@ export default function Footer() {
               <ul className="mt-4 space-y-3">
                 <li>
                   <Link
+                    href="/soon"
+                    className="text-[14px] text-gray-2 transition-colors hover:text-blue"
+                  >
+                    {t.footer.soon}
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/changelog"
                     className="text-[14px] text-gray-2 transition-colors hover:text-blue"
                   >
