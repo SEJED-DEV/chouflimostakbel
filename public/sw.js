@@ -33,6 +33,12 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// Lets the page ask a waiting worker to take over, so a first visit can
+// become eligible for install without waiting for a reload.
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
+});
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches

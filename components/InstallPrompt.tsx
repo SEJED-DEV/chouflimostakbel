@@ -4,12 +4,15 @@ import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
-import { X } from "@phosphor-icons/react/dist/ssr/X";
+import { ShareNetwork } from "@phosphor-icons/react/dist/ssr/ShareNetwork";
+import { PlusSquare } from "@phosphor-icons/react/dist/ssr/PlusSquare";
+import { Check } from "@phosphor-icons/react/dist/ssr/Check";
 import { useLanguage } from "./LanguageProvider";
 import {
   capturePrompt,
   canPromptDirectly,
   isInstalled,
+  isIosSafari,
   promptInstall,
   subscribe,
   INSTALL_SHEET,
@@ -19,47 +22,46 @@ const STORAGE_KEY = "cmb-install-dismissed";
 /** Dismiss it for a week, then offer again - not forever, and not every visit. */
 const REASK_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
 
-function isStandalone() {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    // iOS Safari reports installed apps via navigator.standalone
-    (window.navigator as unknown as { standalone?: boolean }).standalone === true
-  );
+function wasRecentlyDismissed(): boolean {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return false;
+    const at = Number(raw);
+    if (Number.isFinite(at) && Date.now() - at < REASK_AFTER_MS) return true;
+    window.localStorage.removeItem(STORAGE_KEY);
+    return false;
+  } catch {
+    return false;
+  }
 }
 
 /**
- * PWA install prompt.
+ * Install sheet.
  *
- * Uses the browser's `beforeinstallprompt` where available (Chrome, Edge,
- * Android). iOS Safari never fires that event and has no install API, so it
- * gets the manual Share -> Add to Home Screen instructions instead.
+ * Two states, because the browser gives us two very different situations:
  *
- * Dismissal is a timestamp, not a permanent flag: it comes back after a week
- * rather than never, and not on every single visit either.
+ *  - A real `beforeinstallprompt` was captured: offer the native prompt.
+ *  - No prompt available. iOS never fires one at all, and every browser needs
+ *    a service worker to be *controlling* the page before it will - which on a
+ *    first visit it is not. Either way we still owe the user an answer, so we
+ *    explain the manual route instead of showing a lone "Not now".
  */
 export default function InstallPrompt() {
   const { t } = useLanguage();
   const reduce = useReducedMotion();
 
-  const [deferred, setDeferred] = useState<ReturnType<typeof canPromptDirectly>>(false);
+  const [canPrompt, setCanPrompt] = useState(false);
   const [show, setShow] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [manual, setManual] = useState(false);
 
+  // ---------------------------------------------------------------------
+  // Always-on. This must never be gated on the dismissal preference:
+  // if it were, a dismissed visitor would stop capturing the event
+  // entirely and the download buttons would have nothing to prompt with.
+  // ---------------------------------------------------------------------
   useEffect(() => {
-    if (isStandalone()) return;
-
-    // Respect a recent dismissal.
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const at = Number(raw);
-        if (Number.isFinite(at) && Date.now() - at < REASK_AFTER_MS) return;
-        window.localStorage.removeItem(STORAGE_KEY);
-      }
-    } catch {
-      /* storage blocked - fall through and offer it */
-    }
+    if (isInstalled()) return;
 
     const onInstalled = () => setInstalled(true);
     window.addEventListener("appinstalled", onInstalled);
@@ -68,18 +70,18 @@ export default function InstallPrompt() {
       // Suppress the browser's own mini-infobar; we render our own.
       e.preventDefault();
       capturePrompt(e as Parameters<typeof capturePrompt>[0]);
-      setShow(true);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
 
-    // Stay in sync with the shared store, so a prompt triggered by the Nav
-    // or Footer button is reflected here as well.
-    const unsubscribe = subscribe(() => setDeferred(canPromptDirectly()));
+    const unsubscribe = subscribe(() => setCanPrompt(canPromptDirectly()));
+    const unregisterSheet = INSTALL_SHEET.subscribe({
+      show: () => {
+        setShow(true);
+        setManual(!canPromptDirectly());
+      },
+    });
 
-    // iOS gets its own sheet (IosInstallSheet), so nothing to wire here.
-    const unregisterSheet = INSTALL_SHEET.subscribe({ show: () => setShow(true) });
-
-    setDeferred(canPromptDirectly());
+    setCanPrompt(canPromptDirectly());
 
     return () => {
       unsubscribe();
@@ -87,12 +89,24 @@ export default function InstallPrompt() {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
-
   }, []);
 
-  const dismiss = useCallback((remember = true) => {
+  // ---------------------------------------------------------------------
+  // Auto-offer, only when not recently dismissed.
+  // ---------------------------------------------------------------------
+  useEffect(() => {
+    if (installed || wasRecentlyDismissed()) return;
+    if (!canPrompt) return;
+    // Let the language / what's-new sheets clear first.
+    const id = window.setTimeout(() => {
+      setManual(false);
+      setShow(true);
+    }, 900);
+    return () => window.clearTimeout(id);
+  }, [canPrompt, installed]);
+
+  const dismiss = useCallback(() => {
     setShow(false);
-    if (!remember) return;
     try {
       window.localStorage.setItem(STORAGE_KEY, String(Date.now()));
     } catch {
@@ -101,54 +115,72 @@ export default function InstallPrompt() {
   }, []);
 
   const accept = useCallback(async () => {
-    const done = await promptInstall();
-    setDeferred(canPromptDirectly());
-    if (!done) setShow(false);
-    dismiss();
-  }, [dismiss]);
+    if (canPrompt) {
+      await promptInstall();
+      setCanPrompt(canPromptDirectly());
+      dismiss();
+    } else {
+      // Nothing to prompt with - send them to the manual instructions.
+      setShow(false);
+      setManual(true);
+      const id = window.setTimeout(() => setShow(true), 60);
+      return () => window.clearTimeout(id);
+    }
+  }, [canPrompt, dismiss]);
 
-  // Nothing to offer.
-  if (installed || isInstalled()) return null;
+  useEffect(() => {
+    if (!show) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") dismiss();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [show, dismiss]);
+
+  if (installed) return null;
+
+  const ios = isIosSafari();
+  const steps = ios
+    ? [t.ios.step1, t.ios.step2, t.ios.step3]
+    : [t.manual.step1, t.manual.step2, t.manual.step3];
+  const icons = ios ? [ShareNetwork, PlusSquare, Check] : [Check, Check, Check];
 
   return (
     <AnimatePresence>
       {show && (
         <motion.div
-          className="fixed inset-x-0 bottom-0 z-[80] flex justify-center p-3 sm:inset-0 sm:items-center sm:p-5"
+          className="fixed inset-0 z-[95] flex items-end justify-center p-4 sm:items-center sm:p-5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduce ? 0 : 0.25 }}
           role="dialog"
           aria-modal="true"
-          aria-label={t.install.title}
+          aria-label={ios ? t.ios.title : t.install.title}
         >
-          {/* Scrim only on desktop, where the sheet is centred. */}
-          <div
-            className="absolute inset-0 hidden bg-black/25 backdrop-blur-[6px] sm:block"
-            onClick={() => dismiss()}
-          />
+          <div className="absolute inset-0 bg-black/25 backdrop-blur-[6px]" onClick={dismiss} />
 
           <motion.div
-            initial={reduce ? false : { opacity: 0, y: 28, scale: 0.97 }}
+            initial={reduce ? false : { opacity: 0, y: 26, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 20, scale: 0.98 }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.97 }}
             transition={
               reduce
                 ? { duration: 0 }
-                : { type: "spring", stiffness: 400, damping: 34, mass: 0.8 }
+                : { type: "spring", stiffness: 400, damping: 33, mass: 0.85 }
             }
-            className="frosted relative w-full max-w-sm rounded-[26px] p-6"
+            className="frosted relative w-full max-w-sm rounded-[28px] p-7"
             style={{
               boxShadow:
                 "0 24px 70px rgba(0,0,0,0.24), inset 0 0 0 0.5px rgba(255,255,255,0.7)",
             }}
           >
-            {/* Grabber on mobile, where it reads as a sheet. */}
-            <div
-              aria-hidden
-              className="mx-auto mb-4 h-1 w-9 rounded-full bg-sep sm:hidden"
-            />
+            <div aria-hidden className="mx-auto mb-5 h-1 w-9 rounded-full bg-sep sm:hidden" />
 
             <div className="flex items-start gap-4">
               <Image
@@ -159,28 +191,38 @@ export default function InstallPrompt() {
                 className="h-12 w-12 shrink-0 rounded-xl"
                 style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.12)" }}
               />
-
-              <div className="min-w-0 flex-1">
-                <h2 className="text-[19px] font-semibold tracking-[-0.02em] text-ink">
-                  {t.install.title}
-                </h2>
-                <p className="mt-1 text-[14px] leading-relaxed text-gray-2">
-                  {t.install.body}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => dismiss()}
-                aria-label="Close"
-                className="-mt-1 -me-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray transition-colors hover:bg-ink/[0.06] hover:text-ink"
-              >
-                <X size={15} weight="bold" />
-              </button>
+              <h2 className="pt-0.5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
+                {ios ? t.ios.title : t.install.title}
+              </h2>
             </div>
 
-            <div className="mt-5 flex gap-2.5">
-              {deferred && (
+            <p className="mt-4 text-[15px] leading-relaxed text-gray-2">
+              {ios ? t.ios.body : manual ? t.manual.body : t.install.body}
+            </p>
+
+            {!canPrompt && (
+              <ol className="mt-5 space-y-2.5">
+                {steps.map((step, i) => {
+                  const Icon = icons[i];
+                  return (
+                    <li key={step} className="flex items-start gap-3">
+                      <span
+                        aria-hidden
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue/10 text-blue"
+                      >
+                        <Icon size={15} weight="bold" />
+                      </span>
+                      <span className="pt-1 text-[14.5px] leading-snug text-ink">
+                        {step}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+
+            <div className="mt-6 flex gap-2.5">
+              {canPrompt && (
                 <button
                   type="button"
                   onClick={accept}
@@ -192,10 +234,10 @@ export default function InstallPrompt() {
               )}
               <button
                 type="button"
-                onClick={() => dismiss()}
+                onClick={dismiss}
                 className="flex-1 rounded-full bg-bg-alt px-5 py-2.5 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
               >
-                {t.install.later}
+                {canPrompt ? t.install.later : t.manual.gotIt}
               </button>
             </div>
           </motion.div>

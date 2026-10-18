@@ -100,6 +100,15 @@ export const en = {
     gotIt: "Got it",
   },
 
+  /** No native install prompt: non-iOS browsers need the app registered first. */
+  manual: {
+    body: "Your browser needs one more visit before it can install the app. Reload this page, then try again.",
+    step1: "Reload the page once.",
+    step2: "Tap the download button again.",
+    step3: "Your browser will offer to install it.",
+    gotIt: "Got it",
+  },
+
 
   home: {
     eyebrow: "Guidance for Tunisian youth",
@@ -259,6 +268,14 @@ export const fr: Dictionary = {
     gotIt: "J'ai compris",
   },
 
+  manual: {
+    body: "Votre navigateur a besoin d'une visite de plus avant de pouvoir installer l'application. Rechargez cette page, puis réessayez.",
+    step1: "Rechargez la page une fois.",
+    step2: "Appuyez de nouveau sur le bouton de téléchargement.",
+    step3: "Votre navigateur vous proposera de l'installer.",
+    gotIt: "J'ai compris",
+  },
+
 
   home: {
     eyebrow: "Orientation pour la jeunesse tunisienne",
@@ -405,6 +422,14 @@ export const ar: Dictionary = {
     step1: "اضغط زر المشاركة في سفاري.",
     step2: "اختر «إضافة إلى الشاشة الرئيسية».",
     step3: "اضغط إضافة.",
+    gotIt: "فهمت",
+  },
+
+  manual: {
+    body: "يحتاج متصفّحك إلى زيارة أخرى قبل أن يتمكن من تثبيت التطبيق. أعد تحديث هذه الصفحة ثم حاول.",
+    step1: "أعد تحديث الصفحة مرة واحدة.",
+    step2: "اضطط على زر التحميل مرة أخرى.",
+    step3: "سيعرض لديك متصفّح بتثبيته.",
     gotIt: "فهمت",
   },
 
