@@ -15,6 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/about", priority: 0.6, freq: "yearly" as const },
     { path: "/privacy", priority: 0.2, freq: "yearly" as const },
     { path: "/terms", priority: 0.2, freq: "yearly" as const },
+    { path: "/changelog", priority: 0.3, freq: "monthly" as const },
   ];
 
   const lastModified = new Date();

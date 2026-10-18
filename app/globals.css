@@ -2,9 +2,17 @@
 
 /*
  * Choufli Mosta9bel - Apple-native calm
- * System-first type (SF Pro via system stack), neutral palette, one system
- * blue used sparingly. No harsh borders: spacing, grouping, translucency,
- * and soft depth carry the hierarchy. Calm, confident, inevitable.
+ * Neutral palette, one system blue used sparingly. No harsh borders:
+ * spacing, grouping, translucency and soft depth carry the hierarchy.
+ *
+ * THEME MODEL
+ * Every colour is a CSS custom property in @theme, so flipping `.dark` on
+ * <html> re-themes the whole site without a single `dark:` variant in JSX.
+ *
+ * `--color-ink` is TEXT and flips with the theme.
+ * `--color-surface` is an always-dark surface (the full-bleed statement
+ * sections). It deliberately does NOT flip, so `bg-surface` + `text-white`
+ * stays a dark block in both themes.
  */
 @theme {
   --color-bg: #ffffff;
@@ -16,6 +24,10 @@
   --color-blue: #0071e3;
   --color-blue-hi: #0077ed;
 
+  /* Always-dark surface, used for full-bleed statement sections. */
+  --color-surface: #1d1d1f;
+  --color-surface-2: #2c2c2e;
+
   /* Satoshi carries Latin only, so Arabic falls through to a proper Arabic
      face - SF Arabic on Apple, Geeza/Segoe elsewhere. */
   --font-sans: var(--font-satoshi), -apple-system, BlinkMacSystemFont,
@@ -26,6 +38,25 @@
     monospace;
 
   --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Dark theme. Overriding the variables is all that is needed - every
+   bg-* / text-* / border-* utility resolves through them. */
+.dark {
+  --color-bg: #000000;
+  --color-bg-alt: #1c1c1e;
+  --color-ink: #f5f5f7;
+  --color-gray: #98989d;
+  --color-gray-2: #a1a1a6;
+  --color-sep: #38383a;
+  --color-blue: #0a84ff;
+  --color-blue-hi: #409cff;
+
+  /* Still dark, just a shade apart from the page. */
+  --color-surface: #131316;
+  --color-surface-2: #2c2c2e;
+
+  color-scheme: dark;
 }
 
 html {
@@ -63,6 +94,11 @@ body {
   background: rgba(22, 22, 24, 0.68);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+/* Glass sits over photos as often as over the page, so dark mode keeps more
+   opacity to stop light text washing out. */
+.dark .frosted {
+  background: rgba(28, 28, 30, 0.78);
 }
 
 /* Soft system depth - layered, never harsh */
@@ -205,6 +241,9 @@ html {
   overflow: hidden;
   background: #e8e8ed;
 }
+.dark .skeleton {
+  background: #2c2c2e;
+}
 .skeleton::after {
   content: "";
   position: absolute;
@@ -217,6 +256,14 @@ html {
     transparent
   );
   animation: shimmer 1.4s var(--ease-apple) infinite;
+}
+.dark .skeleton::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.12),
+    transparent
+  );
 }
 @keyframes shimmer {
   100% {
@@ -234,6 +281,9 @@ html {
   background: #e9e9eb;
   border-radius: 9px;
   padding: 2px;
+}
+.dark .seg-track {
+  background: #1c1c1e;
 }
 
 @media (prefers-reduced-motion: reduce) {

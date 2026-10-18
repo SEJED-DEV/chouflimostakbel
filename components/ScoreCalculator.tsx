@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
@@ -105,7 +105,7 @@ export default function ScoreCalculator() {
                 aria-pressed={active}
                 className={`rounded-full px-3.5 py-2 text-[13px] font-medium transition-colors duration-200 ${
                   active
-                    ? "bg-ink text-white"
+                    ? "bg-surface text-white"
                     : "bg-bg text-gray-2 hover:text-ink"
                 }`}
               >

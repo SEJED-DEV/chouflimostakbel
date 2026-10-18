@@ -104,7 +104,7 @@ export default function HomeContent() {
               </Reveal>
 
               <Reveal delay={0.15}>
-                <Card className="h-full bg-ink" interactive={false}>
+                <Card className="h-full bg-surface" interactive={false}>
                   <Link
                     href="/graduates"
                     className="group flex h-full flex-col justify-between p-8"
@@ -137,7 +137,7 @@ export default function HomeContent() {
       </section>
 
       {/* MANIFESTO - full-bleed dark, calm scrubbed statement */}
-      <section className="bg-ink py-28 text-white sm:py-36">
+      <section className="bg-surface py-28 text-white sm:py-36">
         <div className="mx-auto max-w-5xl px-6 sm:px-8">
           <Rule className="mb-12 !bg-white/20 max-w-3xl" />
           <ScrubText

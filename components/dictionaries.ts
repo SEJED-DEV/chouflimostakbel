@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Translation dictionaries.
  *
  * `en` is the source of truth for the shape. `fr` and `ar` mirror it exactly.
@@ -194,6 +194,7 @@ export const en = {
     explore: "Explore",
     contact: "Contact",
     legal: "Legal",
+    changelog: "What's new",
     rights: "© 2026 Choufli Mosta9bel. Made in Tunisia.",
   },
 
@@ -346,6 +347,7 @@ export const fr: Dictionary = {
     explore: "Explorer",
     contact: "Contact",
     legal: "Légal",
+    changelog: "Nouveautés",
     rights: "© 2026 Choufli Mosta9bel. Fait en Tunisie.",
   },
 
@@ -487,6 +489,7 @@ export const ar: Dictionary = {
     explore: "استكشاف",
     contact: "اتصل بنا",
     legal: "قانوني",
+    changelog: "ما الجديد",
     rights: "© 2026 شوفلي مستقبلك. صنع في تونس.",
   },
 

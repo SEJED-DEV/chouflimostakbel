@@ -9,6 +9,7 @@ import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
 import { MailIcon, InfoIcon } from "./SiteIcons";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
 import { useLanguage } from "./LanguageProvider";
 
 const links = [
@@ -81,13 +82,15 @@ export default function Nav() {
             >
               {t.nav.getStarted}
             </Link>
-            <div className="ms-1 border-s border-sep ps-1">
+            <div className="ms-1 flex items-center border-s border-sep ps-1">
+              <ThemeToggle />
               <LanguageSwitcher />
             </div>
           </div>
 
           {/* Small-screen utilities: language + info + contact */}
           <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle variant="compact" />
             <LanguageSwitcher variant="compact" />
             <Link
               href="/about"

@@ -76,6 +76,14 @@ export default function Footer() {
                 {t.footer.legal}
               </p>
               <ul className="mt-4 space-y-3">
+                <li>
+                  <Link
+                    href="/changelog"
+                    className="text-[14px] text-gray-2 transition-colors hover:text-blue"
+                  >
+                    {t.footer.changelog}
+                  </Link>
+                </li>
                 {legalLinks.map((l) => (
                   <li key={l.href}>
                     <Link

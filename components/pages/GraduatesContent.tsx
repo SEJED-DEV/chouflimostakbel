@@ -86,7 +86,7 @@ export default function GraduatesContent() {
       </section>
 
       {/* MISSION - dark statement */}
-      <section className="bg-ink py-28 text-white sm:py-36">
+      <section className="bg-surface py-28 text-white sm:py-36">
         <div className="mx-auto max-w-5xl px-6 sm:px-8">
           <Rule className="mb-12 !bg-white/20 max-w-3xl" />
           <ScrubText

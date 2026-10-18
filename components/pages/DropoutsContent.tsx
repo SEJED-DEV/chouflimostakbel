@@ -87,7 +87,7 @@ export default function DropoutsContent() {
       </section>
 
       {/* SECOND CHANCES - dark statement */}
-      <section className="bg-ink py-24 text-white sm:py-32">
+      <section className="bg-surface py-24 text-white sm:py-32">
         <div className="mx-auto max-w-5xl px-6 sm:px-8">
           <p className="text-[15px] font-medium text-blue">{t.secondChance.kicker}</p>
           <ScrubText

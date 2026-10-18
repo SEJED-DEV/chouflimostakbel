@@ -9,6 +9,7 @@ import WelcomePopup from "@/components/WelcomePopup";
 import InstallPrompt from "@/components/InstallPrompt";
 import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -159,7 +160,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
   ],
 };
 
@@ -168,19 +169,26 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${matcha.variable} ${satoshi.variable}`}>
+      <head>
+        {/* Applies the stored theme before first paint - without this the page
+            flashes light before React hydrates. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-[100dvh] flex flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <LanguageProvider>
-          <Nav />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <LanguagePicker />
-          <WelcomePopup />
-          <InstallPrompt />
-        </LanguageProvider>
+        <ThemeProvider>
+          <LanguageProvider>
+            <Nav />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <LanguagePicker />
+            <WelcomePopup />
+            <InstallPrompt />
+          </LanguageProvider>
+        </ThemeProvider>
         <ServiceWorkerRegister />
         <DevModalReset />
       </body>
