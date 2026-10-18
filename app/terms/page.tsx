@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Reveal, { Rule } from "@/components/Reveal";
-import { site, hosting, authorProfile, authorSocialLinks } from "@/lib/site";
+import { site } from "@/lib/site";
+import Publisher from "@/components/Publisher";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
@@ -161,67 +162,12 @@ export default function TermsPage() {
                   Publisher
                 </h2>
                 <p className="mt-3">
-                  This site is published by{" "}
-                  <a
-                    href={authorProfile.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue underline underline-offset-2"
-                  >
-                    {authorProfile.name}
-                  </a>{" "}
-                  ({authorProfile.role}).
+                  {site.name} is published and maintained by the person below,
+                  who can be reached directly with any question about these terms.
                 </p>
-                <p className="mt-3">
-                  Publisher contact:{" "}
-                  {authorProfile.email && (
-                    <>
-                      <a
-                        href={`mailto:${authorProfile.email}`}
-                        className="text-blue underline underline-offset-2"
-                      >
-                        {authorProfile.email}
-                      </a>
-                      ,{" "}
-                    </>
-                  )}
-                  {authorProfile.phone && (
-                    <a
-                      href={`tel:${authorProfile.phone.replace(/\s/g, "")}`}
-                      className="text-blue underline underline-offset-2"
-                    >
-                      {authorProfile.phone}
-                    </a>
-                  )}
-                  {authorProfile.location && <> &middot; {authorProfile.location}</>}
-                </p>
-                {authorSocialLinks.length > 0 && (
-                  <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
-                    {authorSocialLinks.map((s) => (
-                      <a
-                        key={s.network}
-                        href={s.href}
-                        target="_blank"
-                        rel="noopener noreferrer me"
-                        className="text-blue underline underline-offset-2"
-                      >
-                        {s.network}
-                      </a>
-                    ))}
-                  </p>
-                )}
-                <p className="mt-3">
-                  Hosting is provided by{" "}
-                  <a
-                    href={hosting.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue underline underline-offset-2"
-                  >
-                    {hosting.domain}
-                  </a>{" "}
-                  ({hosting.city}, {hosting.countryCode}).
-                </p>
+                <div className="mt-5">
+                  <Publisher />
+                </div>
               </div>
             </Reveal>
           </div>

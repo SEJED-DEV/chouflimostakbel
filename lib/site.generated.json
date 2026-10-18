@@ -1,6 +1,6 @@
 {
   "_source": "https://sejed.dev",
-  "_syncedAt": "2026-10-18T16:10:34.278Z",
+  "_syncedAt": "2026-10-18T16:46:09.546Z",
   "name": "Sejed Trabelsi",
   "role": "Full Stack Developer",
   "url": "https://sejed.dev",
@@ -9,6 +9,7 @@
   "phone": null,
   "location": "Mannouba, TN",
   "socials": {
-    "github": "https://github.com/SEJED-DEV"
+    "github": "https://github.com/SEJED-DEV",
+    "linkedin": "https://linkedin.com/in/trabelssi-sejed-a592b7438"
   }
 }
