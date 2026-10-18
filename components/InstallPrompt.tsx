@@ -10,7 +10,6 @@ import {
   capturePrompt,
   canPromptDirectly,
   isInstalled,
-  isIosSafari,
   promptInstall,
   subscribe,
   INSTALL_SHEET,
@@ -77,14 +76,7 @@ export default function InstallPrompt() {
     // or Footer button is reflected here as well.
     const unsubscribe = subscribe(() => setDeferred(canPromptDirectly()));
 
-    // iOS has no install event, so offer the manual route on first load.
-    let t: number | undefined;
-    if (isIosSafari()) {
-      t = window.setTimeout(() => setShow(true), 3500);
-    }
-
-    // A Nav/Footer button with no native prompt to offer falls back here for
-    // the manual instructions.
+    // iOS gets its own sheet (IosInstallSheet), so nothing to wire here.
     const unregisterSheet = INSTALL_SHEET.subscribe({ show: () => setShow(true) });
 
     setDeferred(canPromptDirectly());
@@ -94,8 +86,8 @@ export default function InstallPrompt() {
       unregisterSheet();
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
-      if (t) window.clearTimeout(t);
     };
+
   }, []);
 
   const dismiss = useCallback((remember = true) => {
@@ -186,14 +178,6 @@ export default function InstallPrompt() {
                 <X size={15} weight="bold" />
               </button>
             </div>
-
-            {/* iOS has no install API - spell it out instead. */}
-            {!deferred && isIosSafari() && (
-              <ol className="mt-4 space-y-1.5 rounded-xl bg-bg-alt px-4 py-3 text-[13px] leading-relaxed text-gray-2">
-                <li>{t.install.iosStep1}</li>
-                <li>{t.install.iosStep2}</li>
-              </ol>
-            )}
 
             <div className="mt-5 flex gap-2.5">
               {deferred && (

@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/components/LanguageProvider";
 import LanguagePicker from "@/components/LanguagePicker";
 import WhatsNewPopup from "@/components/WhatsNewPopup";
 import InstallPrompt from "@/components/InstallPrompt";
+import IosInstallSheet from "@/components/IosInstallSheet";
 import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
@@ -187,6 +188,7 @@ export default function RootLayout({
             <LanguagePicker />
             <WhatsNewPopup />
             <InstallPrompt />
+            <IosInstallSheet />
           </LanguageProvider>
         </ThemeProvider>
         <ServiceWorkerRegister />

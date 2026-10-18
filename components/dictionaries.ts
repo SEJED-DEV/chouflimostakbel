@@ -90,6 +90,16 @@ export const en = {
     iosStep2: "Choose “Add to Home Screen”, then tap Add.",
   },
 
+  /** iOS cannot install programmatically, so it gets explained instead. */
+  ios: {
+    title: "Add to Home Screen",
+    body: "iOS doesn't let a website install itself. You can still add it to your home screen in three taps, and then it opens like any other app.",
+    step1: "Tap the Share button in Safari.",
+    step2: "Choose “Add to Home Screen”.",
+    step3: "Tap Add.",
+    gotIt: "Got it",
+  },
+
 
   home: {
     eyebrow: "Guidance for Tunisian youth",
@@ -240,6 +250,15 @@ export const fr: Dictionary = {
     iosStep2: "Choisissez « Sur l'écran d'accueil », puis appuyez sur Ajouter.",
   },
 
+  ios: {
+    title: "Sur l'écran d'accueil",
+    body: "iOS ne permet pas à un site de s'installer tout seul. Vous pouvez quand même l'ajouter à votre écran d'accueil en trois gestes, et il s'ouvrira comme n'importe quelle application.",
+    step1: "Appuyez sur le bouton Partager dans Safari.",
+    step2: "Choisissez « Sur l'écran d'accueil ».",
+    step3: "Appuyez sur Ajouter.",
+    gotIt: "J'ai compris",
+  },
+
 
   home: {
     eyebrow: "Orientation pour la jeunesse tunisienne",
@@ -378,6 +397,15 @@ export const ar: Dictionary = {
     later: "ليس الآن",
     iosStep1: "اضغط زر المشاركة في سفاري.",
     iosStep2: "اختر «إضافة إلى الشاشة الرئيسية»، ثم اضغط إضافة.",
+  },
+
+  ios: {
+    title: "أضِف إلى الشاشة الرئيسية",
+    body: "لا يسمح iOS لأي موقع أن يثبت نفسه. لكن يمكنك إضافته إلى شاشتك الرئيسية بثلاث ضغطات، ثم سيفتح مثل أي تطبيق آخر.",
+    step1: "اضغط زر المشاركة في سفاري.",
+    step2: "اختر «إضافة إلى الشاشة الرئيسية».",
+    step3: "اضغط إضافة.",
+    gotIt: "فهمت",
   },
 
 
