@@ -10,6 +10,7 @@ import { MailIcon, InfoIcon } from "./SiteIcons";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
+import DownloadButton from "./DownloadButton";
 import { useLanguage } from "./LanguageProvider";
 
 const links = [
@@ -91,6 +92,7 @@ export default function Nav() {
           {/* Small-screen utilities: language + info + contact */}
           <div className="flex items-center gap-1 md:hidden">
             <ThemeToggle variant="compact" />
+            <DownloadButton />
             <LanguageSwitcher variant="compact" />
             <Link
               href="/about"

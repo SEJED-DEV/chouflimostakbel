@@ -6,15 +6,19 @@ import Image from "next/image";
 import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
 import { X } from "@phosphor-icons/react/dist/ssr/X";
 import { useLanguage } from "./LanguageProvider";
+import {
+  capturePrompt,
+  canPromptDirectly,
+  isInstalled,
+  isIosSafari,
+  promptInstall,
+  subscribe,
+  INSTALL_SHEET,
+} from "@/lib/pwa";
 
 const STORAGE_KEY = "cmb-install-dismissed";
 /** Dismiss it for a week, then offer again - not forever, and not every visit. */
 const REASK_AFTER_MS = 7 * 24 * 60 * 60 * 1000;
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 function isStandalone() {
   if (typeof window === "undefined") return false;
@@ -23,14 +27,6 @@ function isStandalone() {
     // iOS Safari reports installed apps via navigator.standalone
     (window.navigator as unknown as { standalone?: boolean }).standalone === true
   );
-}
-
-function isIosSafari() {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent;
-  const iOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes("Macintosh") && "ontouchend" in document);
-  // Exclude in-app browsers and Chrome/Firefox on iOS, which cannot install.
-  return iOS && /Safari/.test(ua) && !/CriOS|FxiOS|EdgiOS/.test(ua);
 }
 
 /**
@@ -47,7 +43,7 @@ export default function InstallPrompt() {
   const { t } = useLanguage();
   const reduce = useReducedMotion();
 
-  const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferred, setDeferred] = useState<ReturnType<typeof canPromptDirectly>>(false);
   const [show, setShow] = useState(false);
   const [installed, setInstalled] = useState(false);
 
@@ -72,10 +68,14 @@ export default function InstallPrompt() {
     const onPrompt = (e: Event) => {
       // Suppress the browser's own mini-infobar; we render our own.
       e.preventDefault();
-      setDeferred(e as BeforeInstallPromptEvent);
+      capturePrompt(e as Parameters<typeof capturePrompt>[0]);
       setShow(true);
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
+
+    // Stay in sync with the shared store, so a prompt triggered by the Nav
+    // or Footer button is reflected here as well.
+    const unsubscribe = subscribe(() => setDeferred(canPromptDirectly()));
 
     // iOS has no install event, so offer the manual route on first load.
     let t: number | undefined;
@@ -83,7 +83,15 @@ export default function InstallPrompt() {
       t = window.setTimeout(() => setShow(true), 3500);
     }
 
+    // A Nav/Footer button with no native prompt to offer falls back here for
+    // the manual instructions.
+    const unregisterSheet = INSTALL_SHEET.subscribe({ show: () => setShow(true) });
+
+    setDeferred(canPromptDirectly());
+
     return () => {
+      unsubscribe();
+      unregisterSheet();
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
       if (t) window.clearTimeout(t);
@@ -101,18 +109,14 @@ export default function InstallPrompt() {
   }, []);
 
   const accept = useCallback(async () => {
-    if (!deferred) {
-      dismiss();
-      return;
-    }
-    await deferred.prompt();
-    await deferred.userChoice;
-    setDeferred(null);
+    const done = await promptInstall();
+    setDeferred(canPromptDirectly());
+    if (!done) setShow(false);
     dismiss();
-  }, [deferred, dismiss]);
+  }, [dismiss]);
 
   // Nothing to offer.
-  if (installed || isStandalone()) return null;
+  if (installed || isInstalled()) return null;
 
   return (
     <AnimatePresence>

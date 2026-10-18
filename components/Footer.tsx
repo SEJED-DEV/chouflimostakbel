@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import SocialLinks from "./SocialLinks";
+import DownloadButton from "./DownloadButton";
 import { site, socialLinks } from "@/lib/site";
 import { useT } from "./LanguageProvider";
 
@@ -38,6 +39,8 @@ export default function Footer() {
                 buttonClassName="flex h-9 w-9 items-center justify-center rounded-full bg-bg text-gray-2 transition-all duration-200 hover:text-ink active:scale-95"
               />
             )}
+
+            <DownloadButton variant="pill" className="mt-6" />
           </div>
 
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3">
