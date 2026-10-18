@@ -77,19 +77,51 @@ English, French and Arabic, with full RTL support for Arabic.
 
 - **First visit** — an Apple-style sheet asks for the language, then saves the
   choice to `localStorage`
-- **After that** — a welcome sheet appears once, 700ms later, and is dismissed
-  permanently via the `cmb-welcome-seen` flag
+- **After that** — a version-gated "what's new" sheet (see below)
 - **Desktop** — a language menu in the top capsule
 - **Mobile** — the language button in the nav cluster (tap to cycle)
 - Switching is **entirely client-side**: no page reload, no route change. The
   tree cross-fades over ~220ms so text morphs rather than popping
 - Arabic flips `dir="rtl"` on `<html>`, which mirrors the entire layout
 
-The two modals are sequenced rather than concurrent — the language sheet always
-wins the first visit, so the welcome message can never appear underneath it.
+Translations live per page in `components/i18n/<page>.ts` — the same shape in
+all three languages, with TypeScript enforcing it. Shared chrome strings (nav,
+footer, form, calculator) live in `components/dictionaries.ts`.
 
-Translations live in one file: `components/dictionaries.ts`. English is the
-source of truth and TypeScript enforces that French and Arabic mirror its shape.
+The two modals are sequenced rather than concurrent — the language sheet always
+wins the first visit, so nothing ever appears underneath it.
+
+### "What's new" is version-gated, not a permanent flag
+
+It stores **the version the visitor last saw** (`cmb-version`), not a boolean:
+
+| Situation | Behaviour |
+|---|---|
+| Never seen the site | Shows the latest release as a welcome |
+| Last saw v1.0.0, now on v1.1.0 | Shows **every** entry newer than v1.0.0 |
+| Already on the newest | Stays quiet |
+
+So it reappears whenever you ship something and never nags otherwise. To notify
+people about a release, add an entry to the top of `entries` in
+`components/i18n/changelog.ts` (all three languages) — that is the only step.
+
+---
+
+## Themes
+
+Light and dark, following the OS setting until the visitor picks explicitly.
+
+- Every colour is a `@theme` custom property, so flipping `.dark` on `<html>`
+  re-themes the whole site **with no `dark:` variants anywhere in the JSX**
+- `--color-ink` is text and flips; `--color-surface` is an always-dark surface
+  for the full-bleed statement sections and deliberately does not
+- An inline pre-paint script applies the stored theme before React hydrates, so
+  there is no flash of the wrong theme
+- The switch is animated: browsers with the View Transitions API get a circular
+  wipe out from the button; everything else eases colour changes via a
+  short-lived `.theme-anim` class. Both are skipped under
+  `prefers-reduced-motion`
+- Toggle lives in the nav capsule, icon-only on mobile
 
 > All five pages are translated. The score calculator's formula labels are
 > formulaic (`FG = 4 x MG + ...`) and stay in English by design, since that is
@@ -186,8 +218,22 @@ Rendered in the **footer** and the **contact section** on every page.
 | `/divisions` | Tunisian high school divisions, compared |
 | `/graduates` | University orientation + the score calculator |
 | `/about` | About the project + contact form (`#contact`) |
+| `/changelog` | Release history, newest first |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
+
+---
+
+## License
+
+[Apache License 2.0](LICENSE) © 2026 Sejed Trabelsi.
+
+Bundled fonts keep their own licences and are **not** covered by it:
+
+| Font | Licence |
+|---|---|
+| **Satoshi** | ITF Free Font License v2.0 — `app/fonts/Satoshi-LICENSE.txt` |
+| **Matcha Style** | Free for personal and commercial use (Khurasan Studio) |
 
 Also auto-generated: `/sitemap.xml`, `/robots.txt`.
 
@@ -271,7 +317,9 @@ components/
   Publisher.tsx       Publisher block for the legal notices
   SocialLinks.tsx     Shared social glyphs + icon row
   ServiceWorkerRegister.tsx  Registers the PWA service worker (prod only)
-  WelcomePopup.tsx    First-visit welcome sheet (once, localStorage)
+  WhatsNewPopup.tsx   Version-gated "what's new" sheet
+  ThemeProvider.tsx   Light/dark state + pre-paint init script
+  ThemeToggle.tsx     Nav theme control (animated switch)
   Kinetic.tsx         Word-by-word reveal animation
   Reveal.tsx          Scroll-triggered reveal, Rule, ZoomFrame
   ScrubText.tsx       Text that fills in as you scroll

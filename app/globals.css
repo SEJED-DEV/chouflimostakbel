@@ -64,6 +64,63 @@ html {
   scroll-padding-top: 96px;
 }
 
+/* ------------------------------------------------------------------ *
+ * Theme transitions
+ *
+ * `.theme-anim` is added to <html> only for the duration of a light/dark
+ * switch and removed straight after. Colours ease instead of snapping,
+ * without leaving transitions on every element all the time (which would make
+ * hover states feel laggy).
+ * ------------------------------------------------------------------ */
+.theme-anim,
+.theme-anim *,
+.theme-anim *::before,
+.theme-anim *::after {
+  transition:
+    background-color 420ms var(--ease-apple),
+    border-color 420ms var(--ease-apple),
+    color 420ms var(--ease-apple),
+    fill 420ms var(--ease-apple),
+    box-shadow 420ms var(--ease-apple) !important;
+}
+
+/* Fade the page slightly while the swap happens, so the change reads as
+   deliberate rather than as a glitch. */
+.theme-anim body {
+  transition: opacity 260ms var(--ease-apple) !important;
+}
+.theme-anim.theme-fading body {
+  opacity: 0.5;
+}
+
+/* View Transitions: browsers that support it get a circular wipe out from
+   the toggle button instead of a cross-fade. Purely additive. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-anim,
+  .theme-anim * {
+    transition-duration: 0.01ms !important;
+  }
+  .theme-anim.theme-fading body {
+    opacity: 1;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-ink);

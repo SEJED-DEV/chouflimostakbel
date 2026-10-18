@@ -90,13 +90,6 @@ export const en = {
     iosStep2: "Choose “Add to Home Screen”, then tap Add.",
   },
 
-  welcome: {
-    title: "Welcome.",
-    body: "Real options for Tunisian youth, with or without a Bac - vocational training, high school divisions, and what to do after graduating.",
-    cta: "Find your path",
-    ctaHref: "/dropouts",
-    later: "Maybe later",
-  },
 
   home: {
     eyebrow: "Guidance for Tunisian youth",
@@ -195,7 +188,11 @@ export const en = {
     contact: "Contact",
     legal: "Legal",
     changelog: "What's new",
-    rights: "© 2026 Choufli Mosta9bel. Made in Tunisia.",
+    rights: {
+      copyright: "© 2026",
+      brand: "Choufli Mosta9bel",
+      made: "Made in Tunisia.",
+    },
   },
 
   legal: {
@@ -243,13 +240,6 @@ export const fr: Dictionary = {
     iosStep2: "Choisissez « Sur l'écran d'accueil », puis appuyez sur Ajouter.",
   },
 
-  welcome: {
-    title: "Bienvenue.",
-    body: "Des options concrètes pour la jeunesse tunisienne, avec ou sans Bac - formation professionnelle, filières du lycée, et quoi faire après le baccalauréat.",
-    cta: "Trouvez votre voie",
-    ctaHref: "/dropouts",
-    later: "Plus tard",
-  },
 
   home: {
     eyebrow: "Orientation pour la jeunesse tunisienne",
@@ -348,7 +338,11 @@ export const fr: Dictionary = {
     contact: "Contact",
     legal: "Légal",
     changelog: "Nouveautés",
-    rights: "© 2026 Choufli Mosta9bel. Fait en Tunisie.",
+    rights: {
+      copyright: "© 2026",
+      brand: "Choufli Mosta9bel",
+      made: "Fait en Tunisie.",
+    },
   },
 
   legal: {
@@ -386,13 +380,6 @@ export const ar: Dictionary = {
     iosStep2: "اختر «إضافة إلى الشاشة الرئيسية»، ثم اضغط إضافة.",
   },
 
-  welcome: {
-    title: "أهلاً بك.",
-    body: "خيارات حقيقية للشباب التونسي، مع البكالوريا أو بدونها - التكوين المهني، وأقسام الثانوية، وماذا تفعل بعد التخرج.",
-    cta: "اعثر على طريقك",
-    ctaHref: "/dropouts",
-    later: "لاحقاً",
-  },
 
   home: {
     eyebrow: "إرشاد للشباب التونسي",
@@ -490,7 +477,11 @@ export const ar: Dictionary = {
     contact: "اتصل بنا",
     legal: "قانوني",
     changelog: "ما الجديد",
-    rights: "© 2026 شوفلي مستقبلك. صنع في تونس.",
+    rights: {
+      copyright: "© 2026",
+      brand: "شوفلي مستقبلك",
+      made: "صنع في تونس.",
+    },
   },
 
   legal: {

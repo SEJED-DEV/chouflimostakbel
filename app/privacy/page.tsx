@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Reveal, { Rule } from "@/components/Reveal";
 import { site } from "@/lib/site";
 import Publisher from "@/components/Publisher";
@@ -38,7 +38,7 @@ export default function PrivacyPage() {
                   The short version
                 </h2>
                 <p className="mt-3">
-                  {site.name} is a free, public information site. We do not sell
+                  <strong className="font-semibold text-ink">{site.name}</strong> is a free, public information site. We do not sell
                   your data, we do not run advertising, and we do not track you
                   across other websites. There is no account to create.
                 </p>
@@ -142,7 +142,7 @@ export default function PrivacyPage() {
                   Publisher
                 </h2>
                 <p className="mt-3">
-                  {site.name} is published and maintained by the person below.
+                  <strong className="font-semibold text-ink">{site.name}</strong> is published and maintained by the person below.
                   They can be reached directly for any question about this site.
                 </p>
                 <div className="mt-5">

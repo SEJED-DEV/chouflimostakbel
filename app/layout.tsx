@@ -5,7 +5,7 @@ import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import LanguagePicker from "@/components/LanguagePicker";
-import WelcomePopup from "@/components/WelcomePopup";
+import WhatsNewPopup from "@/components/WhatsNewPopup";
 import InstallPrompt from "@/components/InstallPrompt";
 import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
@@ -185,7 +185,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
             <LanguagePicker />
-            <WelcomePopup />
+            <WhatsNewPopup />
             <InstallPrompt />
           </LanguageProvider>
         </ThemeProvider>

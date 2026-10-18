@@ -100,7 +100,11 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 border-t border-sep pt-6">
-          <p className="text-[13px] text-gray">{t.footer.rights}</p>
+          <p className="text-[13px] text-gray">
+            {t.footer.rights.copyright}{" "}
+            <span className="font-semibold text-ink">{t.footer.rights.brand}</span>.{" "}
+            {t.footer.rights.made}
+          </p>
         </div>
       </div>
     </footer>

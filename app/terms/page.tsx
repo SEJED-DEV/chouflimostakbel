@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Reveal, { Rule } from "@/components/Reveal";
 import { site } from "@/lib/site";
 import Publisher from "@/components/Publisher";
@@ -38,7 +38,7 @@ export default function TermsPage() {
                   Acceptance
                 </h2>
                 <p className="mt-3">
-                  By using {site.name} you agree to these terms. If you do not
+                  By using <strong className="font-semibold text-ink">{site.name}</strong> you agree to these terms. If you do not
                   agree, please stop using the site.
                 </p>
               </div>
@@ -50,7 +50,7 @@ export default function TermsPage() {
                   What this site is for
                 </h2>
                 <p className="mt-3">
-                  {site.name} is a free educational guidance resource for
+                  <strong className="font-semibold text-ink">{site.name}</strong> is a free educational guidance resource for
                   Tunisian students. It publishes information about vocational
                   training, high school divisions and university orientation.
                 </p>
@@ -162,7 +162,7 @@ export default function TermsPage() {
                   Publisher
                 </h2>
                 <p className="mt-3">
-                  {site.name} is published and maintained by the person below,
+                  <strong className="font-semibold text-ink">{site.name}</strong> is published and maintained by the person below,
                   who can be reached directly with any question about these terms.
                 </p>
                 <div className="mt-5">
