@@ -81,6 +81,15 @@ export const en = {
     continue: "Continue",
   },
 
+  install: {
+    title: "Install Choufli Mosta9bel",
+    body: "Add it to your home screen and it opens like an app - faster, and it works offline.",
+    action: "Install",
+    later: "Not now",
+    iosStep1: "Tap the Share button in Safari.",
+    iosStep2: "Choose “Add to Home Screen”, then tap Add.",
+  },
+
   welcome: {
     title: "Welcome.",
     body: "Real options for Tunisian youth, with or without a Bac - vocational training, high school divisions, and what to do after graduating.",
@@ -224,6 +233,15 @@ export const fr: Dictionary = {
     continue: "Continuer",
   },
 
+  install: {
+    title: "Installer Choufli Mosta9bel",
+    body: "Ajoutez-le à votre écran d'accueil : il s'ouvre comme une application - plus rapide, et il fonctionne hors ligne.",
+    action: "Installer",
+    later: "Pas maintenant",
+    iosStep1: "Appuyez sur le bouton Partager dans Safari.",
+    iosStep2: "Choisissez « Sur l'écran d'accueil », puis appuyez sur Ajouter.",
+  },
+
   welcome: {
     title: "Bienvenue.",
     body: "Des options concrètes pour la jeunesse tunisienne, avec ou sans Bac - formation professionnelle, filières du lycée, et quoi faire après le baccalauréat.",
@@ -355,6 +373,15 @@ export const ar: Dictionary = {
     title: "اختر لغتك",
     subtitle: "يمكنك تغييرها في أي وقت.",
     continue: "متابعة",
+  },
+
+  install: {
+    title: "ثبّت شوفلي مستقبلك",
+    body: "أضفه إلى شاشتك الرئيسية ليفتح مثل التطبيق - أسرع، ويعمل بدون إنترنت.",
+    action: "تثبيت",
+    later: "ليس الآن",
+    iosStep1: "اضغط زر المشاركة في سفاري.",
+    iosStep2: "اختر «إضافة إلى الشاشة الرئيسية»، ثم اضغط إضافة.",
   },
 
   welcome: {

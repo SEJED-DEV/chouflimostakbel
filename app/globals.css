@@ -16,9 +16,12 @@
   --color-blue: #0071e3;
   --color-blue-hi: #0077ed;
 
-  --font-sans: "Patrick Hand", var(--font-patrick), -apple-system,
-    BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
+  /* Satoshi carries Latin only, so Arabic falls through to a proper Arabic
+     face - SF Arabic on Apple, Geeza/Segoe elsewhere. */
+  --font-sans: var(--font-satoshi), -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif, "SF Arabic", "Geeza Pro", "Noto Sans Arabic",
+    "Segoe UI", Tahoma, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     monospace;
 

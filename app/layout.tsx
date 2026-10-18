@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { Patrick_Hand } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import { LanguageProvider } from "@/components/LanguageProvider";
 import LanguagePicker from "@/components/LanguagePicker";
 import WelcomePopup from "@/components/WelcomePopup";
+import InstallPrompt from "@/components/InstallPrompt";
+import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
@@ -18,12 +19,26 @@ const matcha = localFont({
   weight: "400",
 });
 
-// Patrick Hand - the rest of the site (body, nav, cards, footer).
-const patrick = Patrick_Hand({
-  weight: "400",
-  subsets: ["latin"],
+// Satoshi - the site typeface. Variable font (wght 300-900) in a single
+// self-hosted woff2, so one request covers every weight we use.
+// Licence: ITF Free Font License v2.0 (see app/fonts/Satoshi-LICENSE.txt).
+const satoshi = localFont({
+  src: [
+    { path: "./fonts/Satoshi-Variable.woff2", weight: "300 900", style: "normal" },
+    { path: "./fonts/Satoshi-VariableItalic.woff2", weight: "300 900", style: "italic" },
+  ],
   display: "swap",
-  variable: "--font-patrick",
+  variable: "--font-satoshi",
+  fallback: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "SF Pro Text",
+    "Segoe UI",
+    "Roboto",
+    "Helvetica Neue",
+    "Arial",
+    "sans-serif",
+  ],
 });
 
 export const metadata: Metadata = {
@@ -152,7 +167,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${matcha.variable} ${patrick.variable}`}>
+    <html lang="en" className={`${matcha.variable} ${satoshi.variable}`}>
       <body className="min-h-[100dvh] flex flex-col pb-[calc(64px+env(safe-area-inset-bottom))] md:pb-0">
         <script
           type="application/ld+json"
@@ -164,8 +179,10 @@ export default function RootLayout({
           <Footer />
           <LanguagePicker />
           <WelcomePopup />
+          <InstallPrompt />
         </LanguageProvider>
         <ServiceWorkerRegister />
+        <DevModalReset />
       </body>
     </html>
   );
