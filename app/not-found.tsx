@@ -1,10 +1,32 @@
+"use client";
+
 import Link from "next/link";
 import { House } from "@phosphor-icons/react/dist/ssr/House";
 import { Signpost } from "@phosphor-icons/react/dist/ssr/Signpost";
 import { Books } from "@phosphor-icons/react/dist/ssr/Books";
 import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
+import { useSlice } from "@/components/i18n/slice";
+import { errors } from "@/components/i18n/errors";
+import { useT } from "@/components/LanguageProvider";
 
+/**
+ * The 404 page.
+ *
+ * A client component, so it can speak the reader's language. It sits inside
+ * the root layout, which means the language provider is above it and the
+ * saved language applies straight away.
+ */
 export default function NotFound() {
+  const t = useSlice(errors);
+  const { t: dict } = useT();
+
+  const paths = [
+    { href: "/", label: dict.nav.home, Icon: House },
+    { href: "/dropouts", label: dict.nav.dropouts, Icon: Signpost },
+    { href: "/divisions", label: dict.nav.divisions, Icon: Books },
+    { href: "/graduates", label: dict.nav.graduates, Icon: GraduationCap },
+  ];
+
   return (
     <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-32 pb-20">
       <div className="mx-auto w-full max-w-2xl px-6 text-center sm:px-8">
@@ -13,21 +35,15 @@ export default function NotFound() {
         </p>
 
         <h1 className="-mt-4 text-[clamp(1.6rem,4.5vw,2.4rem)] font-semibold tracking-[-0.03em] text-ink sm:-mt-6">
-          This page went looking for a different future.
+          {t.notFound.title}
         </h1>
 
         <p className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed text-gray-2">
-          The link may be old, or the page may have moved. Nothing here is lost
-          though - pick a path below.
+          {t.notFound.body}
         </p>
 
         <div className="mt-10 grid gap-3 sm:grid-cols-2">
-          {[
-            { href: "/", label: "Home", Icon: House },
-            { href: "/dropouts", label: "School Dropouts", Icon: Signpost },
-            { href: "/divisions", label: "HS Divisions", Icon: Books },
-            { href: "/graduates", label: "Graduates", Icon: GraduationCap },
-          ].map((l) => (
+          {paths.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -43,7 +59,7 @@ export default function NotFound() {
           href="/"
           className="mt-8 inline-block rounded-full bg-blue px-7 py-3 text-[17px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi hover:scale-[1.03]"
         >
-          Back home
+          {t.notFound.backHome}
         </Link>
       </div>
     </section>

@@ -3,6 +3,8 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { isChunkLoadError, recoverFromChunkError } from "@/lib/chunk-error";
+import { useSlice } from "@/components/i18n/slice";
+import { errors } from "@/components/i18n/errors";
 
 /**
  * Route-level error boundary. Catches runtime failures inside a page and
@@ -19,6 +21,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useSlice(errors);
   const stale = isChunkLoadError(error);
 
   useEffect(() => {
@@ -35,13 +38,11 @@ export default function Error({
         </div>
 
         <h1 className="mt-7 text-[clamp(1.6rem,4.5vw,2.4rem)] font-semibold tracking-[-0.03em] text-ink">
-          {stale ? "Updating to the latest version." : "Something went sideways."}
+          {stale ? t.error.staleTitle : t.error.title}
         </h1>
 
         <p className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed text-gray-2">
-          {stale
-            ? "This page was left open while the site was updated. Refreshing picks up the current version."
-            : "This page hit an unexpected error. Trying again usually clears it."}
+          {stale ? t.error.staleBody : t.error.body}
         </p>
 
         {error.digest && (
@@ -55,13 +56,13 @@ export default function Error({
               onClick={reset}
               className="rounded-full bg-blue px-7 py-3 text-[17px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi hover:scale-[1.03]"
             >
-              Try again
+              {t.error.tryAgain}
             </button>
             <Link
               href="/"
               className="rounded-full bg-bg-alt px-7 py-3 text-[17px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
             >
-              Back home
+              {t.error.backHome}
             </Link>
           </div>
         )}

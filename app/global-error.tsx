@@ -2,10 +2,15 @@
 
 import { useEffect } from "react";
 import { isChunkLoadError, recoverFromChunkError } from "@/lib/chunk-error";
+import { pick, useStoredLang } from "@/components/i18n/slice";
+import { errors } from "@/components/i18n/errors";
 
 /**
  * Last-resort boundary: catches failures in the root layout itself, where the
  * normal error page cannot render. Must render its own <html>/<body>.
+ *
+ * Because it replaces the root layout there is no language provider above it,
+ * so it reads the saved language directly.
  *
  * A stale build is the one failure we can fix rather than report, so it
  * reloads instead of asking the visitor to press a button.
@@ -17,6 +22,8 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const lang = useStoredLang();
+  const t = pick(errors, lang);
   const stale = isChunkLoadError(error);
 
   useEffect(() => {
@@ -24,7 +31,7 @@ export default function GlobalError({
   }, [stale]);
 
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body
         style={{
           margin: 0,
@@ -42,12 +49,10 @@ export default function GlobalError({
       >
         <div style={{ maxWidth: "28rem" }}>
           <h1 style={{ fontSize: "1.6rem", fontWeight: 600, letterSpacing: "-0.02em" }}>
-            {stale ? "Updating to the latest version." : "Something went sideways."}
+            {stale ? t.globalError.staleTitle : t.globalError.title}
           </h1>
           <p style={{ marginTop: "0.75rem", color: "#6e6e73", lineHeight: 1.6 }}>
-            {stale
-              ? "This page was left open while the site was updated. Refreshing picks up the current version."
-              : "The site failed to load properly. Try again, or reload the page."}
+            {stale ? t.globalError.staleBody : t.globalError.body}
           </p>
           {error.digest && (
             <p style={{ marginTop: "0.75rem", color: "#86868b", fontSize: "0.75rem" }}>
@@ -69,7 +74,7 @@ export default function GlobalError({
                 cursor: "pointer",
               }}
             >
-              Try again
+              {t.globalError.tryAgain}
             </button>
           )}
         </div>

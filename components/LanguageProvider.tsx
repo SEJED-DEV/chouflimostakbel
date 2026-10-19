@@ -27,7 +27,7 @@ export const LANGS: {
   },
 ];
 
-const STORAGE_KEY = "cmb-lang";
+export const LANG_STORAGE_KEY = "cmb-lang";
 const RTL_LANGS: Lang[] = ["ar"];
 
 type Dict = typeof import("./dictionaries").en;
@@ -53,7 +53,7 @@ const LanguageContext = createContext<Ctx | null>(null);
 function detect(): Lang {
   if (typeof window === "undefined") return "en";
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY) as Lang | null;
+    const stored = window.localStorage.getItem(LANG_STORAGE_KEY) as Lang | null;
     if (stored && ["en", "fr", "ar"].includes(stored)) return stored;
   } catch {
     /* storage blocked */
@@ -73,7 +73,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let chosen = false;
     try {
-      chosen = !!window.localStorage.getItem(STORAGE_KEY);
+      chosen = !!window.localStorage.getItem(LANG_STORAGE_KEY);
     } catch {
       /* storage blocked */
     }
@@ -94,7 +94,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLangState(l);
     setNeedsChoice(false);
     try {
-      window.localStorage.setItem(STORAGE_KEY, l);
+      window.localStorage.setItem(LANG_STORAGE_KEY, l);
     } catch {
       /* storage blocked - language still applies for this session */
     }
