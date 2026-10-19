@@ -86,6 +86,39 @@ export const changelog: Slice<ChangelogCopy> = {
   en: {
     entries: [
       {
+        version: "v1.1.2",
+        date: "19 October 2026",
+        summary:
+          "The roadmap page, a contact form that actually delivers, and a site that survives its own updates.",
+        changes: [
+          "A new page: /soon. It publishes the roadmap for the platform to come - accounts, posts, profiles and a feed - along with the decisions taken so far and the ones still open.",
+          "The backend decision is no longer pending. Supabase, self-hosted on our own infrastructure. What that costs us, and what it saves, is written down plainly rather than glossed over.",
+          "The contact form now delivers. It used to look like it worked and drop your message on the floor. It validates, rate limits, and says what went wrong instead of pretending.",
+          "The changelog now says whether the code you are reading is the newest. If the site is behind its own repository, it says so and links to what is missing.",
+          "A stale build can no longer kill the page. Documents are revalidated rather than cached for a year, and a failed chunk load recovers by itself instead of leaving a blank screen.",
+          "Buttons that inverted in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.",
+          "The cost risks on /soon are split apart: the AI cost, which is metered per call, and the infrastructure cost, which is ours now that the backend is self-hosted.",
+
+          "Update notifications, if you want them: the app can tell you when the site is updated, in your own language. It is a device token, not an account - no email address, and nothing is tracked.",
+          "The privacy policy, the terms, the 404 and the error pages now switch language with the rest of the site. An Arabic reader who hit a broken link used to get an English page.",
+          "The contact form opens by itself on the project's own domain and stays closed on preview builds, so a half-finished version never collects messages it cannot deliver.",
+          "The domain is defined in one place now. Moving it used to mean four files, which had already drifted apart.",
+        ],
+        commits: [
+          { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
+          { hash: "4b85839", summary: "Settle the backend decision: self-hosted Supabase" },
+          { hash: "3cff07d", summary: "Fix dark-mode buttons that kept a fixed text colour" },
+          { hash: "a546d47", summary: "Stop a stale build from killing the page" },
+          { hash: "bc0f170", summary: "Say on the changelog whether this build is the newest" },
+          { hash: "0222878", summary: "Make the contact form actually deliver" },
+          { hash: "4b13f13", summary: "Split the cost risk, and check deploys and encoding automatically" },
+
+          { hash: "9e135e7", summary: "Define the domain in one place" },
+          { hash: "49ffe21", summary: "Add update notifications" },
+          { hash: "f9cd963", summary: "Switch language on the legal and error pages too" },
+        ],
+      },
+      {
         version: "v1.1.1",
         notice: "v1.1.1-r2",
         date: "18 October 2026",
@@ -182,6 +215,39 @@ export const changelog: Slice<ChangelogCopy> = {
   fr: {
     entries: [
       {
+        version: "v1.1.2",
+        date: "19 octobre 2026",
+        summary:
+          "La page /soon, un formulaire de contact qui livre enfin, et un site qui survit à ses propres mises à jour.",
+        changes: [
+          "Une nouvelle page : /soon. Elle publie la feuille de route de la plateforme à venir - comptes, articles, profils et un fil - avec les décisions déjà prises et celles qui restent à prendre.",
+          "La décision sur le backend n'est plus en attente. Supabase, auto-hébergé sur notre propre infrastructure. Ce que cela nous coûte, et ce que cela nous économise, est écrit noir sur blanc.",
+          "Le formulaire de contact livre enfin. Avant, il avait l'air de fonctionner et jetait votre message. Il vérifie, limite le débit, et dit ce qui a échoué au lieu de faire semblant.",
+          "Le journal des versions dit maintenant si le code que vous lisez est le plus récent. Si le site est en retard sur son propre dépôt, il le dit et affiche ce qui manque.",
+          "Un déploiement peut être plus ancien que l'onglet ouvert sans casser la page. Les documents sont revalidés au lieu d'être mis en cache pendant un an, et un chargement de fichier manquant se répare tout seul.",
+          "Les boutons qui s'inversaient en mode sombre inversent aussi leur texte. Le bouton d'installation devenait presque blanc et gardait un texte blanc, ce qui le rendait invisible.",
+          "Les risques de coût sur /soon sont séparés : le coût de l'IA, facturé à l'appel, et le coût d'infrastructure, qui est le nôtre depuis que le backend est auto-hébergé.",
+
+          "Des notifications de mise à jour, si vous en voulez : l'application peut vous prévenir quand le site est mis à jour, dans votre langue. C'est un jeton d'appareil, pas un compte - pas d'adresse e-mail, et rien n'est suivi.",
+          "La politique de confidentialité, les conditions, la page 404 et les pages d'erreur suivent maintenant la langue du reste du site. Un lecteur en arabe qui tombait sur un lien cassé se retrouvait avec une page en anglais.",
+          "Le formulaire de contact s'ouvre tout seul sur le domaine du projet et reste fermé sur les versions de prévisualisation, pour qu'une version inachevée ne recueille jamais des messages qu'elle ne peut pas livrer.",
+          "Le domaine est défini à un seul endroit maintenant. Le changer demandait quatre fichiers, qui avaient déjà divergé.",
+        ],
+        commits: [
+          { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
+          { hash: "4b85839", summary: "Settle the backend decision: self-hosted Supabase" },
+          { hash: "3cff07d", summary: "Fix dark-mode buttons that kept a fixed text colour" },
+          { hash: "a546d47", summary: "Stop a stale build from killing the page" },
+          { hash: "bc0f170", summary: "Say on the changelog whether this build is the newest" },
+          { hash: "0222878", summary: "Make the contact form actually deliver" },
+          { hash: "4b13f13", summary: "Split the cost risk, and check deploys and encoding automatically" },
+
+          { hash: "9e135e7", summary: "Define the domain in one place" },
+          { hash: "49ffe21", summary: "Add update notifications" },
+          { hash: "f9cd963", summary: "Switch language on the legal and error pages too" },
+        ],
+      },
+      {
         version: "v1.1.1",
         notice: "v1.1.1-r2",
         date: "18 octobre 2026",
@@ -277,6 +343,39 @@ export const changelog: Slice<ChangelogCopy> = {
 
   ar: {
     entries: [
+      {
+        version: "v1.1.2",
+        date: "19 أكتوبر 2026",
+        summary:
+          "صفحة الطريق، ونموذج تواصل يوصل أخيراً، وموقع يصمد أمام تحديثاته.",
+        changes: [
+          "صفحة جديدة: ‎/soon. تنشر خطة الطريق للمنصّة القادمة — حسابات، ومقالات، وملفّات شخصية، وخلاصة — مع القرارات المتَّخذة والقرارات التي ما تزال مفتوحة.",
+          "القرار بشأن الخلفية لم يعد معلّقاً. Supabase، باستضافة ذاتية على بنيتنا التحتية. وما ينفقه هذا علينا، وما يوفّره، مكتوب بوضوح لا مُجمَّلاً.",
+          "نموذج التواصل يوصل الآن. كان يبدو ناجحاً ويتخلّص من رسالتك على الأرض. صار يتحقّق من البيانات، ويحدّ من عدد الرسائل، ويقول ما الذي أخفق بدل أن يدّعي النجاح.",
+          "سجلّ الإصدارات يقول الآن إن كانت الشيفرة التي تقرؤها هي الأحدث. وإن كان الموقع متأخّراً عن مستودعه، فإنه يقول ذلك ويعرض ما ينقص.",
+          "لم تعد نسخة قديمة تكسر الصفحة. صار المستند يُعاد التحقّق منه بدل أن يُخزَّن سنة كاملة، وأي جزء مفقود من الملفات يُصلَح تلقائياً بدل ترك شاشة فارغة.",
+          "الأزرار التي كان ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.",
+          "مخاطر التكلفة على ‎/soon صارت منفصلة: تكلفة الذكاء الاصطناعي، وهي تُحتسب لكل استدعاء، وتكلفة البنية التحتية، التي صارت مسؤوليتنا منذ أن استضافنا الخلفية بأنفسنا.",
+
+          "إشعارات التحديث، إن أردتها: يستطيع التطبيق أن يخبرك عند تحديث الموقع، وبـلغتك. إنه رمز جهاز لا حساب - لا بريد إلكتروني، ولا شيء يُتبَّع.",
+          "سياسة الخصوصية والشروط وصفحة 404 وصفحات الخطأ صارت تتبع لغة بقية الموقع. كان القارئ العربي الذي يصطدم برابط مكسور يجد صفحة بالإنجليزية.",
+          "نموذج التواصل يُفتح تلقائياً على نطاق المشروع ويبقى مغلقاً على نسخ المعاينة، حتى لا تجمع نسخة ناقصة رسائل لا تستطيع توصيلها.",
+          "النطاق صار معرّفاً في مكان واحد. تغييره كان يتطلّب أربعة ملفات، وقد تباعدت فعلاً.",
+        ],
+        commits: [
+          { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
+          { hash: "4b85839", summary: "Settle the backend decision: self-hosted Supabase" },
+          { hash: "3cff07d", summary: "Fix dark-mode buttons that kept a fixed text colour" },
+          { hash: "a546d47", summary: "Stop a stale build from killing the page" },
+          { hash: "bc0f170", summary: "Say on the changelog whether this build is the newest" },
+          { hash: "0222878", summary: "Make the contact form actually deliver" },
+          { hash: "4b13f13", summary: "Split the cost risk, and check deploys and encoding automatically" },
+
+          { hash: "9e135e7", summary: "Define the domain in one place" },
+          { hash: "49ffe21", summary: "Add update notifications" },
+          { hash: "f9cd963", summary: "Switch language on the legal and error pages too" },
+        ],
+      },
       {
         version: "v1.1.1",
         notice: "v1.1.1-r2",
