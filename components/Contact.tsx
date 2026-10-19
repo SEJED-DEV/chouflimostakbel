@@ -5,6 +5,7 @@ import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { WarningCircle } from "@phosphor-icons/react/dist/ssr/WarningCircle";
 import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
+import EmailOff from "./EmailOff";
 import SocialLinks from "./SocialLinks";
 import { socialLinks, site, isLiveHost } from "@/lib/site";
 import { useT } from "./LanguageProvider";
@@ -132,13 +133,15 @@ export default function Contact({
               <p className="mx-auto mt-2.5 max-w-md text-[16px] leading-relaxed text-gray-2">
                 {t.contact.comingSoonBody}
               </p>
-              <a
-                href={`mailto:${site.email}`}
-                className="mt-6 inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-colors duration-300 hover:bg-blue-hi"
-              >
-                {t.contact.emailUs}
-                <ArrowRight size={16} weight="bold" />
-              </a>
+              <EmailOff>
+                <a
+                  href={`mailto:${site.email}`}
+                  className="mt-6 inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-colors duration-300 hover:bg-blue-hi"
+                >
+                  {t.contact.emailUs}
+                  <ArrowRight size={16} weight="bold" />
+                </a>
+              </EmailOff>
               <p className="mt-4 font-mono text-[12.5px] text-gray">{site.email}</p>
             </div>
           ) : status === "sent" ? (

@@ -76,8 +76,11 @@ const nextConfig: NextConfig = {
       { source: "/dropouts.html", destination: "/dropouts", permanent: true },
       { source: "/divisions.html", destination: "/divisions", permanent: true },
       { source: "/graduates.html", destination: "/graduates", permanent: true },
-      // Any other page that ended in .html drops the suffix.
-      { source: "/:file([^/]+)\\.html", destination: "/:file", permanent: true },
+      // Any other page that ended in .html drops the suffix - but NOT the
+      // offline page, which is a real file. The service worker precaches it,
+      // and caches.addAll is atomic: one 404 and the whole worker fails to
+      // install, taking push notifications and the offline fallback with it.
+      { source: "/:file((?!offline)[^/]+)\\.html", destination: "/:file", permanent: true },
       // The old site sent people to a third-party score calculator. The
       // built-in one replaced it, and lives on the graduates page.
       { source: "/calculator", destination: "/graduates", permanent: true },

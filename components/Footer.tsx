@@ -5,6 +5,7 @@ import Logo from "./Logo";
 import SocialLinks from "./SocialLinks";
 import DownloadButton from "./DownloadButton";
 import PushPrompt from "./PushPrompt";
+import EmailOff from "./EmailOff";
 import { site, socialLinks } from "@/lib/site";
 import { useT } from "./LanguageProvider";
 
@@ -67,12 +68,14 @@ export default function Footer() {
               <p className="text-[13px] font-semibold text-ink">
                 {t.footer.contact}
               </p>
-              <a
-                href={`mailto:${site.email}`}
-                className="mt-4 block text-[14px] break-all text-gray-2 transition-colors hover:text-blue"
-              >
-                {site.email}
-              </a>
+              <EmailOff>
+                <a
+                  href={`mailto:${site.email}`}
+                  className="mt-4 block text-[14px] break-all text-gray-2 transition-colors hover:text-blue"
+                >
+                  {site.email}
+                </a>
+              </EmailOff>
             </div>
 
             <div>

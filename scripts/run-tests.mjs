@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-const SUITES = ["check-chunk-error.mjs", "test-push-prompt.mjs"];
+const SUITES = ["check-chunk-error.mjs", "test-push-prompt.mjs", "test-redirects.mjs"];
 
 function run(file) {
   return new Promise((resolve) => {

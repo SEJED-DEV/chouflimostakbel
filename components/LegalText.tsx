@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 import { site } from "@/lib/site";
+import EmailOff from "./EmailOff";
 
 /**
  * Renders a line of legal copy.
@@ -42,13 +43,14 @@ export default function LegalText({ text }: { text: string }) {
 
         if (part === "{{email}}") {
           return (
-            <a
-              key={i}
-              href={`mailto:${site.email}`}
-              className="text-blue underline underline-offset-2"
-            >
-              {site.email}
-            </a>
+            <EmailOff key={i}>
+              <a
+                href={`mailto:${site.email}`}
+                className="text-blue underline underline-offset-2"
+              >
+                {site.email}
+              </a>
+            </EmailOff>
           );
         }
 

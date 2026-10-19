@@ -76,6 +76,31 @@ Old caches are purged on activate. To invalidate everything, bump
 
 ---
 
+## Cloudflare
+
+Two settings on the Cloudflare side matter.
+
+**Turn off Scrape Shield → Email Address Obfuscation.** It rewrites every
+email address in the HTML into a `/cdn-cgi/l/email-protection` link, which
+their script decodes. Where that script does not run — a plain text browser,
+an email reader, a crawler, an offline page — the link lands on a 404 instead
+of opening a mail client. The contact form falls back to that address, so a
+broken one means a message that never gets sent.
+
+The markup also carries Cloudflare's own `<!--email_off-->` exemption, so
+this works either way, and `/cdn-cgi/l/email-protection` is answered with a
+small page showing the address rather than a 404 for anything that was
+cached before.
+
+**Do not cache the HTML document for a year.** Next.js sends
+`s-maxage=31536000` for prerendered pages, which tells the CDN to hold the
+document until 2027. The assets are content-hashed and genuinely immutable —
+it is only the document that has to be revalidated, because the next deploy
+replaces the chunks it names. `next.config.ts` sets the correct policy, but a
+CDN rule that overrides it will bring the stale-chunk error back.
+
+---
+
 ## Update notifications
 
 When the site is updated, everyone who turned on update alerts gets a
@@ -85,8 +110,13 @@ changelog.
 - **Opt-in, always.** A push subscription is a device token, not a contact: no
   email address is asked for and nothing is tracked. The reader can turn it
   off, and turning it off deletes the stored token immediately.
-- **Never on page load.** The prompt appears only on the changelog page. Asking
-  unprompted is how a browser ends up permanently refusing.
+- **Never on page load.** The prompt appears in the footer, so it is offered
+  when someone reaches the end of a page rather than while they are reading.
+  Asking unprompted is how a browser ends up permanently refusing.
+- **For a day, then never again.** The first prompt starts a 24 hour window.
+  Inside it the prompt reminds every four hours; after that the reader is
+  locked out permanently. The schedule lives in `lib/push-prompt.ts` and is
+  pinned by tests.
 - **Once per version.** The store remembers the last version announced, so
   deploying five times in a day does not ping anyone five times.
 
@@ -260,9 +290,11 @@ Rendered in the **footer** and the **contact section** on every page.
 | `/divisions` | Tunisian high school divisions, compared |
 | `/graduates` | University orientation + the score calculator |
 | `/about` | About the project + contact form (`#contact`) |
-| `/changelog` | Release history, newest first |
+| `/contact` | The contact form on a page of its own |
+| `/changelog` | Release history, newest first, with the deploy status |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
+| `/soon` | The roadmap for the platform to come |
 
 ---
 

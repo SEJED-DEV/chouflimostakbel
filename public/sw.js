@@ -28,7 +28,19 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(STATIC_CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
+      // Added one at a time, and a failure is ignored. caches.addAll is
+      // atomic: a single 404 rejects the whole promise, the install fails,
+      // and the worker never takes control - which costs push notifications
+      // and the offline fallback as well as the cache.
+      .then((cache) =>
+        Promise.all(
+          PRECACHE.map((url) =>
+            cache.add(url).catch((error) => {
+              console.warn("sw: could not precache", url, error);
+            })
+          )
+        )
+      )
       .then(() => self.skipWaiting())
   );
 });
