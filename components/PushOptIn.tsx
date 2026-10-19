@@ -5,54 +5,23 @@ import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
 import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { useSlice } from "@/components/i18n/slice";
 import { push as pushCopy } from "@/components/i18n/push";
+import {
+  currentSubscription,
+  disablePush,
+  enablePush,
+  iosWithoutApp,
+  pushSupported,
+} from "@/lib/push-client";
 
 /**
- * Lets a reader turn on update alerts.
+ * The explicit control for update alerts, on the changelog page.
  *
- * Push is a device token, not an account: no email address is asked for and
- * nothing is tracked. The reader can turn it off again, and turning it off
- * deletes the stored subscription immediately.
- *
- * The prompt is never shown on page load. Asking unprompted is how a browser
- * ends up permanently refusing, so it appears only where someone is already
- * reading about releases.
+ * This one is not a prompt: it stays put so a reader who came here looking
+ * for it can turn it on or off whenever they like. The site-wide ask lives
+ * in PushPrompt and follows its own schedule.
  */
 
-type State =
-  | "checking"
-  | "unsupported"
-  | "off"
-  | "on"
-  | "denied"
-  | "error";
-
-/** The public key is inlined at build time. Empty means push is not set up. */
-const PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "";
-
-function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = window.atob(base64);
-  // Built from an explicit ArrayBuffer: the push API wants a plain one, and
-  // a Uint8Array over a shared buffer is not accepted.
-  const output = new Uint8Array(new ArrayBuffer(raw.length));
-  for (let i = 0; i < raw.length; i++) output[i] = raw.charCodeAt(i);
-  return output;
-}
-
-/** iOS only delivers web push to an app added to the Home Screen. */
-function iosWithoutApp(): boolean {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent;
-  const iOS =
-    /iPad|iPhone|iPod/.test(ua) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  if (!iOS) return false;
-  const standalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as unknown as { standalone?: boolean }).standalone === true;
-  return !standalone;
-}
+type State = "checking" | "unsupported" | "off" | "on" | "denied" | "error";
 
 export default function PushOptIn({ className = "" }: { className?: string }) {
   const t = useSlice(pushCopy);
@@ -63,14 +32,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
     let cancelled = false;
 
     (async () => {
-      const supported =
-        typeof window !== "undefined" &&
-        "serviceWorker" in navigator &&
-        "PushManager" in window &&
-        "Notification" in window &&
-        Boolean(PUBLIC_KEY);
-
-      if (!supported || iosWithoutApp()) {
+      if (!pushSupported() || iosWithoutApp()) {
         if (!cancelled) setState("unsupported");
         return;
       }
@@ -81,8 +43,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
       }
 
       try {
-        const registration = await navigator.serviceWorker.ready;
-        const existing = await registration.pushManager.getSubscription();
+        const existing = await currentSubscription();
         if (!cancelled) setState(existing ? "on" : "off");
       } catch {
         if (!cancelled) setState("off");
@@ -94,29 +55,12 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
     };
   }, []);
 
-  async function enable() {
+  async function onEnable() {
     if (busy) return;
     setBusy(true);
     try {
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") {
-        setState(permission === "denied" ? "denied" : "off");
-        return;
-      }
-
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUBLIC_KEY),
-      });
-
-      const res = await fetch("/api/push/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(subscription.toJSON()),
-      });
-
-      setState(res.ok ? "on" : "error");
+      const subscription = await enablePush();
+      setState(subscription ? "on" : Notification.permission === "denied" ? "denied" : "error");
     } catch {
       setState("error");
     } finally {
@@ -124,22 +68,11 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
     }
   }
 
-  async function disable() {
+  async function onDisable() {
     if (busy) return;
     setBusy(true);
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-      if (subscription) {
-        // Delete it server side first: an unsubscribe alone would leave the
-        // record behind, still holding a token we could push to.
-        await fetch("/api/push/subscribe", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpoint: subscription.endpoint }),
-        }).catch(() => undefined);
-        await subscription.unsubscribe();
-      }
+      await disablePush();
       setState("off");
     } catch {
       setState("error");
@@ -159,7 +92,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
         <span>{t.on}</span>
         <button
           type="button"
-          onClick={disable}
+          onClick={onDisable}
           disabled={busy}
           className="font-medium text-blue transition-opacity hover:opacity-70 disabled:opacity-50"
         >
@@ -195,7 +128,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
     <div className={`max-w-lg ${className}`}>
       <button
         type="button"
-        onClick={enable}
+        onClick={onEnable}
         disabled={busy}
         className="inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[13.5px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60 disabled:opacity-60"
       >

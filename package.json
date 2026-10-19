@@ -8,7 +8,7 @@
     "prebuild": "node scripts/write-build-info.mjs",
     "build": "next build",
     "start": "next start",
-    "test": "node --experimental-strip-types scripts/check-chunk-error.mjs",
+    "test": "node --experimental-strip-types scripts/run-tests.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
     "check:encoding": "node scripts/check-encoding.mjs",
     "sync:site": "node scripts/sync-site.mjs",

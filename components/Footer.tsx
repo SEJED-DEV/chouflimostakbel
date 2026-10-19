@@ -4,6 +4,7 @@ import Link from "next/link";
 import Logo from "./Logo";
 import SocialLinks from "./SocialLinks";
 import DownloadButton from "./DownloadButton";
+import PushPrompt from "./PushPrompt";
 import { site, socialLinks } from "@/lib/site";
 import { useT } from "./LanguageProvider";
 
@@ -109,6 +110,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
+
+        <PushPrompt className="mt-12" />
 
         <div className="mt-14 border-t border-sep pt-6">
           <p className="text-[13px] text-gray">

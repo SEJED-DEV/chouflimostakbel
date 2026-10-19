@@ -26,6 +26,12 @@ export interface PushCopy {
   unsupported: string;
   /** Something went wrong. */
   error: string;
+  /** Title of the site-wide prompt asking for permission. */
+  promptTitle: string;
+  /** Why it is worth allowing. */
+  promptBody: string;
+  /** Closing the prompt without answering. */
+  later: string;
 }
 
 export const push: Slice<PushCopy> = {
@@ -41,6 +47,10 @@ export const push: Slice<PushCopy> = {
     disable: "Turn off",
     unsupported: "This browser cannot send notifications.",
     error: "That did not work. Try again.",
+    promptTitle: "Get a note when the site is updated.",
+    promptBody:
+      "One message when a new version ships, in your own language. No email address, no tracking.",
+    later: "Later",
   },
 
   fr: {
@@ -55,6 +65,10 @@ export const push: Slice<PushCopy> = {
     disable: "Désactiver",
     unsupported: "Ce navigateur ne peut pas envoyer de notifications.",
     error: "Cela n'a pas fonctionné. Réessayez.",
+    promptTitle: "Soyez prévenu quand le site est mis à jour.",
+    promptBody:
+      "Un message à chaque nouvelle version, dans votre langue. Pas d'adresse e-mail, pas de suivi.",
+    later: "Plus tard",
   },
 
   ar: {
@@ -68,5 +82,9 @@ export const push: Slice<PushCopy> = {
     disable: "إيقاف",
     unsupported: "هذا المتصفح لا يدعم إرسال الإشعارات.",
     error: "لم ينجح ذلك. أعد المحاولة.",
+    promptTitle: "صلك إشعار عند تحديث الموقع.",
+    promptBody:
+      "رسالة واحدة عند صدور كل إصدار جديد، وبلغتك. لا بريد إلكتروني ولا تتبّع.",
+    later: "لاحقًا",
   },
 };
