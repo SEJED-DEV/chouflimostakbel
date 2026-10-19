@@ -5,8 +5,10 @@
   "license": "Apache-2.0",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/write-build-info.mjs",
     "build": "next build",
     "start": "next start",
+    "test": "node --experimental-strip-types scripts/check-chunk-error.mjs",
     "sync:site": "node scripts/sync-site.mjs",
     "check:site": "node scripts/sync-site.mjs --check",
     "icons": "node scripts/generate-icons.mjs"

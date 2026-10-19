@@ -5,6 +5,7 @@ import Card from "@/components/SpotlightCard";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog } from "@/components/i18n/changelog";
 import ChangelogCommits from "@/components/ChangelogCommits";
+import DeployStatusLine from "@/components/DeployStatus";
 
 export default function ChangelogContent() {
   const t = useSlice(changelog);
@@ -22,6 +23,7 @@ export default function ChangelogContent() {
             <p className="mt-5 max-w-xl text-[17px] leading-relaxed text-gray-2">
               {t.header.sub}
             </p>
+            <DeployStatusLine />
           </Reveal>
           <Rule className="mt-10" />
         </div>

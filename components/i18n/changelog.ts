@@ -51,6 +51,35 @@ export interface ChangelogCopy {
     title: string;
     body: string;
   };
+  /** Copy for the live deploy-status line in the page header. */
+  status: DeployStatusCopy;
+}
+
+/**
+ * Arabic distinguishes singular, dual, "few" and "many", so every plural form
+ * is spelled out and picked with Intl.PluralRules. English and French only
+ * ever select `one` and `other`; the rest repeat the generic form so all three
+ * languages keep the same shape.
+ */
+export type PluralKey = "one" | "two" | "few" | "many" | "other";
+
+export interface DeployStatusCopy {
+  /** Accessible name for the line, for screen readers. */
+  label: string;
+  /** This build matches the newest code on the branch. */
+  current: string;
+  /** Commits on the branch that this build does not contain. */
+  behind: Record<PluralKey, string>;
+  /** This build has commits the branch does not - usually a force-push. */
+  ahead: string;
+  /** Both: the branch and the build have moved apart. */
+  diverged: string;
+  /** "Built from {sha}" - {sha} is replaced at render time. */
+  builtFrom: string;
+  /** Link text to the compare view listing exactly what is missing. */
+  seeDiff: string;
+  /** Link text to the repository itself. */
+  openRepo: string;
 }
 
 export const changelog: Slice<ChangelogCopy> = {
@@ -130,6 +159,24 @@ export const changelog: Slice<ChangelogCopy> = {
       title: "Missing something?",
       body: "Every release is written here as it ships. If a change is missing from this page, or something is still unclear, tell us - it goes into the next version.",
     },
+    status: {
+      label: "Deploy status",
+      current: "This build matches the newest code on main.",
+      behind: {
+        one: "1 commit on main is not in this build yet.",
+        two: "{n} commits on main are not in this build yet.",
+        few: "{n} commits on main are not in this build yet.",
+        many: "{n} commits on main are not in this build yet.",
+        other: "{n} commits on main are not in this build yet.",
+      },
+      ahead:
+        "This build has commits main does not - the branch was probably moved back.",
+      diverged:
+        "This build and main have moved apart. Some commits are on the branch, some are not.",
+      builtFrom: "Built from {sha}",
+      seeDiff: "See what is missing on GitHub",
+      openRepo: "Open the repository",
+    },
   },
 
   fr: {
@@ -208,6 +255,24 @@ export const changelog: Slice<ChangelogCopy> = {
       title: "Il manque quelque chose ?",
       body: "Chaque version est consignée ici dès sa publication. Si un changement n'y figure pas, ou si quelque chose reste flou, dites-le-nous : cela ira dans la prochaine version.",
     },
+    status: {
+      label: "État du déploiement",
+      current: "Cette version correspond au code le plus récent sur main.",
+      behind: {
+        one: "1 commit sur main n'est pas encore dans cette version.",
+        two: "{n} commits sur main ne sont pas encore dans cette version.",
+        few: "{n} commits sur main ne sont pas encore dans cette version.",
+        many: "{n} commits sur main ne sont pas encore dans cette version.",
+        other: "{n} commits sur main ne sont pas encore dans cette version.",
+      },
+      ahead:
+        "Cette version contient des commits que main n'a pas - la branche a probablement été reculée.",
+      diverged:
+        "Cette version et main ont divergé. Certains commits sont sur la branche, d'autres non.",
+      builtFrom: "Compilée depuis {sha}",
+      seeDiff: "Voir ce qui manque sur GitHub",
+      openRepo: "Ouvrir le dépôt",
+    },
   },
 
   ar: {
@@ -285,6 +350,24 @@ export const changelog: Slice<ChangelogCopy> = {
     note: {
       title: "هل ينقصك شيء؟",
       body: "كل إصدار يُدوَّن هنا فور نشره. إن لم تجد تغييرًا مذكورًا في هذه الصفحة، أو بقي شيء غير واضح، فأخبرنا وسيكون في الإصدار القادم.",
+    },
+    status: {
+      label: "حالة النشر",
+      current: "هذه النسخة مطابقة لأحدث الشيفرة على main.",
+      behind: {
+        one: "تغيير واحد على main لم يدخل بعد في هذه النسخة.",
+        two: "تغييران على main لم يدخلا بعد في هذه النسخة.",
+        few: "{n} تغييرات على main لم تدخل بعد في هذه النسخة.",
+        many: "{n} تغييراً على main لم تدخل بعد في هذه النسخة.",
+        other: "{n} تغيير على main لم يدخل بعد في هذه النسخة.",
+      },
+      ahead:
+        "تحتوي هذه النسخة على تغييرات غير موجودة في main. ربما أُرجع الفرع إلى الوراء.",
+      diverged:
+        "تباعدت هذه النسخة عن main. بعض التغييرات على الفرع وبعضها ليس عليه.",
+      builtFrom: "مبنية من {sha}",
+      seeDiff: "انظر ما ينقص على GitHub",
+      openRepo: "افتح المستودع",
     },
   },
 };
