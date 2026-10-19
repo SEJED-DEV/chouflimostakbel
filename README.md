@@ -417,7 +417,7 @@ live in `lib/site.ts`.
 
 ## Contact
 
-**contact@chouflimostakbel.tn**
+**contact@chouflimostakbel.tn** (currently live at https://loujayn.sejed.dev
 
 > The contact form is a front-end stub — it currently shows a success state
 > locally without sending. Wire it to an API route or form service before
