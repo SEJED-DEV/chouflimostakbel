@@ -103,6 +103,13 @@ export const metadata: Metadata = {
     },
   },
   manifest: "/manifest.webmanifest",
+  // The commit this build came from, inlined at build time. It lets a
+  // deployment check tell a fresh build from a process that is still
+  // serving the previous one, which is otherwise invisible until a visitor
+  // hits a stale chunk.
+  other: {
+    "build-sha": process.env.BUILD_SHORT_SHA || "unknown",
+  },
   appleWebApp: {
     capable: true,
     title: "Choufli Mosta9bel",

@@ -1,4 +1,37 @@
 import type { NextConfig } from "next";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
+/**
+ * The commit this build was made from, read at BUILD time and inlined.
+ *
+ * The prebuild script writes lib/build-info.json before `next build` starts,
+ * and this file is evaluated when the build starts, so the value below is
+ * frozen into the bundle.
+ *
+ * It has to be frozen. Reading the file at request time looks equivalent and
+ * is not: a server whose files have been updated but whose process has not
+ * been restarted would read the NEW sha and report itself as current, while
+ * still serving the OLD prerendered pages. That is exactly the situation the
+ * status line exists to detect, so it must not be able to hide it.
+ */
+function buildInfo() {
+  try {
+    return JSON.parse(
+      readFileSync(join(process.cwd(), "lib", "build-info.json"), "utf8"),
+    ) as {
+      repo?: string;
+      sha?: string | null;
+      shortSha?: string | null;
+      dirty?: boolean;
+      builtAt?: string;
+    };
+  } catch {
+    return {};
+  }
+}
+
+const info = buildInfo();
 
 /**
  * Cache policy, stated explicitly because the default is wrong for a site
@@ -15,6 +48,15 @@ import type { NextConfig } from "next";
  * _next/static) so that which one wins cannot depend on array order.
  */
 const nextConfig: NextConfig = {
+  // Inlined at build time, so a stale process keeps reporting its own sha.
+  env: {
+    BUILD_REPO: info.repo || "SEJED-DEV/chouflimostakbel",
+    BUILD_SHA: info.sha || "",
+    BUILD_SHORT_SHA: info.shortSha || "",
+    BUILD_DIRTY: info.dirty ? "true" : "false",
+    BUILD_AT: info.builtAt || "",
+  },
+
   images: {
     remotePatterns: [
       {

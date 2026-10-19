@@ -90,6 +90,7 @@ check(
 );
 
 // ---- 5. The deploy-status endpoint answers ------------------------------
+let reportedSha = null;
 try {
   const status = await fetch(`${BASE}/api/status`);
   const body = await status.json();
@@ -97,6 +98,8 @@ try {
     status.ok &&
     ["current", "behind", "ahead", "diverged", "unknown"].includes(body.state) &&
     typeof body.behind === "number";
+
+  reportedSha = body.shortSha ?? null;
 
   check(
     "deploy status endpoint answers",
@@ -106,6 +109,21 @@ try {
 } catch (e) {
   check("deploy status endpoint answers", false, String(e).slice(0, 80));
 }
+
+// ---- 6. The process is serving the build it claims to ------------------
+// A deploy that copies the files but does not restart the process leaves the
+// old prerendered pages in place while the new build's sha is already on
+// disk. Comparing the sha baked into the HTML with the one the status
+// endpoint reports is the only way to see it from outside.
+const htmlSha = (html.match(/<meta name="build-sha" content="([^"]*)"/) || [])[1] ?? null;
+
+check(
+  "the running process serves the build it reports",
+  htmlSha !== null && reportedSha !== null && htmlSha === reportedSha,
+  htmlSha === null
+    ? "no build-sha meta tag in the HTML"
+    : `HTML says ${htmlSha}, status endpoint says ${reportedSha}`,
+);
 
 // ---- Summary -------------------------------------------------------------
 const failed = results.filter((r) => !r.pass);

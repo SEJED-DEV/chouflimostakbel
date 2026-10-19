@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { NextResponse } from "next/server";
 
 /**
@@ -40,16 +38,19 @@ export interface DeployStatus {
 }
 
 async function readBuildInfo() {
-  try {
-    const raw = await readFile(join(process.cwd(), "lib", "build-info.json"), "utf8");
-    return JSON.parse(raw) as {
-      repo?: string;
-      sha?: string | null;
-      shortSha?: string | null;
-    };
-  } catch {
-    return {};
-  }
+  // These are inlined at build time by next.config.ts, so a process that is
+  // still running an older build reports the OLD sha - which is the truth
+  // about what it is serving. Reading lib/build-info.json at request time
+  // would report the NEW sha for a process still serving the old pages,
+  // hiding exactly the failure this endpoint exists to catch.
+  const sha = process.env.BUILD_SHA || "";
+  const shortSha = process.env.BUILD_SHORT_SHA || (sha ? sha.slice(0, 7) : "");
+
+  return {
+    repo: process.env.BUILD_REPO || "SEJED-DEV/chouflimostakbel",
+    sha: sha || null,
+    shortSha: shortSha || null,
+  };
 }
 
 function unknown(repo: string, sha: string | null, shortSha: string | null): DeployStatus {
