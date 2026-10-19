@@ -175,7 +175,7 @@ export default function SoonContent() {
                   <Card className="p-7 sm:p-8" interactive={false}>
                     <div className="flex flex-col gap-5 sm:flex-row sm:gap-7">
                       <div className="flex items-center gap-3 sm:w-40 sm:shrink-0">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-white">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-bg">
                           {p.n}
                         </span>
                         <span className="text-[18px] font-semibold tracking-[-0.02em] text-ink sm:hidden">

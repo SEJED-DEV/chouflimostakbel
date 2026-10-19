@@ -19,6 +19,14 @@ export interface ChangelogEntry {
   /** Individual changes, most important first. */
   changes: string[];
   /**
+   * The id the "what's new" sheet stores once this entry has been read.
+   *
+   * Defaults to the version. Give an entry its own id when the SAME version
+   * ships more changes later - the sheet fires again for everyone, without
+   * pretending a new version was released.
+   */
+  notice?: string;
+  /**
    * Commits this release was built from. Short hashes only - the full hash is
    * resolved against the repository at render time.
    */
@@ -50,15 +58,17 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.1",
+        notice: "v1.1.1-r2",
         date: "18 October 2026",
         summary:
-          "Fixes: the install buttons did nothing on phones, and iOS had no honest answer.",
+          "Fixes: the install buttons did nothing on phones, iOS had no honest answer, and a few buttons lost their text in dark mode.",
         changes: [
           "The download buttons in the mobile menu and the footer now work. They were silently broken for anyone who had dismissed the install sheet in the previous week.",
           "The install sheet no longer offers a lone “Not now”. When a browser cannot prompt, it explains what to do instead.",
           "On iOS the sheet now says plainly that a website cannot install itself, and gives the three taps that work: Share, Add to Home Screen, Add.",
           "Everywhere else, it explains the reload-once step browsers require before they will offer installation.",
           "The service worker now registers early enough that a first visit can become installable.",
+          "Buttons whose background inverts in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.",
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
@@ -126,15 +136,17 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.1",
+        notice: "v1.1.1-r2",
         date: "18 octobre 2026",
         summary:
-          "Correctifs : les boutons d'installation ne faisaient rien sur mobile, et iOS n'avait pas de vraie réponse.",
+          "Correctifs : les boutons d'installation ne faisaient rien sur mobile, iOS n'avait pas de vraie réponse, et quelques boutons perdaient leur texte en mode sombre.",
         changes: [
           "Les boutons de téléchargement du menu mobile et du pied de page fonctionnent enfin. Ils étaient cassés sans rien dire à qui avait fermé la fenêtre d'installation la semaine précédente.",
           "La fenêtre d'installation n'affiche plus un simple « Pas maintenant ». Lorsqu'un navigateur ne peut pas proposer l'installation, elle explique quoi faire à la place.",
           "Sur iOS, elle dit clairement qu'un site ne peut pas s'installer lui-même, et donne les trois gestes qui marchent : Partager, Sur l'écran d'accueil, Ajouter.",
           "Partout ailleurs, elle explique l'étape de rechargement que les navigateurs exigent avant de proposer l'installation.",
           "Le service worker s'enregistre suffisamment tôt pour qu'une première visite devienne installable.",
+          "Les boutons dont le fond s'inverse en mode sombre inversent désormais leur texte aussi. Le bouton d'installation devenait presque blanc tout en gardant un texte blanc, ce qui le rendait invisible.",
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
@@ -202,15 +214,17 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.1",
+        notice: "v1.1.1-r2",
         date: "18 أكتوبر 2026",
         summary:
-          "إصلاحات: أزرار التثبيت لم يفعلوا شيءاً على الهواتف، وخالفت الموابيس الخاسة.",
+          "إصلاحات: لم تعمل أزرار التثبيت على الهواتف، ولم يكن هناك جواب صادق على iOS، وفقدت بعض الأزرار نصّها في الوضع الليلي.",
         changes: [
-          "أصبحت أزرار التحميل في القائمة وفي أسفل الصفحة. كانت معطلة بصمة دون شيءاً لمن أغلقت نافذة التثبيت في الأسبوع الماضي.",
-          "لم عد تعرض النافذة سبب زر «ليس الآن» وحدها وحدها. عندما يمكن المتصفح اقتراح التثبيت، فيشرح بماذا تفعل ما دخلتك أولا.",
-          "على iOS، تقول النافذة بصراحة أن الموقع لا يستطيع تثبيت نفسه، تم تعطي الثلاث ضغطات التي تعمل: المشاركة، إضافة إلى الشاشة الرئيسية، إضافة.",
-          "في بقي طرف ذلك، تشرح خطوة إعادة الصفحة التي تطلبها المتصفحات قبل طرح التثبيت.",
-          "عمال الخدمة سيسجل مبكّراً ليتمكن الزيارة الأولى من أن تصبح للمزارة.",
+          "صار زرّا التحميل في قائمة الهاتف وفي أسفل الصفحة يعملان. كانا معطّلين بصمت لكل من أغلق نافذة التثبيت في الأسبوع الماضي.",
+          "لم تعد نافذة التثبيت تعرض زرّ «ليس الآن» وحده. وعندما لا يستطيع المتصفح اقتراح التثبيت، تشرح النافذة ما ينبغي فعله بدلاً من ذلك.",
+          "على iOS تقول النافذة بوضوح إن الموقع لا يستطيع تثبيت نفسه، وتوضّح الخطوات الثلاث التي تنفع: المشاركة، ثمّ الإضافة إلى الشاشة الرئيسية، ثمّ إضافة.",
+          "في كل مكان آخر، تشرح خطوة إعادة التحميل التي تشترطها المتصفحات قبل أن تقترح التثبيت.",
+          "يسجّل عامل الخدمة أبكر من ذلك، حتى تصبح الزيارة الأولى قابلة للتثبيت.",
+          "الأزرار التي ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.",
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },

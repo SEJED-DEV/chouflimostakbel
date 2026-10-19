@@ -7,15 +7,24 @@ import { X } from "@phosphor-icons/react/dist/ssr/X";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { useLanguage } from "./LanguageProvider";
 import { useSlice } from "@/components/i18n/slice";
-import { changelog } from "@/components/i18n/changelog";
+import { changelog, type ChangelogEntry } from "@/components/i18n/changelog";
 import ChangelogCommits from "@/components/ChangelogCommits";
 
 const STORAGE_KEY = "cmb-version";
 
 /**
+ * The id stored for an entry the visitor has read. Entries usually answer to
+ * their version; a re-shipped version carries its own `notice` id, so the
+ * sheet comes back for people who already saw that version.
+ */
+function noticeOf(entry: ChangelogEntry): string {
+  return entry.notice ?? entry.version;
+}
+
+/**
  * "What's new" sheet.
  *
- * Version-gated, NOT a permanent flag. It stores the version the visitor last
+ * Version-gated, NOT a permanent flag. It stores the release the visitor last
  * saw, so it reappears whenever a release is newer than that - and stays
  * quiet in between. Bumping the changelog is all it takes to notify people.
  *
@@ -49,9 +58,10 @@ export default function WhatsNewPopup() {
       // Never seen it: introduce the latest release.
       show = entries.slice(0, 1);
     } else {
-      const idx = entries.findIndex((e) => e.version === stored);
+      const idx = entries.findIndex((e) => noticeOf(e) === stored);
       if (idx === -1) {
-        // Version they knew is gone from the list - show what's here now.
+        // Release they knew is gone from the list - or it shipped more
+        // changes under a new notice id. Either way: show what's here now.
         show = entries.slice(0, 1);
       } else if (idx > 0) {
         // Everything newer than what they last saw.
@@ -71,8 +81,8 @@ export default function WhatsNewPopup() {
   function close() {
     setOpen(false);
     try {
-      // Store the newest version we know about, not a boolean.
-      window.localStorage.setItem(STORAGE_KEY, c.entries[0].version);
+      // Store the newest release we know about, not a boolean.
+      window.localStorage.setItem(STORAGE_KEY, noticeOf(c.entries[0]));
     } catch {
       /* storage blocked - it will offer again next visit */
     }

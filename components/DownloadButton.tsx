@@ -39,7 +39,7 @@ export default function DownloadButton({
       <button
         type="button"
         onClick={handleClick}
-        className={`group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[14px] font-medium text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${className}`}
+        className={`group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-[14px] font-medium text-bg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${className}`}
       >
         <DownloadIcon size={16} />
         {t.install.action}
