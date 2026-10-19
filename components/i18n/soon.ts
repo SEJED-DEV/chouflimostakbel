@@ -275,8 +275,12 @@ export const soon: Slice<SoonCopy> = {
           mitigation: "Report queue with triage and ban tooling, built in from the first release",
         },
         {
-          risk: "Costs creep upward",
-          mitigation: "Embeddings only; optional AI tagging stays off by default",
+          risk: "AI costs creep upward",
+          mitigation: "Embeddings only, and optional AI tagging stays off by default. Both are metered per call, so the bill tracks engagement instead of being fixed up front.",
+        },
+        {
+          risk: "Infrastructure costs are ours now, and they scale with traffic and storage",
+          mitigation: "Self-hosting swaps a SaaS bill for Postgres CPU, memory and IOPS, object storage, bandwidth and backups. Cheaper at small scale, and it becomes the dominant cost if the feed gets busy.",
         },
         {
           risk: "We operate the backend ourselves, so an unattended major upgrade can take the whole platform down at once - accounts, reads and writes together.",
@@ -502,8 +506,12 @@ export const soon: Slice<SoonCopy> = {
           mitigation: "File de signalements avec triage et outils de blocage, prévus dès la première version",
         },
         {
-          risk: "Les coûts grisent vers le haut",
-          mitigation: "Des vecteurs uniquement ; l'étiquetage par IA facultatif reste désactivé par défaut",
+          risk: "Les coûts de l'IA grisent vers le haut",
+          mitigation: "Des vecteurs uniquement, et un étiquetage par IA facultatif qui reste désactivé par défaut. Les deux sont facturés à l'appel : la facture suit l'usage réel au lieu d'être fixée dès le départ.",
+        },
+        {
+          risk: "Les coûts d'infrastructure sont désormais les nôtres, et ils augmentent avec le trafic et le stockage",
+          mitigation: "L'auto-hébergement remplace une facture d'abonnement par du CPU Postgres, de la mémoire, des IOPS, du stockage objet, de la bande passante et des sauvegardes. Moins cher à petite échelle, et cela devient le poste dominant si le fil s'anime.",
         },
         {
           risk: "Nous exploitons le backend nous-mêmes : une mise à niveau majeure lancée sans surveillance peut faire tomber toute la plateforme d'un coup - comptes, lectures et écritures ensemble.",
@@ -727,8 +735,12 @@ export const soon: Slice<SoonCopy> = {
           mitigation: "قائمة إبلاغات مع فرز وأدوات حظر، مبنيّة منذ الإصدار الأول",
         },
         {
-          risk: "تضخّم التكاليف تدريجياً",
-          mitigation: "التضمينات فقط؛ وتحليل الموضوعات بالذكاء الاصطناعي يبقى معطّلاً افتراضياً",
+          risk: "تكاليف الذكاء الاصطناعي تتضخّم تدريجياً",
+          mitigation: "التضمينات فقط، ويبقى تحليل الموضوعات بالذكاء الاصطناعي اختيارياً ومعطّلاً افتراضياً. وكلاهما يُحتسب لكل استدعاء، فالفاتورة تتابع تفاعل المستخدمين بدل أن تكون مبلغاً ثابتاً مقدّماً.",
+        },
+        {
+          risk: "تكاليف البنية التحتية صارت مسؤوليتنا، وهي تتناسب مع عدد الزوّار وحجم التخزين",
+          mitigation: "الاستضافة الذاتية تستبدل فاتورة الاشتراك بمعالجة Postgres والذاكرة وعمليات الإدخال والإخراج وتخزين الملفات واستهلاك البيانات والنسخ الاحتياطية. أرخص ما لم يكبر الاستعمال، لكنها تصبح أكبر بند في التكلفة إذا ازدحمت الخلاصة.",
         },
         {
           risk: "إدارة الواجهة الخلفية مسؤوليتنا وحدنا، لذلك يمكن أن تُسقط ترقيةٌ كبرى غيرُ مراقبة المنصّة كلّها مرّة واحدة - الحسابات والقراءة والكتابة معاً.",

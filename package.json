@@ -9,9 +9,11 @@
     "build": "next build",
     "start": "next start",
     "test": "node --experimental-strip-types scripts/check-chunk-error.mjs",
+    "verify:deploy": "node scripts/verify-deploy.mjs",
     "sync:site": "node scripts/sync-site.mjs",
     "check:site": "node scripts/sync-site.mjs --check",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "check:encoding": "node scripts/check-encoding.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
