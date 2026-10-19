@@ -24,9 +24,17 @@ const OVERRIDE = process.env.NEXT_PUBLIC_CONTACT_FORM;
 export default function Contact({
   title,
   note,
+  className = "",
+  headingLevel = "h2",
 }: {
   title?: string;
   note?: string;
+  className?: string;
+  /**
+   * The heading tag. A section inside a page is an h2; a page of its own is
+   * an h1, and it should not be the only h2 on the page.
+   */
+  headingLevel?: "h1" | "h2";
 }) {
   const { t } = useT();
   const [status, setStatus] = useState<Status>("idle");
@@ -34,6 +42,7 @@ export default function Contact({
   const formRef = useRef<HTMLFormElement>(null);
   const heading = title ?? t.contact.title;
   const sub = note ?? t.contact.note;
+  const Heading = headingLevel;
 
   // The form opens itself on the project's own domains and stays closed
   // everywhere else, so a preview build never collects messages it cannot
@@ -96,12 +105,12 @@ export default function Contact({
           : null;
 
   return (
-    <section className="bg-bg">
+    <section className={`bg-bg ${className}`}>
       <div className="mx-auto max-w-2xl px-6 py-24 sm:px-8">
         <div className="text-center">
-          <h2 className="text-[clamp(2rem,5vw,3rem)] font-semibold tracking-[-0.03em] text-ink">
+          <Heading className="text-[clamp(2rem,5vw,3rem)] font-semibold tracking-[-0.03em] text-ink">
             {heading}
-          </h2>
+          </Heading>
           <p className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed text-gray-2">
             {sub}
           </p>

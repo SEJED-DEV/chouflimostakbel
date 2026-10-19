@@ -66,6 +66,25 @@ const nextConfig: NextConfig = {
     ],
   },
 
+  async redirects() {
+    return [
+      // The old site was four hand-written HTML pages. Those URLs sit in
+      // bookmarks and in links people shared, and a 404 for them is the
+      // first thing a returning reader sees. They redirect to the routes
+      // that replaced them.
+      { source: "/index.html", destination: "/", permanent: true },
+      { source: "/dropouts.html", destination: "/dropouts", permanent: true },
+      { source: "/divisions.html", destination: "/divisions", permanent: true },
+      { source: "/graduates.html", destination: "/graduates", permanent: true },
+      // Any other page that ended in .html drops the suffix.
+      { source: "/:file([^/]+)\\.html", destination: "/:file", permanent: true },
+      // The old site sent people to a third-party score calculator. The
+      // built-in one replaced it, and lives on the graduates page.
+      { source: "/calculator", destination: "/graduates", permanent: true },
+      { source: "/score", destination: "/graduates", permanent: true },
+    ];
+  },
+
   async headers() {
     return [
       {
