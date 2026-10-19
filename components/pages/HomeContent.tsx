@@ -151,7 +151,7 @@ export default function HomeContent() {
             </p>
             <Link
               href="/dropouts"
-              className="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-[17px] font-medium text-ink transition-transform duration-300 hover:scale-[1.02]"
+              className="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-[17px] font-medium text-black transition-transform duration-300 hover:scale-[1.02]"
             >
               {t.manifesto.cta}
               <ArrowRight
