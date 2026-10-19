@@ -2,10 +2,15 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import { isChunkLoadError, recoverFromChunkError } from "@/lib/chunk-error";
 
 /**
  * Route-level error boundary. Catches runtime failures inside a page and
  * offers a calm recovery instead of a blank screen.
+ *
+ * A stale build is handled separately: if the failure is a chunk that no
+ * longer exists, reloading picks up the current one, so we say that is what
+ * is happening rather than offering a retry that cannot work.
  */
 export default function Error({
   error,
@@ -14,10 +19,13 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const stale = isChunkLoadError(error);
+
   useEffect(() => {
     // Surfacing the digest makes production errors traceable.
     console.error(error);
-  }, [error]);
+    if (stale) recoverFromChunkError();
+  }, [error, stale]);
 
   return (
     <section className="relative flex min-h-[100dvh] items-center overflow-hidden bg-bg pt-32 pb-20">
@@ -27,32 +35,36 @@ export default function Error({
         </div>
 
         <h1 className="mt-7 text-[clamp(1.6rem,4.5vw,2.4rem)] font-semibold tracking-[-0.03em] text-ink">
-          Something went sideways.
+          {stale ? "Updating to the latest version." : "Something went sideways."}
         </h1>
 
         <p className="mx-auto mt-4 max-w-md text-[17px] leading-relaxed text-gray-2">
-          This page hit an unexpected error. Trying again usually clears it.
+          {stale
+            ? "This page was left open while the site was updated. Refreshing picks up the current version."
+            : "This page hit an unexpected error. Trying again usually clears it."}
         </p>
 
         {error.digest && (
           <p className="mt-3 font-mono text-[12px] text-gray">ref: {error.digest}</p>
         )}
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={reset}
-            className="rounded-full bg-blue px-7 py-3 text-[17px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi hover:scale-[1.03]"
-          >
-            Try again
-          </button>
-          <Link
-            href="/"
-            className="rounded-full bg-bg-alt px-7 py-3 text-[17px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
-          >
-            Back home
-          </Link>
-        </div>
+        {!stale && (
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={reset}
+              className="rounded-full bg-blue px-7 py-3 text-[17px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi hover:scale-[1.03]"
+            >
+              Try again
+            </button>
+            <Link
+              href="/"
+              className="rounded-full bg-bg-alt px-7 py-3 text-[17px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
+            >
+              Back home
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

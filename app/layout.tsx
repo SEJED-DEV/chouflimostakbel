@@ -9,6 +9,7 @@ import WhatsNewPopup from "@/components/WhatsNewPopup";
 import InstallPrompt from "@/components/InstallPrompt";
 import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
@@ -190,6 +191,7 @@ export default function RootLayout({
           </LanguageProvider>
         </ThemeProvider>
         <ServiceWorkerRegister />
+        <ChunkErrorRecovery />
         <DevModalReset />
       </body>
     </html>
