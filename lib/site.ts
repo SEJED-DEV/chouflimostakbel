@@ -22,6 +22,14 @@ export const site = {
   tagline: "Find your path",
   /** Change this in ONE place when the domain moves - sitemap/robots/SEO use it. */
   domain: "https://www.chouflimostakbel.tn",
+  /**
+   * The hostnames that mean "this is the real site".
+   *
+   * The contact form opens itself on these and stays closed everywhere else,
+   * so a half-finished build on a preview domain never collects messages it
+   * cannot deliver. Both the apex and the www form count.
+   */
+  liveHosts: ["chouflimostakbel.tn", "www.chouflimostakbel.tn"],
   email: "contact@chouflimostakbel.tn",
   /** For tel: links - digits with a leading +, no spaces. */
   phoneHref: "",
@@ -168,3 +176,15 @@ export const contact = {
 
 /** Source repository, used to link changelog entries to their commits. */
 export const REPO_URL = "https://github.com/SEJED-DEV/chouflimostakbel";
+
+/**
+ * True when the given hostname is one of the project's real domains.
+ *
+ * Used to decide whether the contact form should be open. A preview build
+ * hosted somewhere else stays closed, because a form that quietly swallows
+ * messages is worse than no form at all.
+ */
+export function isLiveHost(hostname: string): boolean {
+  const host = hostname.toLowerCase().split(":")[0];
+  return (site.liveHosts as readonly string[]).includes(host);
+}

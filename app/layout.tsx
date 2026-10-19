@@ -11,6 +11,7 @@ import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
+import { site } from "@/lib/site";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -44,7 +45,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.chouflimostakbel.tn"),
+  metadataBase: new URL(site.domain),
   title: {
     default: "Choufli Mosta9bel | Find your path",
     template: "%s | Choufli Mosta9bel",
@@ -69,7 +70,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.chouflimostakbel.tn",
+    url: site.domain,
     siteName: "Choufli Mosta9bel",
     title: "Choufli Mosta9bel | Find your path",
     description:
@@ -126,30 +127,30 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://www.chouflimostakbel.tn/#organization",
-      name: "Choufli Mosta9bel",
+      "@id": `${site.domain}/#organization`,
+      name: site.name,
       alternateName: "شوفلي مستقبلك",
-      url: "https://www.chouflimostakbel.tn",
+      url: site.domain,
       logo: {
         "@type": "ImageObject",
-        url: "https://www.chouflimostakbel.tn/logo.svg",
+        url: `${site.domain}/logo.svg`,
       },
-      image: "https://www.chouflimostakbel.tn/og-image.png",
-      email: "contact@chouflimostakbel.tn",
+      image: `${site.domain}/og-image.png`,
+      email: site.email,
       description:
         "A Tunisian guidance project helping school dropouts, undecided students, and graduates find real, practical paths to a stable future.",
       areaServed: { "@type": "Country", name: "Tunisia" },
     },
     {
       "@type": "WebSite",
-      "@id": "https://www.chouflimostakbel.tn/#website",
-      url: "https://www.chouflimostakbel.tn",
-      name: "Choufli Mosta9bel",
+      "@id": `${site.domain}/#website`,
+      url: site.domain,
+      name: site.name,
       description:
         "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
       inLanguage: "en",
       publisher: {
-        "@id": "https://www.chouflimostakbel.tn/#organization",
+        "@id": `${site.domain}/#organization`,
       },
     },
   ],

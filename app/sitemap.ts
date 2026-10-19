@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
+import { site } from "@/lib/site";
 
 /**
  * Sitemap for the whole site. Clean slate: we own every URL, so this is the
  * single source of truth for which pages exist.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://www.chouflimostakbel.tn";
+  const base = site.domain;
 
   const routes = [
     { path: "", priority: 1.0, freq: "weekly" as const },

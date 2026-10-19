@@ -215,6 +215,8 @@ export const en = {
     unavailableTitle: "This form is not connected yet.",
     unavailableBody: "It is still being set up. Write to us directly and we will answer.",
     emailUs: "Write to us",
+    comingSoonTitle: "The contact form opens when the site goes live on its own domain.",
+    comingSoonBody: "Until then, write to us directly - we read everything that arrives.",
   },
 
   footer: {
@@ -399,6 +401,8 @@ export const fr: Dictionary = {
     unavailableTitle: "Ce formulaire n’est pas encore connecté.",
     unavailableBody: "Il est encore en cours de mise en place. Écrivez-nous directement et nous répondrons.",
     emailUs: "Écrivez-nous",
+    comingSoonTitle: "Le formulaire de contact ouvre quand le site passe sur son propre domaine.",
+    comingSoonBody: "D’ici là, écrivez-nous directement - nous lisons tout ce qui arrive.",
   },
 
   footer: {
@@ -572,6 +576,8 @@ export const ar: Dictionary = {
     unavailableTitle: "هذا النموذج لم يُربط بعد.",
     unavailableBody: "لا يزال قيد الإعداد. راسلنا مباشرة وسنجيبك.",
     emailUs: "راسلنا",
+    comingSoonTitle: "يُفتح نموذج التواصل حين ينتقل الموقع إلى نطاقه الخاص.",
+    comingSoonBody: "إلى ذلك الحين، راسلنا مباشرة - فنقرأ كل ما يصلنا.",
   },
 
   footer: {

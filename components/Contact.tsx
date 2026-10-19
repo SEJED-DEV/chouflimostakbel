@@ -1,14 +1,25 @@
 ﻿"use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { WarningCircle } from "@phosphor-icons/react/dist/ssr/WarningCircle";
+import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
 import SocialLinks from "./SocialLinks";
-import { socialLinks, site } from "@/lib/site";
+import { socialLinks, site, isLiveHost } from "@/lib/site";
 import { useT } from "./LanguageProvider";
 
 type Status = "idle" | "sending" | "sent" | "error" | "tooMany" | "unavailable";
+
+/**
+ * Overrides the domain check.
+ *
+ *   always  the form is open everywhere - use it to test the real thing
+ *   never   the form is closed everywhere
+ *
+ * Unset, the form opens only on the project's own domains.
+ */
+const OVERRIDE = process.env.NEXT_PUBLIC_CONTACT_FORM;
 
 export default function Contact({
   title,
@@ -19,9 +30,26 @@ export default function Contact({
 }) {
   const { t } = useT();
   const [status, setStatus] = useState<Status>("idle");
+  const [open, setOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const heading = title ?? t.contact.title;
   const sub = note ?? t.contact.note;
+
+  // The form opens itself on the project's own domains and stays closed
+  // everywhere else, so a preview build never collects messages it cannot
+  // deliver. The closed state is what the server renders, so there is no
+  // hydration mismatch and nothing flashes.
+  useEffect(() => {
+    if (OVERRIDE === "always") {
+      setOpen(true);
+      return;
+    }
+    if (OVERRIDE === "never") {
+      setOpen(false);
+      return;
+    }
+    setOpen(isLiveHost(window.location.hostname));
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +111,28 @@ export default function Contact({
         <SocialLinks links={socialLinks} className="mt-7 justify-center" />
 
         <div className="mt-10">
-          {status === "sent" ? (
+          {!open ? (
+            /* The form is closed until the site runs on its own domain. */
+            <div className="card-soft rounded-3xl bg-bg p-8 text-center sm:p-10">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-alt text-blue">
+                <Bell size={22} weight="regular" />
+              </div>
+              <h3 className="mt-5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
+                {t.contact.comingSoonTitle}
+              </h3>
+              <p className="mx-auto mt-2.5 max-w-md text-[16px] leading-relaxed text-gray-2">
+                {t.contact.comingSoonBody}
+              </p>
+              <a
+                href={`mailto:${site.email}`}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-colors duration-300 hover:bg-blue-hi"
+              >
+                {t.contact.emailUs}
+                <ArrowRight size={16} weight="bold" />
+              </a>
+              <p className="mt-4 font-mono text-[12.5px] text-gray">{site.email}</p>
+            </div>
+          ) : status === "sent" ? (
             <div className="card-soft flex flex-col items-center rounded-3xl bg-bg p-10 text-center">
               <CheckCircle size={44} weight="fill" className="text-blue" />
               <p className="mt-5 text-[22px] font-semibold text-ink">{t.contact.sentTitle}</p>
