@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { classify, type CompareResult, type DeployState } from "@/lib/deploy-status";
 
 /**
  * Deploy status: is the code running on this server the newest code on GitHub?
@@ -14,14 +15,19 @@ import { NextResponse } from "next/server";
  * and render nothing.
  */
 
-// Runs per request; the GitHub call underneath is cached for ten minutes.
+// Runs per request; the GitHub call underneath is cached.
 export const dynamic = "force-dynamic";
 
 const BRANCH = "main";
 const REPO_FALLBACK = "SEJED-DEV/chouflimostakbel";
-const CACHE_SECONDS = 600;
 
-export type DeployState = "current" | "behind" | "ahead" | "diverged" | "unknown";
+/** How long the GitHub response is reused. */
+const CACHE_SECONDS = 120;
+
+/** How long a browser or CDN may reuse our answer. */
+const EDGE_SECONDS = 300;
+
+export type { DeployState };
 
 export interface DeployStatus {
   state: DeployState;
@@ -67,12 +73,16 @@ function unknown(repo: string, sha: string | null, shortSha: string | null): Dep
   };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const build = await readBuildInfo();
   const repo = build.repo || REPO_FALLBACK;
   const sha = build.sha ?? null;
   const shortSha = build.shortSha ?? (sha ? sha.slice(0, 7) : null);
   const repoUrl = `https://github.com/${repo}`;
+
+  // ?fresh=1 skips every cache. Used by the deploy check, which needs the
+  // truth right now rather than what was true two minutes ago.
+  const fresh = new URL(request.url).searchParams.get("fresh") === "1";
 
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
@@ -89,7 +99,9 @@ export async function GET() {
     NextResponse.json(body, {
       headers: {
         // Cached at the edge so a page view does not become a GitHub request.
-        "Cache-Control": `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=86400`,
+        "Cache-Control": fresh
+          ? "no-store"
+          : `public, s-maxage=${EDGE_SECONDS}, stale-while-revalidate=86400`,
       },
     });
 
@@ -100,7 +112,10 @@ export async function GET() {
   try {
     res = await fetch(
       `https://api.github.com/repos/${repo}/compare/${sha}...${BRANCH}`,
-      { headers, next: { revalidate: CACHE_SECONDS } },
+      // A fresh request skips the cache, so the answer is not two minutes old.
+      fresh
+        ? { headers, cache: "no-store" }
+        : { headers, next: { revalidate: CACHE_SECONDS } },
     );
   } catch {
     // Offline, DNS failure, GitHub down. Not the same as "behind".
@@ -111,30 +126,14 @@ export async function GET() {
   // shallow clone, or a branch that moved. 403/429: rate limited.
   if (!res.ok) return json(unknown(repo, sha, shortSha));
 
-  let data: {
-    status?: string;
-    ahead_by?: number;
-    behind_by?: number;
-    commits?: { sha: string; commit?: { message?: string } }[];
-  };
+  let data: CompareResult;
   try {
     data = await res.json();
   } catch {
     return json(unknown(repo, sha, shortSha));
   }
 
-  const behind = data.behind_by ?? 0;
-  const ahead = data.ahead_by ?? 0;
-
-  // GitHub reports "identical", "behind", "ahead" or "diverged".
-  const state: DeployState =
-    data.status === "behind" || (behind > 0 && ahead === 0)
-      ? "behind"
-      : data.status === "ahead" || (ahead > 0 && behind === 0)
-        ? "ahead"
-        : data.status === "diverged"
-          ? "diverged"
-          : "current";
+  const { state, behind, ahead } = classify(data);
 
   return json({
     state,

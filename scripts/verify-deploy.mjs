@@ -91,8 +91,11 @@ check(
 
 // ---- 5. The deploy-status endpoint answers ------------------------------
 let reportedSha = null;
+let reportedState = null;
 try {
-  const status = await fetch(`${BASE}/api/status`);
+  // ?fresh=1 skips the cache. A check that reads a two-minute-old answer
+  // cannot tell you whether the deployment you just did is the current one.
+  const status = await fetch(`${BASE}/api/status?fresh=1`);
   const body = await status.json();
   const valid =
     status.ok &&
@@ -100,6 +103,7 @@ try {
     typeof body.behind === "number";
 
   reportedSha = body.shortSha ?? null;
+  reportedState = body.state;
 
   check(
     "deploy status endpoint answers",
@@ -108,6 +112,36 @@ try {
   );
 } catch (e) {
   check("deploy status endpoint answers", false, String(e).slice(0, 80));
+}
+
+// ---- 5b. The state matches the sha the page was built from --------------
+// If the running build is not the branch head, the status line has to say so.
+// A build that is behind but reports itself as current is the bug this
+// whole endpoint exists to catch.
+if (reportedSha && reportedState) {
+  const compare = await fetch(
+    `https://api.github.com/repos/SEJED-DEV/chouflimostakbel/compare/${reportedSha}...main`,
+    { headers: { "User-Agent": "chouflimostakbel-verify" } },
+  );
+
+  if (!compare.ok) {
+    check(
+      "the state matches what GitHub says",
+      reportedState === "unknown",
+      `GitHub could not compare ${reportedSha} (${compare.status}); the endpoint says "${reportedState}"`,
+    );
+  } else {
+    const data = await compare.json();
+    // ahead_by counts what the branch has that the build does not.
+    const missing = data.ahead_by ?? 0;
+    const expected = missing > 0 ? "behind" : "current";
+
+    check(
+      "the state matches what GitHub says",
+      reportedState === expected,
+      `GitHub: ${missing} commit(s) missing, so "${expected}". The endpoint says "${reportedState}".`,
+    );
+  }
 }
 
 // ---- 6. The process is serving the build it claims to ------------------
