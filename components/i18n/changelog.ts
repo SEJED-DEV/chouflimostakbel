@@ -8,6 +8,15 @@ import type { Slice } from "./types";
  * language. Nothing else in the file needs to change.
  */
 
+/** What a change did. Drives the grouping, the icons and the filters. */
+export type ChangeKind = "added" | "fixed" | "changed" | "removed";
+
+/** One thing that changed, and what kind of change it was. */
+export interface ChangelogChange {
+  text: string;
+  kind: ChangeKind;
+}
+
 /** One shipped release: which version, when, and what it changed. */
 export interface ChangelogEntry {
   /** Version string. Same in every language, e.g. "v1.1.0". */
@@ -17,7 +26,7 @@ export interface ChangelogEntry {
   /** One line describing the release as a whole. */
   summary: string;
   /** Individual changes, most important first. */
-  changes: string[];
+  changes: ChangelogChange[];
   /**
    * The id the "what's new" sheet stores once this entry has been read.
    *
@@ -47,6 +56,31 @@ export interface ChangelogCopy {
   commitsLabel: string;
   /** Copy for the version-gated "what's new" sheet. */
   popup: { title: string; seeAll: string; close: string };
+  /** Search box. */
+  searchPlaceholder: string;
+  /** Filter chips, one per kind plus "everything". */
+  filterAll: string;
+  filterAdded: string;
+  filterFixed: string;
+  filterChanged: string;
+  filterRemoved: string;
+  /** How many changes a release carries. */
+  changeCount: string;
+  changeCountOne: string;
+  /** Headings for the groups of changes inside a release. */
+  groupAdded: string;
+  groupFixed: string;
+  groupChanged: string;
+  groupRemoved: string;
+  /** Accessible labels for the show/hide control. */
+  expand: string;
+  collapse: string;
+  /** Nothing matched the search or the filters. */
+  noResults: string;
+  noResultsBody: string;
+  clearFilters: string;
+  /** Heading above the list of releases. */
+  releases: string;
   note: {
     title: string;
     body: string;
@@ -91,18 +125,20 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "The roadmap page, a contact form that actually delivers, and a site that survives its own updates.",
         changes: [
-          "A new page: /soon. It publishes the roadmap for the platform to come - accounts, posts, profiles and a feed - along with the decisions taken so far and the ones still open.",
-          "The backend decision is no longer pending. Supabase, self-hosted on our own infrastructure. What that costs us, and what it saves, is written down plainly rather than glossed over.",
-          "The contact form now delivers. It used to look like it worked and drop your message on the floor. It validates, rate limits, and says what went wrong instead of pretending.",
-          "The changelog now says whether the code you are reading is the newest. If the site is behind its own repository, it says so and links to what is missing.",
-          "A stale build can no longer kill the page. Documents are revalidated rather than cached for a year, and a failed chunk load recovers by itself instead of leaving a blank screen.",
-          "Buttons that inverted in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.",
-          "The cost risks on /soon are split apart: the AI cost, which is metered per call, and the infrastructure cost, which is ours now that the backend is self-hosted.",
+          { text: "A new page: /soon. It publishes the roadmap for the platform to come - accounts, posts, profiles and a feed - along with the decisions taken so far and the ones still open.", kind: "added" },
+          { text: "The backend decision is no longer pending. Supabase, self-hosted on our own infrastructure. What that costs us, and what it saves, is written down plainly rather than glossed over.", kind: "changed" },
+          { text: "The contact form now delivers. It used to look like it worked and drop your message on the floor. It validates, rate limits, and says what went wrong instead of pretending.", kind: "fixed" },
+          { text: "The changelog now says whether the code you are reading is the newest. If the site is behind its own repository, it says so and links to what is missing.", kind: "added" },
+          { text: "A stale build can no longer kill the page. Documents are revalidated rather than cached for a year, and a failed chunk load recovers by itself instead of leaving a blank screen.", kind: "fixed" },
+          { text: "Buttons that inverted in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.", kind: "fixed" },
+          { text: "The cost risks on /soon are split apart: the AI cost, which is metered per call, and the infrastructure cost, which is ours now that the backend is self-hosted.", kind: "changed" },
 
-          "Update notifications, if you want them: the app can tell you when the site is updated, in your own language. It is a device token, not an account - no email address, and nothing is tracked.",
-          "The privacy policy, the terms, the 404 and the error pages now switch language with the rest of the site. An Arabic reader who hit a broken link used to get an English page.",
-          "The contact form opens by itself on the project's own domain and stays closed on preview builds, so a half-finished version never collects messages it cannot deliver.",
-          "The domain is defined in one place now. Moving it used to mean four files, which had already drifted apart.",
+          { text: "Update notifications, if you want them: the app can tell you when the site is updated, in your own language. It is a device token, not an account - no email address, and nothing is tracked.", kind: "added" },
+          { text: "The privacy policy, the terms, the 404 and the error pages now switch language with the rest of the site. An Arabic reader who hit a broken link used to get an English page.", kind: "added" },
+          { text: "The contact form opens by itself on the project's own domain and stays closed on preview builds, so a half-finished version never collects messages it cannot deliver.", kind: "added" },
+          { text: "The domain is defined in one place now. Moving it used to mean four files, which had already drifted apart.", kind: "changed" },
+
+          { text: "The changelog page itself is rebuilt: each release collapses to one line, the newest stays open, and the changes are grouped by kind and searchable. A long changelog no longer means a long scroll.", kind: "changed" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
@@ -125,12 +161,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "Fixes: the install buttons did nothing on phones, iOS had no honest answer, and a few buttons lost their text in dark mode.",
         changes: [
-          "The download buttons in the mobile menu and the footer now work. They were silently broken for anyone who had dismissed the install sheet in the previous week.",
-          "The install sheet no longer offers a lone “Not now”. When a browser cannot prompt, it explains what to do instead.",
-          "On iOS the sheet now says plainly that a website cannot install itself, and gives the three taps that work: Share, Add to Home Screen, Add.",
-          "Everywhere else, it explains the reload-once step browsers require before they will offer installation.",
-          "The service worker now registers early enough that a first visit can become installable.",
-          "Buttons whose background inverts in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.",
+          { text: "The download buttons in the mobile menu and the footer now work. They were silently broken for anyone who had dismissed the install sheet in the previous week.", kind: "fixed" },
+          { text: "The install sheet no longer offers a lone “Not now”. When a browser cannot prompt, it explains what to do instead.", kind: "changed" },
+          { text: "On iOS the sheet now says plainly that a website cannot install itself, and gives the three taps that work: Share, Add to Home Screen, Add.", kind: "changed" },
+          { text: "Everywhere else, it explains the reload-once step browsers require before they will offer installation.", kind: "changed" },
+          { text: "The service worker now registers early enough that a first visit can become installable.", kind: "fixed" },
+          { text: "Buttons whose background inverts in dark mode now invert their text too. The install button used to turn near-white and keep white text, which made it disappear.", kind: "fixed" },
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
@@ -144,19 +180,19 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "A complete rebuild of the site, plus installable as an app and light or dark mode.",
         changes: [
-          "The site was rebuilt from the ground up. The design, layout and writing are all new - v1.0.0 looked nothing like this.",
-          "A full redesign across every page, built for clarity on a phone first.",
-          "Four new pages: About, Changelog, and proper Privacy and Terms pages.",
-          "The site is now in English, French and Arabic, switchable at any time, with Arabic laid out right-to-left.",
-          "A university orientation score calculator, built on the Ministry of Higher Education formula, replacing the third-party tool we used to link to.",
-          "Installable on iOS, Android and desktop: add it to your home screen and it opens full screen, like a native app.",
-          "Offline fallback: pages you have already opened stay readable when the connection drops.",
-          "An install prompt inside the browser, so adding the site to your device takes a single tap.",
-          "Install buttons in the mobile menu and the footer.",
-          "On iOS, where a site cannot install itself, the button explains the three taps that add it to the home screen instead.",
-          "Light and dark themes, following your system setting automatically.",
-          "New typography throughout, with Arabic typeset properly across the whole site.",
-          "Search rebuilt from scratch: a sitemap and robots file, per-page canonical URLs, and link previews for every page when it is shared.",
+          { text: "The site was rebuilt from the ground up. The design, layout and writing are all new - v1.0.0 looked nothing like this.", kind: "added" },
+          { text: "A full redesign across every page, built for clarity on a phone first.", kind: "added" },
+          { text: "Four new pages: About, Changelog, and proper Privacy and Terms pages.", kind: "added" },
+          { text: "The site is now in English, French and Arabic, switchable at any time, with Arabic laid out right-to-left.", kind: "added" },
+          { text: "A university orientation score calculator, built on the Ministry of Higher Education formula, replacing the third-party tool we used to link to.", kind: "added" },
+          { text: "Installable on iOS, Android and desktop: add it to your home screen and it opens full screen, like a native app.", kind: "added" },
+          { text: "Offline fallback: pages you have already opened stay readable when the connection drops.", kind: "added" },
+          { text: "An install prompt inside the browser, so adding the site to your device takes a single tap.", kind: "added" },
+          { text: "Install buttons in the mobile menu and the footer.", kind: "added" },
+          { text: "On iOS, where a site cannot install itself, the button explains the three taps that add it to the home screen instead.", kind: "added" },
+          { text: "Light and dark themes, following your system setting automatically.", kind: "added" },
+          { text: "New typography throughout, with Arabic typeset properly across the whole site.", kind: "added" },
+          { text: "Search rebuilt from scratch: a sitemap and robots file, per-page canonical URLs, and link previews for every page when it is shared.", kind: "changed" },
         ],
       },
       {
@@ -165,12 +201,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "The original site: four hand-written HTML pages, in English only, with no installable app and no dark mode.",
         changes: [
-          "Four static pages - home, school dropouts, high school divisions and graduates.",
-          "The ATFP reference guide: certifications, the fields they open, and where to apply.",
-          "Division comparisons - subjects, advantages and drawbacks for every branch of the Tunisian high school.",
-          "English only, with no language switching.",
-          "No light or dark theme, no installable app, no offline support.",
-          "Questions and reviews went to a Gmail address, with no privacy policy or terms page.",
+          { text: "Four static pages - home, school dropouts, high school divisions and graduates.", kind: "added" },
+          { text: "The ATFP reference guide: certifications, the fields they open, and where to apply.", kind: "added" },
+          { text: "Division comparisons - subjects, advantages and drawbacks for every branch of the Tunisian high school.", kind: "added" },
+          { text: "English only, with no language switching.", kind: "removed" },
+          { text: "No light or dark theme, no installable app, no offline support.", kind: "removed" },
+          { text: "Questions and reviews went to a Gmail address, with no privacy policy or terms page.", kind: "removed" },
         ],
       },
     ],
@@ -188,6 +224,25 @@ export const changelog: Slice<ChangelogCopy> = {
       seeAll: "See everything",
       close: "Close",
     },
+
+    searchPlaceholder: "Search releases and changes",
+    filterAll: "Everything",
+    filterAdded: "Added",
+    filterFixed: "Fixed",
+    filterChanged: "Changed",
+    filterRemoved: "Removed",
+    changeCount: "{n} changes",
+    changeCountOne: "1 change",
+    groupAdded: "Added",
+    groupFixed: "Fixed",
+    groupChanged: "Changed",
+    groupRemoved: "Removed",
+    expand: "Show",
+    collapse: "Hide",
+    noResults: "Nothing matches that.",
+    noResultsBody: "Try another word, or clear the filters.",
+    clearFilters: "Clear the filters",
+    releases: "Releases",
     note: {
       title: "Missing something?",
       body: "Every release is written here as it ships. If a change is missing from this page, or something is still unclear, tell us - it goes into the next version.",
@@ -220,18 +275,20 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "La page /soon, un formulaire de contact qui livre enfin, et un site qui survit à ses propres mises à jour.",
         changes: [
-          "Une nouvelle page : /soon. Elle publie la feuille de route de la plateforme à venir - comptes, articles, profils et un fil - avec les décisions déjà prises et celles qui restent à prendre.",
-          "La décision sur le backend n'est plus en attente. Supabase, auto-hébergé sur notre propre infrastructure. Ce que cela nous coûte, et ce que cela nous économise, est écrit noir sur blanc.",
-          "Le formulaire de contact livre enfin. Avant, il avait l'air de fonctionner et jetait votre message. Il vérifie, limite le débit, et dit ce qui a échoué au lieu de faire semblant.",
-          "Le journal des versions dit maintenant si le code que vous lisez est le plus récent. Si le site est en retard sur son propre dépôt, il le dit et affiche ce qui manque.",
-          "Un déploiement peut être plus ancien que l'onglet ouvert sans casser la page. Les documents sont revalidés au lieu d'être mis en cache pendant un an, et un chargement de fichier manquant se répare tout seul.",
-          "Les boutons qui s'inversaient en mode sombre inversent aussi leur texte. Le bouton d'installation devenait presque blanc et gardait un texte blanc, ce qui le rendait invisible.",
-          "Les risques de coût sur /soon sont séparés : le coût de l'IA, facturé à l'appel, et le coût d'infrastructure, qui est le nôtre depuis que le backend est auto-hébergé.",
+          { text: "Une nouvelle page : /soon. Elle publie la feuille de route de la plateforme à venir - comptes, articles, profils et un fil - avec les décisions déjà prises et celles qui restent à prendre.", kind: "added" },
+          { text: "La décision sur le backend n'est plus en attente. Supabase, auto-hébergé sur notre propre infrastructure. Ce que cela nous coûte, et ce que cela nous économise, est écrit noir sur blanc.", kind: "changed" },
+          { text: "Le formulaire de contact livre enfin. Avant, il avait l'air de fonctionner et jetait votre message. Il vérifie, limite le débit, et dit ce qui a échoué au lieu de faire semblant.", kind: "fixed" },
+          { text: "Le journal des versions dit maintenant si le code que vous lisez est le plus récent. Si le site est en retard sur son propre dépôt, il le dit et affiche ce qui manque.", kind: "added" },
+          { text: "Un déploiement peut être plus ancien que l'onglet ouvert sans casser la page. Les documents sont revalidés au lieu d'être mis en cache pendant un an, et un chargement de fichier manquant se répare tout seul.", kind: "fixed" },
+          { text: "Les boutons qui s'inversaient en mode sombre inversent aussi leur texte. Le bouton d'installation devenait presque blanc et gardait un texte blanc, ce qui le rendait invisible.", kind: "fixed" },
+          { text: "Les risques de coût sur /soon sont séparés : le coût de l'IA, facturé à l'appel, et le coût d'infrastructure, qui est le nôtre depuis que le backend est auto-hébergé.", kind: "changed" },
 
-          "Des notifications de mise à jour, si vous en voulez : l'application peut vous prévenir quand le site est mis à jour, dans votre langue. C'est un jeton d'appareil, pas un compte - pas d'adresse e-mail, et rien n'est suivi.",
-          "La politique de confidentialité, les conditions, la page 404 et les pages d'erreur suivent maintenant la langue du reste du site. Un lecteur en arabe qui tombait sur un lien cassé se retrouvait avec une page en anglais.",
-          "Le formulaire de contact s'ouvre tout seul sur le domaine du projet et reste fermé sur les versions de prévisualisation, pour qu'une version inachevée ne recueille jamais des messages qu'elle ne peut pas livrer.",
-          "Le domaine est défini à un seul endroit maintenant. Le changer demandait quatre fichiers, qui avaient déjà divergé.",
+          { text: "Des notifications de mise à jour, si vous en voulez : l'application peut vous prévenir quand le site est mis à jour, dans votre langue. C'est un jeton d'appareil, pas un compte - pas d'adresse e-mail, et rien n'est suivi.", kind: "added" },
+          { text: "La politique de confidentialité, les conditions, la page 404 et les pages d'erreur suivent maintenant la langue du reste du site. Un lecteur en arabe qui tombait sur un lien cassé se retrouvait avec une page en anglais.", kind: "added" },
+          { text: "Le formulaire de contact s'ouvre tout seul sur le domaine du projet et reste fermé sur les versions de prévisualisation, pour qu'une version inachevée ne recueille jamais des messages qu'elle ne peut pas livrer.", kind: "added" },
+          { text: "Le domaine est défini à un seul endroit maintenant. Le changer demandait quatre fichiers, qui avaient déjà divergé.", kind: "changed" },
+
+          { text: "La page des versions est reconstruite : chaque version tient sur une ligne, la plus récente reste ouverte, et les changements sont regroupés par type et cherchables. Un long journal ne veut plus dire un long défilement.", kind: "changed" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
@@ -254,12 +311,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "Correctifs : les boutons d'installation ne faisaient rien sur mobile, iOS n'avait pas de vraie réponse, et quelques boutons perdaient leur texte en mode sombre.",
         changes: [
-          "Les boutons de téléchargement du menu mobile et du pied de page fonctionnent enfin. Ils étaient cassés sans rien dire à qui avait fermé la fenêtre d'installation la semaine précédente.",
-          "La fenêtre d'installation n'affiche plus un simple « Pas maintenant ». Lorsqu'un navigateur ne peut pas proposer l'installation, elle explique quoi faire à la place.",
-          "Sur iOS, elle dit clairement qu'un site ne peut pas s'installer lui-même, et donne les trois gestes qui marchent : Partager, Sur l'écran d'accueil, Ajouter.",
-          "Partout ailleurs, elle explique l'étape de rechargement que les navigateurs exigent avant de proposer l'installation.",
-          "Le service worker s'enregistre suffisamment tôt pour qu'une première visite devienne installable.",
-          "Les boutons dont le fond s'inverse en mode sombre inversent désormais leur texte aussi. Le bouton d'installation devenait presque blanc tout en gardant un texte blanc, ce qui le rendait invisible.",
+          { text: "Les boutons de téléchargement du menu mobile et du pied de page fonctionnent enfin. Ils étaient cassés sans rien dire à qui avait fermé la fenêtre d'installation la semaine précédente.", kind: "fixed" },
+          { text: "La fenêtre d'installation n'affiche plus un simple « Pas maintenant ». Lorsqu'un navigateur ne peut pas proposer l'installation, elle explique quoi faire à la place.", kind: "changed" },
+          { text: "Sur iOS, elle dit clairement qu'un site ne peut pas s'installer lui-même, et donne les trois gestes qui marchent : Partager, Sur l'écran d'accueil, Ajouter.", kind: "changed" },
+          { text: "Partout ailleurs, elle explique l'étape de rechargement que les navigateurs exigent avant de proposer l'installation.", kind: "changed" },
+          { text: "Le service worker s'enregistre suffisamment tôt pour qu'une première visite devienne installable.", kind: "fixed" },
+          { text: "Les boutons dont le fond s'inverse en mode sombre inversent désormais leur texte aussi. Le bouton d'installation devenait presque blanc tout en gardant un texte blanc, ce qui le rendait invisible.", kind: "fixed" },
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
@@ -273,19 +330,19 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "Une refonte complète du site, plus l'installation comme une application et le mode clair ou sombre.",
         changes: [
-          "Le site a été entièrement reconstruit. Le design, la mise en page et les textes sont neufs - la v1.0.0 n'avait rien à voir.",
-          "Une refonte complète de toutes les pages, pensée d'abord pour la clarté sur mobile.",
-          "Quatre nouvelles pages : À propos, Nouveautés, et de vraies pages Confidentialité et Conditions.",
-          "Le site est désormais en anglais, français et arabe, changeable à tout moment, avec l'arabe correctement mis en page de droite à gauche.",
-          "Une calculatrice de score d'orientation universitaire, fondée sur la formule du Ministère de l'Enseignement Supérieur, qui remplace l'outil tiers que nous utilisions.",
-          "Installable sur iOS, Android et sur ordinateur : ajoutez-le à votre écran d'accueil et il s'ouvre en plein écran, comme une application native.",
-          "Mode hors ligne : les pages déjà consultées restent lisibles même lorsque la connexion est coupée.",
-          "Une invite d'installation s'affiche dans le navigateur : ajouter le site à votre appareil ne demande qu'un seul geste.",
-          "Des boutons d'installation dans le menu mobile et en bas de page.",
-          "Sur iOS, où un site ne peut pas s'installer tout seul, le bouton explique les trois gestes pour l'ajouter à l'écran d'accueil.",
-          "Thèmes clair et sombre, suivant automatiquement le réglage de votre système.",
-          "Une nouvelle typographie partout, avec un arabe correctement composé sur tout le site.",
-          "Référencement reconstruit de zéro : un fichier sitemap et robots, des URL canoniques pour chaque page, et un aperçu enrichi à chaque partage.",
+          { text: "Le site a été entièrement reconstruit. Le design, la mise en page et les textes sont neufs - la v1.0.0 n'avait rien à voir.", kind: "added" },
+          { text: "Une refonte complète de toutes les pages, pensée d'abord pour la clarté sur mobile.", kind: "added" },
+          { text: "Quatre nouvelles pages : À propos, Nouveautés, et de vraies pages Confidentialité et Conditions.", kind: "added" },
+          { text: "Le site est désormais en anglais, français et arabe, changeable à tout moment, avec l'arabe correctement mis en page de droite à gauche.", kind: "added" },
+          { text: "Une calculatrice de score d'orientation universitaire, fondée sur la formule du Ministère de l'Enseignement Supérieur, qui remplace l'outil tiers que nous utilisions.", kind: "added" },
+          { text: "Installable sur iOS, Android et sur ordinateur : ajoutez-le à votre écran d'accueil et il s'ouvre en plein écran, comme une application native.", kind: "added" },
+          { text: "Mode hors ligne : les pages déjà consultées restent lisibles même lorsque la connexion est coupée.", kind: "added" },
+          { text: "Une invite d'installation s'affiche dans le navigateur : ajouter le site à votre appareil ne demande qu'un seul geste.", kind: "added" },
+          { text: "Des boutons d'installation dans le menu mobile et en bas de page.", kind: "added" },
+          { text: "Sur iOS, où un site ne peut pas s'installer tout seul, le bouton explique les trois gestes pour l'ajouter à l'écran d'accueil.", kind: "added" },
+          { text: "Thèmes clair et sombre, suivant automatiquement le réglage de votre système.", kind: "added" },
+          { text: "Une nouvelle typographie partout, avec un arabe correctement composé sur tout le site.", kind: "added" },
+          { text: "Référencement reconstruit de zéro : un fichier sitemap et robots, des URL canoniques pour chaque page, et un aperçu enrichi à chaque partage.", kind: "changed" },
         ],
       },
       {
@@ -294,12 +351,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "Le site d'origine : quatre pages HTML écrites à la main, en anglais seulement, sans application installable ni mode sombre.",
         changes: [
-          "Quatre pages statiques - accueil, décrochés scolaires, filières du lycée et bacheliers.",
-          "Le guide de référence de l'ATFP : les certifications, les métiers qu'elles ouvrent, et où se porter candidat.",
-          "Comparatifs des filières - matières, avantages et inconvénients pour chaque section du lycée tunisien.",
-          "En anglais seulement, sans changement de langue.",
-          "Ni thème clair ou sombre, ni application installable, ni mode hors ligne.",
-          "Les questions et les avis allaient à une adresse Gmail, sans page de confidentialité ni de conditions.",
+          { text: "Quatre pages statiques - accueil, décrochés scolaires, filières du lycée et bacheliers.", kind: "added" },
+          { text: "Le guide de référence de l'ATFP : les certifications, les métiers qu'elles ouvrent, et où se porter candidat.", kind: "added" },
+          { text: "Comparatifs des filières - matières, avantages et inconvénients pour chaque section du lycée tunisien.", kind: "added" },
+          { text: "En anglais seulement, sans changement de langue.", kind: "removed" },
+          { text: "Ni thème clair ou sombre, ni application installable, ni mode hors ligne.", kind: "removed" },
+          { text: "Les questions et les avis allaient à une adresse Gmail, sans page de confidentialité ni de conditions.", kind: "removed" },
         ],
       },
     ],
@@ -317,6 +374,25 @@ export const changelog: Slice<ChangelogCopy> = {
       seeAll: "Tout voir",
       close: "Fermer",
     },
+
+    searchPlaceholder: "Rechercher une version ou un changement",
+    filterAll: "Tout",
+    filterAdded: "Ajouts",
+    filterFixed: "Corrections",
+    filterChanged: "Modifications",
+    filterRemoved: "Retraits",
+    changeCount: "{n} changements",
+    changeCountOne: "1 changement",
+    groupAdded: "Ajouts",
+    groupFixed: "Corrections",
+    groupChanged: "Modifications",
+    groupRemoved: "Retraits",
+    expand: "Voir",
+    collapse: "Masquer",
+    noResults: "Rien ne correspond.",
+    noResultsBody: "Essayez un autre mot, ou effacez les filtres.",
+    clearFilters: "Effacer les filtres",
+    releases: "Versions",
     note: {
       title: "Il manque quelque chose ?",
       body: "Chaque version est consignée ici dès sa publication. Si un changement n'y figure pas, ou si quelque chose reste flou, dites-le-nous : cela ira dans la prochaine version.",
@@ -349,18 +425,20 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "صفحة الطريق، ونموذج تواصل يوصل أخيراً، وموقع يصمد أمام تحديثاته.",
         changes: [
-          "صفحة جديدة: ‎/soon. تنشر خطة الطريق للمنصّة القادمة — حسابات، ومقالات، وملفّات شخصية، وخلاصة — مع القرارات المتَّخذة والقرارات التي ما تزال مفتوحة.",
-          "القرار بشأن الخلفية لم يعد معلّقاً. Supabase، باستضافة ذاتية على بنيتنا التحتية. وما ينفقه هذا علينا، وما يوفّره، مكتوب بوضوح لا مُجمَّلاً.",
-          "نموذج التواصل يوصل الآن. كان يبدو ناجحاً ويتخلّص من رسالتك على الأرض. صار يتحقّق من البيانات، ويحدّ من عدد الرسائل، ويقول ما الذي أخفق بدل أن يدّعي النجاح.",
-          "سجلّ الإصدارات يقول الآن إن كانت الشيفرة التي تقرؤها هي الأحدث. وإن كان الموقع متأخّراً عن مستودعه، فإنه يقول ذلك ويعرض ما ينقص.",
-          "لم تعد نسخة قديمة تكسر الصفحة. صار المستند يُعاد التحقّق منه بدل أن يُخزَّن سنة كاملة، وأي جزء مفقود من الملفات يُصلَح تلقائياً بدل ترك شاشة فارغة.",
-          "الأزرار التي كان ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.",
-          "مخاطر التكلفة على ‎/soon صارت منفصلة: تكلفة الذكاء الاصطناعي، وهي تُحتسب لكل استدعاء، وتكلفة البنية التحتية، التي صارت مسؤوليتنا منذ أن استضافنا الخلفية بأنفسنا.",
+          { text: "صفحة جديدة: ‎/soon. تنشر خطة الطريق للمنصّة القادمة — حسابات، ومقالات، وملفّات شخصية، وخلاصة — مع القرارات المتَّخذة والقرارات التي ما تزال مفتوحة.", kind: "added" },
+          { text: "القرار بشأن الخلفية لم يعد معلّقاً. Supabase، باستضافة ذاتية على بنيتنا التحتية. وما ينفقه هذا علينا، وما يوفّره، مكتوب بوضوح لا مُجمَّلاً.", kind: "changed" },
+          { text: "نموذج التواصل يوصل الآن. كان يبدو ناجحاً ويتخلّص من رسالتك على الأرض. صار يتحقّق من البيانات، ويحدّ من عدد الرسائل، ويقول ما الذي أخفق بدل أن يدّعي النجاح.", kind: "fixed" },
+          { text: "سجلّ الإصدارات يقول الآن إن كانت الشيفرة التي تقرؤها هي الأحدث. وإن كان الموقع متأخّراً عن مستودعه، فإنه يقول ذلك ويعرض ما ينقص.", kind: "added" },
+          { text: "لم تعد نسخة قديمة تكسر الصفحة. صار المستند يُعاد التحقّق منه بدل أن يُخزَّن سنة كاملة، وأي جزء مفقود من الملفات يُصلَح تلقائياً بدل ترك شاشة فارغة.", kind: "fixed" },
+          { text: "الأزرار التي كان ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.", kind: "fixed" },
+          { text: "مخاطر التكلفة على ‎/soon صارت منفصلة: تكلفة الذكاء الاصطناعي، وهي تُحتسب لكل استدعاء، وتكلفة البنية التحتية، التي صارت مسؤوليتنا منذ أن استضافنا الخلفية بأنفسنا.", kind: "changed" },
 
-          "إشعارات التحديث، إن أردتها: يستطيع التطبيق أن يخبرك عند تحديث الموقع، وبـلغتك. إنه رمز جهاز لا حساب - لا بريد إلكتروني، ولا شيء يُتبَّع.",
-          "سياسة الخصوصية والشروط وصفحة 404 وصفحات الخطأ صارت تتبع لغة بقية الموقع. كان القارئ العربي الذي يصطدم برابط مكسور يجد صفحة بالإنجليزية.",
-          "نموذج التواصل يُفتح تلقائياً على نطاق المشروع ويبقى مغلقاً على نسخ المعاينة، حتى لا تجمع نسخة ناقصة رسائل لا تستطيع توصيلها.",
-          "النطاق صار معرّفاً في مكان واحد. تغييره كان يتطلّب أربعة ملفات، وقد تباعدت فعلاً.",
+          { text: "إشعارات التحديث، إن أردتها: يستطيع التطبيق أن يخبرك عند تحديث الموقع، وبـلغتك. إنه رمز جهاز لا حساب - لا بريد إلكتروني، ولا شيء يُتبَّع.", kind: "added" },
+          { text: "سياسة الخصوصية والشروط وصفحة 404 وصفحات الخطأ صارت تتبع لغة بقية الموقع. كان القارئ العربي الذي يصطدم برابط مكسور يجد صفحة بالإنجليزية.", kind: "added" },
+          { text: "نموذج التواصل يُفتح تلقائياً على نطاق المشروع ويبقى مغلقاً على نسخ المعاينة، حتى لا تجمع نسخة ناقصة رسائل لا تستطيع توصيلها.", kind: "added" },
+          { text: "النطاق صار معرّفاً في مكان واحد. تغييره كان يتطلّب أربعة ملفات، وقد تباعدت فعلاً.", kind: "changed" },
+
+          { text: "أُعيد بناء صفحة سجلّ الإصدارات: كل إصدار ينطبق في سطر واحد، والأحدث يبقى مفتوحًا، والتغييرات مُجمَّعة حسب نوعها وقابلة للبحث. فالسجلّ الطويل لم يعد يعني تمريرًا طويلًا.", kind: "changed" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
@@ -383,12 +461,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "إصلاحات: لم تعمل أزرار التثبيت على الهواتف، ولم يكن هناك جواب صادق على iOS، وفقدت بعض الأزرار نصّها في الوضع الليلي.",
         changes: [
-          "صار زرّا التحميل في قائمة الهاتف وفي أسفل الصفحة يعملان. كانا معطّلين بصمت لكل من أغلق نافذة التثبيت في الأسبوع الماضي.",
-          "لم تعد نافذة التثبيت تعرض زرّ «ليس الآن» وحده. وعندما لا يستطيع المتصفح اقتراح التثبيت، تشرح النافذة ما ينبغي فعله بدلاً من ذلك.",
-          "على iOS تقول النافذة بوضوح إن الموقع لا يستطيع تثبيت نفسه، وتوضّح الخطوات الثلاث التي تنفع: المشاركة، ثمّ الإضافة إلى الشاشة الرئيسية، ثمّ إضافة.",
-          "في كل مكان آخر، تشرح خطوة إعادة التحميل التي تشترطها المتصفحات قبل أن تقترح التثبيت.",
-          "يسجّل عامل الخدمة أبكر من ذلك، حتى تصبح الزيارة الأولى قابلة للتثبيت.",
-          "الأزرار التي ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.",
+          { text: "صار زرّا التحميل في قائمة الهاتف وفي أسفل الصفحة يعملان. كانا معطّلين بصمت لكل من أغلق نافذة التثبيت في الأسبوع الماضي.", kind: "fixed" },
+          { text: "لم تعد نافذة التثبيت تعرض زرّ «ليس الآن» وحده. وعندما لا يستطيع المتصفح اقتراح التثبيت، تشرح النافذة ما ينبغي فعله بدلاً من ذلك.", kind: "changed" },
+          { text: "على iOS تقول النافذة بوضوح إن الموقع لا يستطيع تثبيت نفسه، وتوضّح الخطوات الثلاث التي تنفع: المشاركة، ثمّ الإضافة إلى الشاشة الرئيسية، ثمّ إضافة.", kind: "changed" },
+          { text: "في كل مكان آخر، تشرح خطوة إعادة التحميل التي تشترطها المتصفحات قبل أن تقترح التثبيت.", kind: "changed" },
+          { text: "يسجّل عامل الخدمة أبكر من ذلك، حتى تصبح الزيارة الأولى قابلة للتثبيت.", kind: "fixed" },
+          { text: "الأزرار التي ينقلب لونها في الوضع الليلي صارت تقلب نصّها معه أيضاً. كان زرّ التثبيت يصير أبيض تقريباً ويحتفظ بنصّ أبيض، فيختفي تماماً.", kind: "fixed" },
         ],
         commits: [
           { hash: "827d685", summary: "Fix the install buttons doing nothing on mobile" },
@@ -402,19 +480,19 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "إعادة بناء كاملة للموقع، مع إمكانية التثبيت كتطبيق ووضع فاتح أو داكن.",
         changes: [
-          "أُعيد بناء الموقع من الأساس. التصميم والتنسيق والنصوص كلها جديدة - فالإصدار 1.0.0 لم يكن شيئاً يشبهه.",
-          "تصميم جديد لكل الصفحات، صُمم أولاً لوضوح القراءة على الهاتف.",
-          "أربع صفحات جديدة: من نحن، وما الجديد، وصفحتان فعليتان للخصوصية والشروط.",
-          "الموقع متاح الآن بالإنجليزية والفرنسية والعربية، مع إمكانية تغيير اللغة في أي وقت والعربية مرتبة من اليمين إلى اليسار.",
-          "حاسبة سكور التوجيه الجامعي، مبنية على صيغة وزارة التعليم العالي، لتحل محل الأداة الخارجية التي كنا نربط بها.",
-          "قابل للتثبيت على iOS وAndroid وعلى الحاسوب: أضِفه إلى شاشتك الرئيسية فيفتح بملء الشاشة، مثل التطبيق الأصلي.",
-          "العمل دون اتصال: تبقى الصفحات التي فتحتها سابقاً قابلة للقراءة عند انقطاع الاتصال.",
-          "رسالة تثبيت تظهر داخل المتصفح، فتضيف الموقع إلى جهازك بلمسة واحدة.",
-          "أزراء تثبيت في قائمة التنقّل موا في التفاويز.",
-          "على iOS، حيث لا يسمح للموقع أن يثبت نفسه، يشرر الزرم إلى الثلاث الضغطات التي تضيفه إلى الشاشة الرئيسية.",
-          "وضع فاتح ووضع داكن، يتبعان تلقائياً إعداد نظامك.",
-          "خط جديد في كل الموقع، مع ضبط العربية بشكل صحيح في كل الصفحات.",
-          "إعادة بناء البحث من الصفر: ملف sitemap وrobots، ورابط أساسي لكل صفحة، ومعاينة غنية عند مشاركة أي رابط.",
+          { text: "أُعيد بناء الموقع من الأساس. التصميم والتنسيق والنصوص كلها جديدة - فالإصدار 1.0.0 لم يكن شيئاً يشبهه.", kind: "added" },
+          { text: "تصميم جديد لكل الصفحات، صُمم أولاً لوضوح القراءة على الهاتف.", kind: "added" },
+          { text: "أربع صفحات جديدة: من نحن، وما الجديد، وصفحتان فعليتان للخصوصية والشروط.", kind: "added" },
+          { text: "الموقع متاح الآن بالإنجليزية والفرنسية والعربية، مع إمكانية تغيير اللغة في أي وقت والعربية مرتبة من اليمين إلى اليسار.", kind: "added" },
+          { text: "حاسبة سكور التوجيه الجامعي، مبنية على صيغة وزارة التعليم العالي، لتحل محل الأداة الخارجية التي كنا نربط بها.", kind: "added" },
+          { text: "قابل للتثبيت على iOS وAndroid وعلى الحاسوب: أضِفه إلى شاشتك الرئيسية فيفتح بملء الشاشة، مثل التطبيق الأصلي.", kind: "added" },
+          { text: "العمل دون اتصال: تبقى الصفحات التي فتحتها سابقاً قابلة للقراءة عند انقطاع الاتصال.", kind: "added" },
+          { text: "رسالة تثبيت تظهر داخل المتصفح، فتضيف الموقع إلى جهازك بلمسة واحدة.", kind: "added" },
+          { text: "أزراء تثبيت في قائمة التنقّل موا في التفاويز.", kind: "added" },
+          { text: "على iOS، حيث لا يسمح للموقع أن يثبت نفسه، يشرر الزرم إلى الثلاث الضغطات التي تضيفه إلى الشاشة الرئيسية.", kind: "added" },
+          { text: "وضع فاتح ووضع داكن، يتبعان تلقائياً إعداد نظامك.", kind: "added" },
+          { text: "خط جديد في كل الموقع، مع ضبط العربية بشكل صحيح في كل الصفحات.", kind: "added" },
+          { text: "إعادة بناء البحث من الصفر: ملف sitemap وrobots، ورابط أساسي لكل صفحة، ومعاينة غنية عند مشاركة أي رابط.", kind: "changed" },
         ],
       },
       {
@@ -423,12 +501,12 @@ export const changelog: Slice<ChangelogCopy> = {
         summary:
           "الموقع الأصلي: أربع صفحات HTML مكتوبة يدوياً، بالإنجليزية فقط، وبدون تطبيق قابل للتثبيت ولا وضع داكن.",
         changes: [
-          "أربع صفحات ثابتة - الرئيسية، المتسربون من الدراسة، أقسام الثانوية، والخريجون.",
-          "الدليل المرجعي للتكوين المهني ATFP: الشهادات، والحقول التي تفتحها، وأماكن الترشح.",
-          "مقارنات بين الأقسام - المواد والإيجابيات والسلبيات لكل قسم في الثانوية التونسية.",
-          "بالإنجليزية فقط، وبدون إمكانية تغيير اللغة.",
-          "لا وضع فاتح ولا داكن، ولا تطبيق قابل للتثبيت، ولا عمل دون اتصال.",
-          "كانت الأسئلة والآراء تُرسل إلى عنوان Gmail، دون صفحة خصوصية ولا صفحة شروط.",
+          { text: "أربع صفحات ثابتة - الرئيسية، المتسربون من الدراسة، أقسام الثانوية، والخريجون.", kind: "added" },
+          { text: "الدليل المرجعي للتكوين المهني ATFP: الشهادات، والحقول التي تفتحها، وأماكن الترشح.", kind: "added" },
+          { text: "مقارنات بين الأقسام - المواد والإيجابيات والسلبيات لكل قسم في الثانوية التونسية.", kind: "added" },
+          { text: "بالإنجليزية فقط، وبدون إمكانية تغيير اللغة.", kind: "removed" },
+          { text: "لا وضع فاتح ولا داكن، ولا تطبيق قابل للتثبيت، ولا عمل دون اتصال.", kind: "removed" },
+          { text: "كانت الأسئلة والآراء تُرسل إلى عنوان Gmail، دون صفحة خصوصية ولا صفحة شروط.", kind: "removed" },
         ],
       },
     ],
@@ -446,6 +524,25 @@ export const changelog: Slice<ChangelogCopy> = {
       seeAll: "عرض الكل",
       close: "إغلاق",
     },
+
+    searchPlaceholder: "ابحث عن إصدار أو تغيير",
+    filterAll: "الكل",
+    filterAdded: "إضافات",
+    filterFixed: "إصلاحات",
+    filterChanged: "تعديلات",
+    filterRemoved: "إزالة",
+    changeCount: "{n} تغييرات",
+    changeCountOne: "تغيير واحد",
+    groupAdded: "إضافات",
+    groupFixed: "إصلاحات",
+    groupChanged: "تعديلات",
+    groupRemoved: "إزالة",
+    expand: "إظهار",
+    collapse: "إخفاء",
+    noResults: "لا شيء يطابق ذلك.",
+    noResultsBody: "جرّب كلمة أخرى، أو امسح عوامل التصفية.",
+    clearFilters: "امسح عوامل التصفية",
+    releases: "الإصدارات",
     note: {
       title: "هل ينقصك شيء؟",
       body: "كل إصدار يُدوَّن هنا فور نشره. إن لم تجد تغييرًا مذكورًا في هذه الصفحة، أو بقي شيء غير واضح، فأخبرنا وسيكون في الإصدار القادم.",

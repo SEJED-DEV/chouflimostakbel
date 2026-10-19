@@ -7,8 +7,16 @@ import { X } from "@phosphor-icons/react/dist/ssr/X";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { useLanguage } from "./LanguageProvider";
 import { useSlice } from "@/components/i18n/slice";
-import { changelog, type ChangelogEntry } from "@/components/i18n/changelog";
+import { changelog, type ChangelogEntry, type ChangeKind } from "@/components/i18n/changelog";
 import ChangelogCommits from "@/components/ChangelogCommits";
+
+/** The colour that stands for each kind of change. */
+const CHANGE_COLOR: Record<ChangeKind, string> = {
+  added: "#0071e3",
+  fixed: "#34c759",
+  changed: "#ff9f0a",
+  removed: "#ff453a",
+};
 
 const STORAGE_KEY = "cmb-version";
 
@@ -170,14 +178,15 @@ export default function WhatsNewPopup() {
                   <ul className="space-y-2">
                     {entry.changes.map((change) => (
                       <li
-                        key={change}
+                        key={change.text}
                         className="flex gap-2.5 text-[14.5px] leading-relaxed text-gray-2"
                       >
                         <span
                           aria-hidden
-                          className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-blue"
+                          className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ backgroundColor: CHANGE_COLOR[change.kind] }}
                         />
-                        <span>{change}</span>
+                        <span>{change.text}</span>
                       </li>
                     ))}
                   </ul>
