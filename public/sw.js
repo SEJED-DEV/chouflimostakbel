@@ -11,7 +11,7 @@
  * Bump CACHE_VERSION to invalidate everything on the next visit.
  */
 
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const STATIC_CACHE = `cmb-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `cmb-pages-${CACHE_VERSION}`;
 const OFFLINE_URL = "/offline.html";
@@ -106,4 +106,87 @@ self.addEventListener("fetch", (event) => {
       })
     );
   }
+});
+
+/* ------------------------------------------------------------------ *
+ * Update notifications
+ * ------------------------------------------------------------------ *
+ * One push is sent for a release, carrying the title and body in all three
+ * languages. The worker picks the one matching the reader's saved language,
+ * so a single message reaches every reader in their own language.
+ */
+
+const LANG_KEY = "cmb-lang";
+
+function currentLang() {
+  try {
+    const stored = localStorage.getItem(LANG_KEY);
+    if (stored === "fr" || stored === "ar") return stored;
+  } catch {
+    /* some browsers do not expose localStorage to workers */
+  }
+  return "en";
+}
+
+/** Accepts either one string or one string per language. */
+function localised(value, lang) {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") {
+    if (typeof value[lang] === "string") return value[lang];
+    if (typeof value.en === "string") return value.en;
+    const first = Object.values(value).find((v) => typeof v === "string");
+    if (first) return first;
+  }
+  return "";
+}
+
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    /* a malformed payload should not stop the notification */
+  }
+
+  const lang = currentLang();
+  const title = localised(data.title, lang) || "Choufli Mosta9bel";
+  const body = localised(data.body, lang);
+  const url = typeof data.url === "string" ? data.url : "/changelog";
+
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      // One notification per release: a newer one replaces the older.
+      tag: "cmb-update-" + (data.version || "latest"),
+      renotify: true,
+      data: { url: url },
+      vibrate: [40, 30, 40],
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const url = event.notification.data && event.notification.data.url
+    ? event.notification.data.url
+    : "/changelog";
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((clientList) => {
+        // Prefer an open tab: opening a second copy of the app is worse
+        // than switching to one that is already there.
+        for (const client of clientList) {
+          if (client.url.indexOf(self.location.origin) === 0 && "focus" in client) {
+            if ("navigate" in client) client.navigate(url);
+            return client.focus();
+          }
+        }
+        return self.clients.openWindow(url);
+      })
+  );
 });

@@ -6,6 +6,7 @@ import { useSlice } from "@/components/i18n/slice";
 import { changelog } from "@/components/i18n/changelog";
 import ChangelogCommits from "@/components/ChangelogCommits";
 import DeployStatusLine from "@/components/DeployStatus";
+import PushOptIn from "@/components/PushOptIn";
 
 export default function ChangelogContent() {
   const t = useSlice(changelog);
@@ -24,6 +25,7 @@ export default function ChangelogContent() {
               {t.header.sub}
             </p>
             <DeployStatusLine />
+            <PushOptIn className="mt-4" />
           </Reveal>
           <Rule className="mt-10" />
         </div>

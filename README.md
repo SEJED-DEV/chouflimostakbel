@@ -39,6 +39,11 @@ npm run start
 | `npm run sync:site` | Refresh `lib/site.generated.json` from sejed.dev |
 | `npm run check:site` | Fail if the generated profile is out of date (CI) |
 | `npm run icons` | Regenerate `public/icons/` from `favicon.png` |
+| `npm run test` | The chunk-error detector's own test suite |
+| `npm run check:encoding` | Fail if any translated file has been corrupted |
+| `npm run verify:deploy [url]` | Check a live deployment; exits non-zero on failure |
+| `npm run vapid` | Generate a web-push key pair |
+| `npm run notify:push` | Announce the newest release to push subscribers |
 
 ---
 
@@ -68,6 +73,43 @@ Old caches are purged on activate. To invalidate everything, bump
 
 > **Service workers require HTTPS** (or `localhost`). Over plain HTTP on a
 > deployed domain the browser will silently decline to register it.
+
+---
+
+## Update notifications
+
+When the site is updated, everyone who turned on update alerts gets a
+notification. One message, in the reader's own language, linking to the
+changelog.
+
+- **Opt-in, always.** A push subscription is a device token, not a contact: no
+  email address is asked for and nothing is tracked. The reader can turn it
+  off, and turning it off deletes the stored token immediately.
+- **Never on page load.** The prompt appears only on the changelog page. Asking
+  unprompted is how a browser ends up permanently refusing.
+- **Once per version.** The store remembers the last version announced, so
+  deploying five times in a day does not ping anyone five times.
+
+```bash
+npm run vapid            # generate a key pair
+npm run notify:push      # announce the newest release
+npm run notify:push -- --dry-run   # show what would be sent
+```
+
+Set `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` in `.env.local`
+first. **Back the private key up**: changing it invalidates every existing
+subscription, and every reader would have to turn notifications on again.
+
+Subscriptions live in Postgres when `DATABASE_URL` is set — the self-hosted
+Supabase the platform is planned on — and in `data/push.json` otherwise, which
+is fine for one machine but is not a backup.
+
+> **iOS** delivers web push only to an app added to the Home Screen, on
+> iOS 16.4 and later. The opt-in stays hidden on an iOS tab that is not
+> installed, rather than failing after the reader has agreed to something.
+
+> **Delivery is best effort.** A push that cannot be delivered expires rather
+> than queueing forever, so the copy never promises that a message arrived.
 
 ---
 
@@ -382,12 +424,33 @@ Built from scratch — we own every URL, there is no legacy HTML to preserve.
 
 ### Before deploying to a different domain
 
-The production domain is hardcoded in three files. If you deploy somewhere
-other than `chouflimostakbel.tn`, update it:
+The production domain lives in **one place** — `site.domain` in `lib/site.ts`.
+Sitemap, robots, canonical URLs, Open Graph and the structured data all read
+from it, so moving the domain is a one-line change.
 
-- `app/layout.tsx` — `metadataBase`
-- `app/sitemap.ts` — `base`
-- `app/robots.ts` — `sitemap` and `host`
+Two things do not move with it, because they are not ours to change:
+
+- **The apex certificate.** `chouflimostakbel.tn` and `www.chouflimostakbel.tn`
+  need to be on the certificate, and the apex needs to redirect.
+- **`site.liveHosts`.** The list of hostnames that count as the real site. It
+  gates the contact form (see below), so add the new hostname there too.
+
+```ts
+export const site = {
+  domain: "https://www.chouflimostakbel.tn",
+  liveHosts: ["chouflimostakbel.tn", "www.chouflimostakbel.tn"],
+  // ...
+};
+```
+
+### The contact form opens itself
+
+The form is closed by default and opens only on `site.liveHosts`. A preview
+build on some other address therefore never collects messages it cannot
+deliver — it shows the email address instead.
+
+`NEXT_PUBLIC_CONTACT_FORM=always` opens it everywhere, which is how you test
+the real thing before the domain move. `never` closes it everywhere.
 
 ---
 

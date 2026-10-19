@@ -10,24 +10,31 @@
     "start": "next start",
     "test": "node --experimental-strip-types scripts/check-chunk-error.mjs",
     "verify:deploy": "node scripts/verify-deploy.mjs",
+    "check:encoding": "node scripts/check-encoding.mjs",
     "sync:site": "node scripts/sync-site.mjs",
     "check:site": "node scripts/sync-site.mjs --check",
     "icons": "node scripts/generate-icons.mjs",
-    "check:encoding": "node scripts/check-encoding.mjs"
+    "notify:push": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/notify-push.mjs",
+    "vapid": "node scripts/generate-vapid-keys.mjs",
+    "check:translations": "node scripts/check-translations.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.7",
     "gsap": "^3.15.0",
     "motion": "^12.4.7",
     "next": "^15.1.6",
+    "pg": "^8.23.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.6",
     "@types/node": "^22.10.7",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "@types/web-push": "^3.6.4",
     "tailwindcss": "^4.0.6",
     "typescript": "^5.7.3"
   }

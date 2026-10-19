@@ -8,3 +8,4 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 lib/build-info.json
+data/
