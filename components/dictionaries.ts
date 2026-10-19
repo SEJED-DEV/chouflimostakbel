@@ -207,6 +207,14 @@ export const en = {
     sentTitle: "Message on its way.",
     sentBody: "Thanks for writing. We will get back to you soon.",
     sendAnother: "Send another",
+    sending: "Sending…",
+    errorTitle: "That did not go through.",
+    errorBody: "Something went wrong on our side. Try again in a moment, or write to us directly.",
+    tooManyTitle: "That is a few in a row.",
+    tooManyBody: "We have already received several messages from you. Try again later, or write to us directly.",
+    unavailableTitle: "This form is not connected yet.",
+    unavailableBody: "It is still being set up. Write to us directly and we will answer.",
+    emailUs: "Write to us",
   },
 
   footer: {
@@ -383,6 +391,14 @@ export const fr: Dictionary = {
     sentTitle: "Message envoyé.",
     sentBody: "Merci pour votre message. Nous vous répondrons rapidement.",
     sendAnother: "Envoyer un autre",
+    sending: "Envoi…",
+    errorTitle: "L’envoi n’a pas abouti.",
+    errorBody: "Un problème est survenu de notre côté. Réessayez dans un instant, ou écrivez-nous directement.",
+    tooManyTitle: "Cela fait plusieurs messages d’affilée.",
+    tooManyBody: "Nous avons déjà reçu plusieurs messages de votre part. Réessayez plus tard, ou écrivez-nous directement.",
+    unavailableTitle: "Ce formulaire n’est pas encore connecté.",
+    unavailableBody: "Il est encore en cours de mise en place. Écrivez-nous directement et nous répondrons.",
+    emailUs: "Écrivez-nous",
   },
 
   footer: {
@@ -548,6 +564,14 @@ export const ar: Dictionary = {
     sentTitle: "تم إرسال رسالتك.",
     sentBody: "شكراً لكتابتك. سنجيبك قريباً.",
     sendAnother: "إرسال رسالة أخرى",
+    sending: "جارٍ الإرسال…",
+    errorTitle: "لم يتم الإرسال.",
+    errorBody: "حدث خطأ من طرفنا. أعد المحاولة بعد قليل، أو راسلنا مباشرة.",
+    tooManyTitle: "هذه رسائل متتالية.",
+    tooManyBody: "لقد وصلتنا بالفعل عدة رسائل منك. أعد المحاولة لاحقًا، أو راسلنا مباشرة.",
+    unavailableTitle: "هذا النموذج لم يُربط بعد.",
+    unavailableBody: "لا يزال قيد الإعداد. راسلنا مباشرة وسنجيبك.",
+    emailUs: "راسلنا",
   },
 
   footer: {
