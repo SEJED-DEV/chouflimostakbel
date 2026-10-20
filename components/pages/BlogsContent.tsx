@@ -3,6 +3,7 @@
 import Icon from "@/components/Icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import Reveal, { Rule } from "@/components/Reveal";
 import RoleIcons from "@/components/RoleIcons";
 import { useSlice } from "@/components/i18n/slice";
@@ -10,6 +11,7 @@ import { blogs, type BlogsCopy } from "@/components/i18n/blogs";
 import { useAuth } from "@/components/AuthProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import { isOlderThan, relativeLabel, relativeTime } from "@/lib/time";
+import type { PublicProfile } from "@/lib/people";
 import type { PostSummary } from "@/lib/posts";
 
 /**
@@ -106,6 +108,60 @@ function postedStamp(
   );
 }
 
+/**
+ * A person, as the community list shows them.
+ *
+ * Deliberately small - a photo, a name, a handle, their badges and how much
+ * they have written. It answers "is this who I was looking for" and then gets
+ * out of the way; the full page is one tap on.
+ */
+function PersonCard({
+  person,
+  postCount,
+}: {
+  person: PublicProfile;
+  /** "{n} posts", already translated. */
+  postCount: string;
+}) {
+  return (
+    <Link
+      href={`/u/${person.handle}`}
+      className="group flex items-center gap-3.5 rounded-2xl border border-sep bg-bg p-4 transition-colors duration-300 hover:border-blue/40"
+    >
+      {person.avatar ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={person.avatar}
+          alt=""
+          className="h-11 w-11 shrink-0 rounded-full object-cover"
+          width={44}
+          height={44}
+        />
+      ) : (
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-bg-alt">
+          <Icon name="user" size={17} className="text-gray" />
+        </span>
+      )}
+
+      <span className="min-w-0 flex-1">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <span className="truncate text-[15.5px] font-medium text-ink transition-colors duration-300 group-hover:text-blue">
+            {person.name}
+          </span>
+          <RoleIcons roles={person.roles} />
+        </span>
+        <span className="mt-0.5 flex items-center gap-x-2 text-[13px] text-gray">
+          <span className="truncate">@{person.handle}</span>
+          <span aria-hidden>&middot;</span>
+          <span className="shrink-0">
+            {postCount.replace("{n}", String(person.postCount))}
+          </span>
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 function PostCard({ post, now }: { post: PostSummary; now: string }) {
   const t = useSlice(blogs);
   const { lang } = useLanguage();
@@ -131,7 +187,7 @@ function PostCard({ post, now }: { post: PostSummary; now: string }) {
           {/* The heading carries the link, so the card is reachable by its
               title and the byline below is free to link somewhere else. */}
           <Link
-            href={`/blogs/${post.slug}`}
+            href={`/community/${post.slug}`}
             className="transition-colors duration-300 hover:text-blue"
           >
             {post.title}
@@ -182,17 +238,55 @@ function PostCard({ post, now }: { post: PostSummary; now: string }) {
  */
 export default function BlogsContent({
   posts,
+  people,
   now,
 }: {
   posts: PostSummary[];
+  /** Everyone with a public page, so a search can find a writer. */
+  people: PublicProfile[];
   /** The server's clock, so "14 min ago" is in the HTML. */
   now: string;
 }) {
   const t = useSlice(blogs);
   const { profile } = useAuth();
   const router = useRouter();
+  const [query, setQuery] = useState("");
 
   const drafts = posts.filter((p) => p.status === "draft").length;
+
+  /**
+   * What the search box is narrowing to.
+   *
+   * Case is folded but nothing else is: accents and Arabic letter forms are
+   * left alone, because someone typing "école" and someone typing "ecole" are
+   * both being reasonable and guessing which one they meant is how a search
+   * starts losing results it should have found.
+   */
+  const trimmed = query.trim().toLowerCase();
+
+  const shownPeople = useMemo(() => {
+    if (!trimmed) return [];
+    return people.filter(
+      (p) =>
+        p.name.toLowerCase().includes(trimmed) ||
+        p.handle.toLowerCase().includes(trimmed),
+    );
+  }, [people, trimmed]);
+
+  const shownPosts = useMemo(() => {
+    if (!trimmed) return posts;
+    return posts.filter(
+      (p) =>
+        p.title.toLowerCase().includes(trimmed) ||
+        p.excerpt.toLowerCase().includes(trimmed) ||
+        p.tags.some((tag) => tag.toLowerCase().includes(trimmed)) ||
+        p.author.name.toLowerCase().includes(trimmed) ||
+        p.author.handle.toLowerCase().includes(trimmed),
+    );
+  }, [posts, trimmed]);
+
+  const searching = trimmed.length > 0;
+  const nothingFound = searching && !shownPosts.length && !shownPeople.length;
 
   return (
     <>
@@ -212,7 +306,7 @@ export default function BlogsContent({
             {profile ? (
               <button
                 type="button"
-                onClick={() => router.push("/blogs/new")}
+                onClick={() => router.push("/community/new")}
                 className="inline-flex items-center gap-2 rounded-full bg-blue px-5 py-2.5 text-[15px] font-medium text-white transition-colors duration-300 hover:bg-blue-hi"
               >
                 <Icon name="square-pen" size={16} />
@@ -233,13 +327,52 @@ export default function BlogsContent({
             )}
           </div>
 
+          {/* Search. One box for both halves of the page: a person's name and
+              a post's title are the two things anyone arrives knowing, and a
+              reader looking for "sejed" does not first decide whether that is
+              a person or a post. */}
+          <div className="relative mt-6">
+            <Icon
+              name="search"
+              size={16}
+              className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              aria-label={t.searchPlaceholder}
+              className="input-ios input-ios-leading"
+            />
+          </div>
+
           <Rule className="mt-10" />
         </div>
       </section>
 
       <section className="bg-bg pb-24 sm:pb-32">
         <div className="mx-auto max-w-3xl px-6 sm:px-8">
-          {posts.length === 0 ? (
+          {nothingFound ? (
+            <div className="card-soft rounded-3xl bg-bg p-8 text-center sm:p-10">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-alt">
+                <Icon name="search" size={20} className="text-gray" />
+              </div>
+              <h2 className="mt-5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
+                {t.noMatches}
+              </h2>
+              <p className="mx-auto mt-2 max-w-md text-[16px] leading-relaxed text-gray-2">
+                {t.noMatchesBody}
+              </p>
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                className="mt-6 rounded-full bg-bg-alt px-5 py-2.5 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
+              >
+                {t.clearSearch}
+              </button>
+            </div>
+          ) : posts.length === 0 && !searching ? (
             <div className="card-soft rounded-3xl bg-bg p-8 text-center sm:p-10">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-alt">
                 <Icon name="newspaper" size={22} className="text-blue" />
@@ -253,7 +386,7 @@ export default function BlogsContent({
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                 <Link
-                  href={profile ? "/blogs/new" : "/signup"}
+                  href={profile ? "/community/new" : "/signup"}
                   className="rounded-full bg-blue px-5 py-2.5 text-[15px] font-medium text-white transition-colors duration-300 hover:bg-blue-hi"
                 >
                   {t.writeOne}
@@ -267,10 +400,40 @@ export default function BlogsContent({
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
-              {posts.map((post) => (
-                <PostCard key={post.id} post={post} now={now} />
-              ))}
+            <div className="flex flex-col gap-10">
+              {/* People first, when a search brought them up: a reader who
+                  typed a name was most likely looking for the person. */}
+              {shownPeople.length > 0 && (
+                <div>
+                  <h2 className="text-[13px] font-semibold tracking-[0.06em] text-gray uppercase">
+                    {t.people}
+                  </h2>
+                  <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {shownPeople.map((person) => (
+                      <li key={person.id}>
+                        <PersonCard person={person} postCount={t.postCount} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {shownPosts.length > 0 && (
+                <div>
+                  {searching && (
+                    <h2 className="text-[13px] font-semibold tracking-[0.06em] text-gray uppercase">
+                      {t.posts}
+                    </h2>
+                  )}
+                  <div
+                    className={`flex flex-col gap-4 ${searching ? "mt-4" : ""}`}
+                  >
+                    {shownPosts.map((post) => (
+                      <PostCard key={post.id} post={post} now={now} />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

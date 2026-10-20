@@ -80,8 +80,37 @@ export async function getPublicProfile(handle: string): Promise<PublicProfile | 
  * policy. The query is written without a session in mind, so it needs no
  * special case when the reader happens to be the author.
  */
-export async function listPublishedByAuthor(authorId: string): Promise<PostSummary[]> {
+/**
+ * Everyone with a public page, most prolific first.
+ *
+ * Read in full rather than searched in SQL. The view is small - it holds only
+ * people who have published - and a search that runs in the database would
+ * have to decide about case, accents and Arabic letter forms, which the
+ * database is not good at and which would then behave differently from the
+ * search beside it that filters posts in the browser. One list, filtered the
+ * same way in both places, beats two searches that disagree.
+ */
+export async function listPublicPeople(): Promise<PublicProfile[]> {
   try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("public_profiles")
+      .select(SELECT)
+      .order("post_count", { ascending: false })
+      .order("handle", { ascending: true })
+      .limit(500);
+
+    if (error || !data) return [];
+    const list = Array.isArray(data)
+      ? (data as unknown as Record<string, unknown>[])
+      : [];
+    return list.map(toProfile);
+  } catch {
+    return [];
+  }
+}
+
+export async function listPublishedByAuthor(authorId: string): Promise<PostSummary[]> {  try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("posts")

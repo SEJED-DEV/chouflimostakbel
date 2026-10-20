@@ -2,6 +2,9 @@
 
 import Icon from "@/components/Icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 
 import Reveal, { Rule } from "@/components/Reveal";
 import RoleIcons from "@/components/RoleIcons";
@@ -29,8 +32,44 @@ export default function PostContent({ post }: { post: Post }) {
   const t = useSlice(blogs);
   const { profile } = useAuth();
   const { lang } = useLanguage();
+  const router = useRouter();
+
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
 
   const mine = profile?.id === post.authorId;
+
+  /**
+   * Delete, then leave.
+   *
+   * The page cannot stay: it is about to describe a post that no longer
+   * exists, and re-rendering it would 404. The confirmation lives in front of
+   * this, not inside it, because the database has no undo and a misclick
+   * should cost a click to correct rather than a piece of writing.
+   */
+  async function remove() {
+    if (busy) return;
+    setBusy(true);
+    setFailed(false);
+
+    try {
+      const response = await fetch(`/api/posts/${post.id}`, { method: "DELETE" });
+      if (!response.ok) {
+        setFailed(true);
+        setBusy(false);
+        return;
+      }
+      router.push("/community");
+      // The list is server-rendered from a fresh query, so it must not come
+      // from the client cache - the deleted post would still be in it.
+      router.refresh();
+    } catch {
+      setFailed(true);
+      setBusy(false);
+    }
+  }
+
   const date = post.publishedAt
     ? new Intl.DateTimeFormat(lang, { dateStyle: "long" }).format(
         new Date(post.publishedAt),
@@ -51,7 +90,7 @@ export default function PostContent({ post }: { post: Post }) {
         <div className="mx-auto max-w-3xl px-6 sm:px-8">
           <Reveal>
             <Link
-              href="/blogs"
+              href="/community"
               className="inline-flex items-center gap-2 text-[14px] font-medium text-gray-2 transition-colors duration-300 hover:text-ink"
             >
               <Icon name="arrow-right" size={14} className="rotate-180" />
@@ -121,14 +160,26 @@ export default function PostContent({ post }: { post: Post }) {
             </div>
 
             {mine && (
-              <div className="mt-6">
+              <div className="mt-6 flex flex-wrap items-center gap-3">
                 <Link
-                  href={`/blogs/${post.slug}/edit`}
+                  href={`/community/${post.slug}/edit`}
                   className="inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[14px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
                 >
                   <Icon name="square-pen" size={15} />
                   {t.editPost}
                 </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFailed(false);
+                    setConfirming(true);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[14px] font-medium text-[#ff453a] transition-colors duration-300 hover:bg-[#ff453a]/10"
+                >
+                  <Icon name="xmark" size={15} />
+                  {t.deletePost}
+                </button>
               </div>
             )}
           </Reveal>
@@ -158,6 +209,63 @@ export default function PostContent({ post }: { post: Post }) {
           )}
         </div>
       </article>
+
+      <AnimatePresence>
+        {confirming && (
+          <motion.div
+            className="fixed inset-0 z-[90] flex items-end justify-center bg-black/25 p-4 backdrop-blur-[6px] sm:items-center sm:p-5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t.deleteTitle}
+            onClick={() => !busy && setConfirming(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 14, scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 33, mass: 0.85 }}
+              className="frosted w-full max-w-sm rounded-[24px] p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h2 className="text-[19px] font-semibold tracking-[-0.02em] text-ink">
+                {t.deleteTitle}
+              </h2>
+              <p className="mt-2 text-[15px] leading-relaxed text-gray-2">
+                {t.deleteBody}
+              </p>
+
+              {failed && (
+                <p className="mt-3 text-[14px] font-medium text-[#ff453a]">
+                  {t.deleteFailed}
+                </p>
+              )}
+
+              <div className="mt-6 flex flex-col gap-2.5 sm:flex-row-reverse">
+                <button
+                  type="button"
+                  onClick={remove}
+                  disabled={busy}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#ff453a] px-5 py-2.5 text-[15px] font-medium text-white transition-opacity duration-200 hover:opacity-90 disabled:opacity-60"
+                >
+                  {t.deletePost}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirming(false)}
+                  disabled={busy}
+                  className="rounded-full bg-bg-alt px-5 py-2.5 text-[15px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60 disabled:opacity-60"
+                >
+                  {t.deleteCancel}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

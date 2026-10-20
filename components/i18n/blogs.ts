@@ -32,6 +32,11 @@ export interface BlogsCopy {
   /** The post. */
   backToBlogs: string;
   editPost: string;
+  /** The confirmation sheet on the post page, shown before anything is removed. */
+  deleteTitle: string;
+  deleteBody: string;
+  deleteCancel: string;
+  deleteFailed: string;
   publishedOn: string;
   editedOn: string;
   postNotFound: string;
@@ -58,6 +63,16 @@ export interface BlogsCopy {
   nothingPublished: string;
   personNotFound: string;
   personNotFoundBody: string;
+
+  /** Search on the community page. */
+  searchPlaceholder: string;
+  /** Heading above the matching people, when there are any. */
+  people: string;
+  /** Heading above the matching posts, when there are any. */
+  posts: string;
+  noMatches: string;
+  noMatchesBody: string;
+  clearSearch: string;
 
   /** The editor. */
   editorNew: string;
@@ -109,7 +124,7 @@ export interface BlogsCopy {
 export const blogs: Slice<BlogsCopy> = {
   en: {
     title: "The",
-    titleAccent: "blogs.",
+    titleAccent: "community.",
     sub: "What people have written. Every post here is written by a reader, not by us.",
     empty: "No posts yet.",
     emptyBody:
@@ -126,6 +141,11 @@ export const blogs: Slice<BlogsCopy> = {
 
     backToBlogs: "All posts",
     editPost: "Edit",
+    deleteTitle: "Delete this post?",
+    deleteBody:
+      "It will be gone for everyone, including you. There is no undo and no copy kept.",
+    deleteCancel: "Keep it",
+    deleteFailed: "It could not be deleted. Try again.",
     publishedOn: "Published",
     editedOn: "Last edited",
     postNotFound: "No such post.",
@@ -144,6 +164,13 @@ export const blogs: Slice<BlogsCopy> = {
     personNotFound: "No such person.",
     personNotFoundBody:
       "Either the handle is misspelt, or they have not published anything yet.",
+
+    searchPlaceholder: "Search posts and people",
+    people: "People",
+    posts: "Posts",
+    noMatches: "Nothing matched.",
+    noMatchesBody: "Try a shorter word, or a name.",
+    clearSearch: "Clear",
 
     editorNew: "New post",
     editorEdit: "Edit post",
@@ -192,8 +219,8 @@ export const blogs: Slice<BlogsCopy> = {
   },
 
   fr: {
-    title: "Les",
-    titleAccent: "blogs.",
+    title: "La",
+    titleAccent: "communauté.",
     sub: "Ce que les gens ont écrit. Chaque article vient d’un lecteur, pas de nous.",
     empty: "Aucun article pour l’instant.",
     emptyBody:
@@ -210,6 +237,11 @@ export const blogs: Slice<BlogsCopy> = {
 
     backToBlogs: "Tous les articles",
     editPost: "Modifier",
+    deleteTitle: "Supprimer cet article ?",
+    deleteBody:
+      "Il disparaîtra pour tout le monde, vous compris. Il n’y a ni retour en arrière ni copie conservée.",
+    deleteCancel: "Le garder",
+    deleteFailed: "La suppression a échoué. Réessayez.",
     publishedOn: "Publié le",
     editedOn: "Dernière modification",
     postNotFound: "Cet article n’existe pas.",
@@ -228,6 +260,13 @@ export const blogs: Slice<BlogsCopy> = {
     personNotFound: "Personne de ce nom.",
     personNotFoundBody:
       "Soit l’identifiant est mal orthographié, soit cette personne n’a encore rien publié.",
+
+    searchPlaceholder: "Rechercher articles et personnes",
+    people: "Personnes",
+    posts: "Articles",
+    noMatches: "Aucun résultat.",
+    noMatchesBody: "Essayez un mot plus court, ou un nom.",
+    clearSearch: "Effacer",
 
     editorNew: "Nouvel article",
     editorEdit: "Modifier l’article",
@@ -280,8 +319,8 @@ export const blogs: Slice<BlogsCopy> = {
   },
 
   ar: {
-    title: "المدو",
-    titleAccent: "نة.",
+    title: "المجتم",
+    titleAccent: "ع.",
     sub: "ما كتبه الناس. كل مقال هنا كتبه قارئ، لا نحن.",
     empty: "لا مقالات بعد.",
     emptyBody:
@@ -298,6 +337,11 @@ export const blogs: Slice<BlogsCopy> = {
 
     backToBlogs: "كل المقالات",
     editPost: "تعديل",
+    deleteTitle: "أتريد حذف هذا المقال؟",
+    deleteBody:
+      "سيختفي عن الجميع، وعنك أيضًا. لا تراجع عن الحذف ولا نسخة محفوظة.",
+    deleteCancel: "أبقِه",
+    deleteFailed: "تعذّر الحذف. حاول مرة أخرى.",
     publishedOn: "نُشر في",
     editedOn: "آخر تعديل",
     postNotFound: "لا يوجد مقال بهذا الاسم.",
@@ -315,6 +359,13 @@ export const blogs: Slice<BlogsCopy> = {
     personNotFound: "لا يوجد شخص بهذا الاسم.",
     personNotFoundBody:
       "إمّا أن المعرّف مكتوب خطأً، وإمّا أن صاحبه لم ينشر شيئًا بعد.",
+
+    searchPlaceholder: "ابحث في المقالات والأشخاص",
+    people: "أشخاص",
+    posts: "مقالات",
+    noMatches: "لا شيء مطابق.",
+    noMatchesBody: "جرّب كلمة أقصر، أو اسمًا.",
+    clearSearch: "مسح",
 
     editorNew: "مقال جديد",
     editorEdit: "تعديل المقال",
