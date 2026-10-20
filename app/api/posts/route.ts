@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { currentProfile } from "@/lib/auth";
 import {
   existingSlugs,
+  listPostsByAuthor,
   parsePostInput,
   readingMinutes,
   slugify,
@@ -25,6 +26,17 @@ export const dynamic = "force-dynamic";
 
 function problem(error: string, status: number) {
   return NextResponse.json({ ok: false, error }, { status });
+}
+
+export async function GET() {
+  const profile = await currentProfile();
+  if (!profile) return problem("notSignedIn", 401);
+
+  // A reader's own posts, drafts included. This is the one place a draft is
+  // listed, and it is reachable only with the session that wrote it - the
+  // select policy answers that, not this route.
+  const posts = await listPostsByAuthor(profile.id);
+  return NextResponse.json({ ok: true, posts });
 }
 
 export async function POST(request: Request) {

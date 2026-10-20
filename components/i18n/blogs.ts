@@ -37,6 +37,28 @@ export interface BlogsCopy {
   postNotFound: string;
   postNotFoundBody: string;
 
+  /**
+   * How long ago something was posted. "Just now", "5 minutes ago" and so on.
+   *
+   * The list shows when a post landed rather than the date it carries, because
+   * "3 hours ago" is what a reader is actually asking. The exact date is still
+   * on the post itself, where there is room for it.
+   */
+  justNow: string;
+  minutesAgo: string;
+  hoursAgo: string;
+  daysAgo: string;
+  postedAgo: string;
+
+  /** The public profile of one person. */
+  /** "{n} posts" */
+  postCount: string;
+  /** "Written by {name}" */
+  byPerson: string;
+  nothingPublished: string;
+  personNotFound: string;
+  personNotFoundBody: string;
+
   /** The editor. */
   editorNew: string;
   editorEdit: string;
@@ -110,6 +132,19 @@ export const blogs: Slice<BlogsCopy> = {
     postNotFoundBody:
       "It may have been deleted, or the address may be mistyped.",
 
+    justNow: "just now",
+    minutesAgo: "{n} min ago",
+    hoursAgo: "{n} h ago",
+    daysAgo: "{n} d ago",
+    postedAgo: "Posted {when}",
+
+    postCount: "{n} posts",
+    byPerson: "Written by {name}",
+    nothingPublished: "Nothing published yet.",
+    personNotFound: "No such person.",
+    personNotFoundBody:
+      "Either the handle is misspelt, or they have not published anything yet.",
+
     editorNew: "New post",
     editorEdit: "Edit post",
     fieldTitle: "Title",
@@ -180,6 +215,19 @@ export const blogs: Slice<BlogsCopy> = {
     postNotFound: "Cet article n’existe pas.",
     postNotFoundBody:
       "Il a peut-être été supprimé, ou l’adresse comporte une faute.",
+
+    justNow: "à l’instant",
+    minutesAgo: "il y a {n} min",
+    hoursAgo: "il y a {n} h",
+    daysAgo: "il y a {n} j",
+    postedAgo: "Publié {when}",
+
+    postCount: "{n} articles",
+    byPerson: "Écrit par {name}",
+    nothingPublished: "Rien de publié pour l’instant.",
+    personNotFound: "Personne de ce nom.",
+    personNotFoundBody:
+      "Soit l’identifiant est mal orthographié, soit cette personne n’a encore rien publié.",
 
     editorNew: "Nouvel article",
     editorEdit: "Modifier l’article",
@@ -254,6 +302,19 @@ export const blogs: Slice<BlogsCopy> = {
     editedOn: "آخر تعديل",
     postNotFound: "لا يوجد مقال بهذا الاسم.",
     postNotFoundBody: "لعله حُذف، أو أن في العنوان خطأ.",
+
+    justNow: "الآن",
+    minutesAgo: "قبل {n} دقيقة",
+    hoursAgo: "قبل {n} ساعة",
+    daysAgo: "قبل {n} يوم",
+    postedAgo: "نُشر {when}",
+
+    postCount: "{n} مقالاً",
+    byPerson: "بقلم {name}",
+    nothingPublished: "لم يُنشر شيء بعد.",
+    personNotFound: "لا يوجد شخص بهذا الاسم.",
+    personNotFoundBody:
+      "إمّا أن المعرّف مكتوب خطأً، وإمّا أن صاحبه لم ينشر شيئًا بعد.",
 
     editorNew: "مقال جديد",
     editorEdit: "تعديل المقال",

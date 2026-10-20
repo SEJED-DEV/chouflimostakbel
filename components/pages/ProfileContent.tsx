@@ -2,14 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Icon from "@/components/Icons";
 import Reveal, { Rule } from "@/components/Reveal";
 import { useSlice } from "@/components/i18n/slice";
 import { account } from "@/components/i18n/account";
+import { blogs } from "@/components/i18n/blogs";
 import { useAuth } from "@/components/AuthProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import SettingsButton from "@/components/SettingsSheet";
 import { ROLES, normaliseRoles, type RoleKey } from "@/lib/roles";
+import type { PostSummary } from "@/lib/posts";
 
 /**
  * The reader's own profile.
@@ -94,6 +97,7 @@ function BadgeRow({ roles }: { roles: RoleKey[] }) {
 
 export default function ProfileContent() {
   const t = useSlice(account);
+  const b = useSlice(blogs);
   const { lang } = useLanguage();
   const router = useRouter();
   const { profile, loading, refresh } = useAuth();
@@ -104,6 +108,7 @@ export default function ProfileContent() {
   const [birth, setBirth] = useState("");
   const avatarInput = useRef<HTMLInputElement>(null);
   const bannerInput = useRef<HTMLInputElement>(null);
+  const [posts, setPosts] = useState<PostSummary[] | null>(null);
 
   useEffect(() => {
     if (!loading && !profile) router.replace("/login");
@@ -115,6 +120,25 @@ export default function ProfileContent() {
       setEmail(profile.email ?? "");
       setBirth(profile.dateOfBirth ?? "");
     }
+  }, [profile]);
+
+  // Your own posts, drafts included, fetched once there is a session to
+  // fetch them with. A failure leaves the list absent rather than empty, so
+  // "nothing here yet" is never shown to someone who has written something.
+  useEffect(() => {
+    if (!profile) return;
+    let alive = true;
+
+    fetch("/api/posts")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && data?.ok) setPosts(data.posts as PostSummary[]);
+      })
+      .catch(() => {});
+
+    return () => {
+      alive = false;
+    };
   }, [profile]);
 
   async function save(event: React.FormEvent<HTMLFormElement>) {
@@ -405,14 +429,48 @@ export default function ProfileContent() {
             </button>
           </form>
 
-          {/* The posts will go here. Saying so is better than an empty box. */}
+          {/* Your own posts. Drafts are listed here and nowhere else on the
+              site, which is what makes this list worth having. */}
           <div className="card-soft mt-5 rounded-3xl bg-bg p-7 sm:p-9">
             <h2 className="text-[19px] font-semibold tracking-[-0.02em] text-ink">
               {t.yourPosts}
             </h2>
-            <p className="mt-2 text-[16px] leading-relaxed text-gray-2">
-              {t.yourPostsBody}
-            </p>
+
+            {posts && posts.length > 0 ? (
+              <ul className="mt-5 space-y-3">
+                {posts.map((post) => (
+                  <li key={post.id}>
+                    <Link
+                      href={`/blogs/${post.slug}`}
+                      className="group flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-sep px-4 py-3 transition-colors duration-300 hover:border-blue/40"
+                    >
+                      <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink transition-colors duration-300 group-hover:text-blue">
+                        {post.title}
+                      </span>
+                      <span className="text-[13px] text-gray">
+                        {post.status === "draft"
+                          ? b.draft
+                          : new Intl.DateTimeFormat(lang, {
+                              dateStyle: "medium",
+                            }).format(new Date(post.publishedAt ?? post.updatedAt))}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-[16px] leading-relaxed text-gray-2">
+                {t.yourPostsBody}
+              </p>
+            )}
+
+            <Link
+              href="/blogs/new"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[14px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
+            >
+              <Icon name="square-pen" size={15} />
+              {b.writeOne}
+            </Link>
           </div>
         </div>
       </section>
