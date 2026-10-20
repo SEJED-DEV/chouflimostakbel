@@ -21,5 +21,8 @@ export const metadata: Metadata = {
 
 export default async function BlogsPage() {
   const posts = await listVisiblePosts();
-  return <BlogsContent posts={posts} />;
+  // The clock is read once, here, and handed down. The cards render "14 min
+  // ago" from this value, so the phrase is in the HTML and the browser's
+  // hydration produces the same string rather than a second, later one.
+  return <BlogsContent posts={posts} now={new Date().toISOString()} />;
 }
