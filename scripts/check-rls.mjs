@@ -248,7 +248,106 @@ check(
   profileColumns.join(", ").slice(0, 70) || "no columns found",
 );
 
-// Clean up. Deleting the GoTrue user cascades to the profile row.
+// ------------------------------------------------------------------
+// Posts
+// ------------------------------------------------------------------
+// The blogs carry the only policy on this site that makes anything public,
+// so they need their own checks: a draft must be invisible to everyone but
+// its author, a published post must be readable by a stranger, a post must
+// not be movable onto someone else's byline, and the byline itself is not
+// the client's to write.
+//
+// Written as jwtA rather than with the service role, because the service
+// role has no grant on posts at all - which is deliberate. Everything here
+// goes through the same path a browser takes.
+
+const stampSlug = `rls-post-${stamp}`;
+
+async function writePost(jwt, body) {
+  return as(jwt, "posts", {
+    method: "POST",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify(body),
+  });
+}
+
+const published = await writePost(jwtA, {
+  author_id: idA,
+  slug: `${stampSlug}-published`,
+  title: "A published post",
+  body_md: "# Hello",
+  status: "published",
+  published_at: new Date().toISOString(),
+  // Sent on purpose: the client is claiming somebody else's handle.
+  author_handle: "not-a-real-handle",
+});
+check("a post can be published", published.status < 300, `HTTP ${published.status}`);
+
+const draft = await writePost(jwtA, {
+  author_id: idA,
+  slug: `${stampSlug}-draft`,
+  title: "A draft",
+  status: "draft",
+});
+check("a post can be saved as a draft", draft.status < 300, `HTTP ${draft.status}`);
+
+// 10. The byline is a fact about the account, not a form field. A trigger
+//     takes it from the profile and discards whatever was sent.
+const byline = Array.isArray(published.body) ? published.body[0] : null;
+check(
+  "the byline cannot be written by the client",
+  byline?.author_handle === `rls-a-${stamp}`,
+  String(byline?.author_handle),
+);
+
+// 11. An anonymous reader gets the published post and never the draft.
+const anonPosts = await as(ANON, `posts?select=slug,status&author_id=eq.${idA}`);
+const anonSlugs = Array.isArray(anonPosts.body) ? anonPosts.body.map((p) => p.slug) : [];
+check(
+  "an anonymous reader sees only published posts",
+  anonPosts.status < 300 &&
+    anonSlugs.includes(`${stampSlug}-published`) &&
+    !anonSlugs.includes(`${stampSlug}-draft`),
+  anonSlugs.join(", ") || `HTTP ${anonPosts.status}`,
+);
+
+// 12. Another signed-in account sees the same: published, and not the draft.
+const postsB = await as(jwtB, `posts?select=slug&author_id=eq.${idA}`);
+const slugsB = Array.isArray(postsB.body) ? postsB.body.map((p) => p.slug) : [];
+check(
+  "another account cannot see a draft",
+  slugsB.length === 1 && slugsB[0] === `${stampSlug}-published`,
+  slugsB.join(", ") || `HTTP ${postsB.status}`,
+);
+
+// 13. Another account cannot edit a published post either.
+const editB = await as(jwtB, `posts?slug=eq.${stampSlug}-published`, {
+  method: "PATCH",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ title: "Edited by B" }),
+});
+check(
+  "an update to another account's post changes nothing",
+  Array.isArray(editB.body) && editB.body.length === 0,
+  `${Array.isArray(editB.body) ? editB.body.length : "?"} rows`,
+);
+
+// 14. A post cannot be moved onto another author's byline, which is what
+//     the `with check` on the update policy is for.
+const stealPost = await as(jwtA, `posts?slug=eq.${stampSlug}-draft`, {
+  method: "PATCH",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ author_id: idB }),
+});
+check(
+  "a post cannot be moved to another author",
+  stealPost.status >= 400 ||
+    (Array.isArray(stealPost.body) && stealPost.body.length === 0),
+  `HTTP ${stealPost.status}`,
+);
+
+// Clean up. Deleting the GoTrue user cascades to the profile row, and the
+// profile row cascades to the posts.
 for (const id of made) {
   await admin(`/admin/users/${id}`, { method: "DELETE" }).catch(() => {});
 }

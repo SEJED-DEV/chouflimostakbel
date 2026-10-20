@@ -176,6 +176,114 @@ body {
     0 18px 50px rgba(0, 0, 0, 0.1);
 }
 
+/* Rendered post bodies.
+ *
+ * Written by hand rather than pulled in as a typography plugin: the posts are
+ * the only place on the site with long-form text, and a plugin would bring
+ * styles for tables, figures and footnotes that nothing here can produce.
+ *
+ * Every colour is a token, so dark mode needs no separate rule - the tokens
+ * are what change, not these.
+ */
+.prose-post {
+  font-size: 17px;
+  line-height: 1.75;
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+.prose-post > * + * {
+  margin-top: 1.25em;
+}
+.prose-post h1,
+.prose-post h2,
+.prose-post h3,
+.prose-post h4 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-ink);
+}
+.prose-post h1 {
+  font-size: 1.6em;
+}
+.prose-post h2 {
+  font-size: 1.35em;
+}
+.prose-post h3 {
+  font-size: 1.15em;
+}
+.prose-post h4 {
+  font-size: 1em;
+}
+.prose-post a {
+  color: var(--color-blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-post strong {
+  font-weight: 600;
+}
+.prose-post ul,
+.prose-post ol {
+  padding-inline-start: 1.4em;
+}
+.prose-post ul {
+  list-style: disc;
+}
+.prose-post ol {
+  list-style: decimal;
+}
+.prose-post li + li {
+  margin-top: 0.4em;
+}
+.prose-post blockquote {
+  padding-inline-start: 1em;
+  border-inline-start: 3px solid var(--color-sep);
+  color: var(--color-gray-2);
+}
+.prose-post code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.88em;
+  background: var(--color-bg-alt);
+  border-radius: 6px;
+  padding: 0.15em 0.4em;
+}
+.prose-post pre {
+  background: var(--color-bg-alt);
+  border-radius: 16px;
+  padding: 18px 20px;
+  overflow-x: auto;
+}
+.prose-post pre code {
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.prose-post hr {
+  border: none;
+  border-top: 1px solid var(--color-sep);
+}
+.prose-post img {
+  border-radius: 16px;
+  max-width: 100%;
+}
+.prose-post table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+.prose-post th,
+.prose-post td {
+  border: 1px solid var(--color-sep);
+  padding: 8px 12px;
+  text-align: start;
+}
+.prose-post th {
+  background: var(--color-bg-alt);
+  font-weight: 600;
+}
+
 /* iOS-style filled input */
 .input-ios {
   background: var(--color-bg-alt);

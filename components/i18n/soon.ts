@@ -75,7 +75,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "On the way",
       title: "A bigger",
       titleAccent: "platform.",
-      sub: "Accounts, profiles and role badges are live. Still being built, in the open: an editor anyone can write in, and a feed that learns what you actually came here for.",
+      sub: "Accounts, profiles and role badges are live, and so is the editor - anyone with an account can write a post, save a draft and delete it again. Still being built, in the open: a feed that learns what you actually came here for.",
       cta: "See the roadmap",
       ctaSecondary: "Follow along on GitHub",
     },
@@ -171,7 +171,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "Profiles and posting",
-          body: "Custom profiles, and an editor where anyone can write a post, with drafts and edit history. The profile exists and you can rename it; the editor does not.",
+          body: "Custom profiles, and an editor where anyone can write a post. Both are built: you can rename your profile, and you can write a post in markdown, save it as a draft, publish it and delete it. What is not built is version history - a post currently has one body and no past versions - and profiles do not carry topics yet.",
           points: [
             "Custom profiles with topics",
             "Markdown editor",
@@ -307,7 +307,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "En préparation",
       title: "Une plateforme",
       titleAccent: "plus grande.",
-      sub: "Les comptes, les profils et les badges sont en ligne. Ce qui reste à construire, au grand jour : un éditeur où chacun peut écrire, et un fil qui comprend ce que vous êtes vraiment venu chercher ici.",
+      sub: "Les comptes, les profils et les badges sont en ligne, et l'éditeur aussi : chacun avec un compte peut écrire un article, l'enregistrer en brouillon et le supprimer. Ce qui reste à construire, au grand jour : un fil qui comprend ce que vous êtes vraiment venu chercher ici.",
       cta: "Voir la feuille de route",
       ctaSecondary: "Suivre sur GitHub",
     },
@@ -405,7 +405,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "Profils et publication",
-          body: "Les profils sont terminés : une photo, une bannière, une date de naissance, la date d'inscription, et les badges que la plateforme vous a attribués - le tout avec une surface de réglages pour le thème et la langue. Il reste l'éditeur : un endroit où chacun peut écrire un article, avec brouillons et historique des modifications. Il n'existe pas encore.",
+          body: "Les profils sont terminés : une photo, une bannière, une date de naissance, la date d'inscription, et les badges que la plateforme vous a attribués - le tout avec une surface de réglages pour le thème et la langue. L'éditeur l'est aussi : on y écrit un article en markdown, on l'enregistre en brouillon, on le publie, on le supprime. Ce qui manque est l'historique des versions - un article n'a pour l'instant qu'un seul corps - et les profils ne portent pas encore de thèmes.",
           points: [
             "Photo, bannière, naissance, badges",
             "Éditeur Markdown",
@@ -541,7 +541,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "قريباً",
       title: "منصة",
       titleAccent: "أكبر.",
-      sub: "الحسابات والملفّات الشخصية وشارات الأدوار تعمل الآن. وما يزال قيد البناء، في العلن: محرّر يكتب فيه أيّ شخص، وخلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً.",
+      sub: "الحسابات والملفّات الشخصية وشارات الأدوار تعمل الآن، وكذلك المحرّر: أيّ صاحب حساب يستطيع أن يكتب مقالاً، ويحفظه مسودّة، ثم يحذفه. وما يزال قيد البناء، في العلن: خلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً.",
       cta: "اطّلع على خارطة الطريق",
       ctaSecondary: "تابعنا على GitHub",
     },
@@ -638,7 +638,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "الملفّات الشخصية والنشر",
-          body: "الملفّات الشخصية اكتملت: صورة وشعار عريض وتاريخ ميلاد وتاريخ الانضمام، والشارات التي منحتها لك المنصّة - مع سطح إعدادات للمظهر واللغة. وما يبقى هو المحرّر: مكان يكتب فيه أيّ شخص مقالاً، مع مسودّات وسجلّ للتعديلات. لم يأتِ بعد.",
+          body: "الملفّات الشخصية اكتملت: صورة وشعار عريض وتاريخ ميلاد وتاريخ الانضمام، والشارات التي منحتها لك المنصّة - مع سطح إعدادات للمظهر واللغة. واكتمل المحرّر أيضاً: يكتب المرء مقاله بصيغة ماركداون، ويحفظه مسودّة أو ينشره، ثم يحذفه. وما لم يُبنَ بعد هو سجلّ الإصدارات - للمقال جسد واحد لا أجيال - والوسوم التي يختارها الكاتب.",
           points: [
             "الصورة والشعار والميلاد والشارات",
             "محرّر Markdown",
