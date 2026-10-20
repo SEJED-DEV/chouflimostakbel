@@ -1,12 +1,10 @@
 "use client";
 
+import Icon, { type IconName } from "@/components/Icons";
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import Image from "next/image";
-import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
-import { ShareNetwork } from "@phosphor-icons/react/dist/ssr/ShareNetwork";
-import { PlusSquare } from "@phosphor-icons/react/dist/ssr/PlusSquare";
-import { Check } from "@phosphor-icons/react/dist/ssr/Check";
+
 import { useLanguage } from "./LanguageProvider";
 import {
   capturePrompt,
@@ -148,7 +146,9 @@ export default function InstallPrompt() {
   const steps = ios
     ? [t.ios.step1, t.ios.step2, t.ios.step3]
     : [t.manual.step1, t.manual.step2, t.manual.step3];
-  const icons = ios ? [ShareNetwork, PlusSquare, Check] : [Check, Check, Check];
+  const icons: IconName[] = ios
+    ? ["share", "square-plus", "circle-check"]
+    : ["circle-check", "circle-check", "circle-check"];
 
   return (
     <AnimatePresence>
@@ -203,14 +203,14 @@ export default function InstallPrompt() {
             {!canPrompt && (
               <ol className="mt-5 space-y-2.5">
                 {steps.map((step, i) => {
-                  const Icon = icons[i];
+                  const icon = icons[i];
                   return (
                     <li key={step} className="flex items-start gap-3">
                       <span
                         aria-hidden
                         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue/10 text-blue"
                       >
-                        <Icon size={15} weight="bold" />
+                        <Icon name={icon} size={15} />
                       </span>
                       <span className="pt-1 text-[14.5px] leading-snug text-ink">
                         {step}
@@ -228,7 +228,7 @@ export default function InstallPrompt() {
                   onClick={accept}
                   className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-blue px-5 py-2.5 text-[15px] font-medium text-white shadow-[0_6px_18px_rgba(0,113,227,0.26)] transition-colors duration-300 hover:bg-blue-hi"
                 >
-                  <DownloadSimple size={15} weight="bold" />
+                  <Icon name="download" size={15} />
                   {t.install.action}
                 </button>
               )}

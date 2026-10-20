@@ -1,7 +1,8 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useEffect, useState } from "react";
-import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr/ArrowSquareOut";
+
 import { useLanguage, type Lang } from "./LanguageProvider";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog, type PluralKey } from "@/components/i18n/changelog";
@@ -116,7 +117,7 @@ export default function DeployStatusLine() {
         className="inline-flex items-center gap-1 font-medium text-blue transition-opacity hover:opacity-70"
       >
         {isBehind ? t.status.seeDiff : t.status.openRepo}
-        <ArrowSquareOut size={13} weight="bold" />
+        <Icon name="external-link" size={13} />
       </a>
     </div>
   );

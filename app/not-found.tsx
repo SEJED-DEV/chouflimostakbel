@@ -1,10 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { House } from "@phosphor-icons/react/dist/ssr/House";
-import { Signpost } from "@phosphor-icons/react/dist/ssr/Signpost";
-import { Books } from "@phosphor-icons/react/dist/ssr/Books";
-import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
+import Icon, { type IconName } from "@/components/Icons";
 import { useSlice } from "@/components/i18n/slice";
 import { errors } from "@/components/i18n/errors";
 import { useT } from "@/components/LanguageProvider";
@@ -20,11 +17,11 @@ export default function NotFound() {
   const t = useSlice(errors);
   const { t: dict } = useT();
 
-  const paths = [
-    { href: "/", label: dict.nav.home, Icon: House },
-    { href: "/dropouts", label: dict.nav.dropouts, Icon: Signpost },
-    { href: "/divisions", label: dict.nav.divisions, Icon: Books },
-    { href: "/graduates", label: dict.nav.graduates, Icon: GraduationCap },
+  const paths: { href: string; label: string; icon: IconName }[] = [
+    { href: "/", label: dict.nav.home, icon: "house" },
+    { href: "/dropouts", label: dict.nav.dropouts, icon: "signpost" },
+    { href: "/divisions", label: dict.nav.divisions, icon: "books" },
+    { href: "/graduates", label: dict.nav.graduates, icon: "graduation-cap" },
   ];
 
   return (
@@ -49,7 +46,7 @@ export default function NotFound() {
               href={l.href}
               className="card-soft card-soft-hover flex items-center gap-3 rounded-2xl bg-bg-alt px-5 py-4 text-left text-[16px] font-medium text-ink"
             >
-              <l.Icon size={20} weight="regular" className="text-blue" />
+              <Icon name={l.icon} size={20} className="text-blue" />
               {l.label}
             </Link>
           ))}

@@ -22,6 +22,12 @@ export interface CurrentProfile {
   displayName: string;
   email: string | null;
   verified: boolean;
+  avatarUrl: string | null;
+  bannerUrl: string | null;
+  dateOfBirth: string | null;
+  /** ISO timestamp. */
+  memberSince: string;
+  roles: string[];
 }
 
 interface AuthState {

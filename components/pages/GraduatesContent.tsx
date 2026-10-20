@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import Link from "next/link";
 import Reveal, { Rule } from "@/components/Reveal";
 import Contact from "@/components/Contact";
@@ -7,8 +8,7 @@ import Hero from "@/components/Hero";
 import ScrubText from "@/components/ScrubText";
 import Card from "@/components/SpotlightCard";
 import ScoreCalculator from "@/components/ScoreCalculator";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+
 import { useSlice } from "@/components/i18n/slice";
 import { graduates } from "@/components/i18n/graduates";
 
@@ -72,9 +72,8 @@ export default function GraduatesContent() {
 
                   <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-bg-alt px-5 py-3 text-[15px] font-medium text-blue transition-colors duration-300 group-hover:bg-blue group-hover:text-white">
                     {t.directory.link}
-                    <ArrowUpRight
+                    <Icon name="arrow-up-right"
                       size={16}
-                      weight="bold"
                       className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                     />
                   </span>
@@ -103,9 +102,8 @@ export default function GraduatesContent() {
               className="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-[17px] font-medium text-black transition-transform duration-300 hover:scale-[1.02]"
             >
               {t.mission.cta}
-              <ArrowRight
+              <Icon name="arrow-right"
                 size={16}
-                weight="bold"
                 className="transition-transform group-hover:translate-x-0.5"
               />
             </Link>

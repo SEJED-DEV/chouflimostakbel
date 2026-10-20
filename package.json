@@ -16,8 +16,9 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
-    "db:reset": "supabase db reset",
+    "db:migrate": "supabase migration up",
     "db:check": "node scripts/check-rls.mjs",
+    "icons:build": "node scripts/build-icons.mjs",
     "changelog:md": "node --experimental-strip-types --no-warnings scripts/write-changelog-md.mjs",
     "notify:push": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/notify-push.mjs",
     "vapid": "node scripts/generate-vapid-keys.mjs",
@@ -27,7 +28,6 @@
     "icons": "node scripts/generate-icons.mjs"
   },
   "dependencies": {
-    "@phosphor-icons/react": "^2.1.7",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
     "gsap": "^3.15.0",
@@ -38,6 +38,7 @@
     "web-push": "^3.6.7"
   },
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@tailwindcss/postcss": "^4.0.6",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.7",

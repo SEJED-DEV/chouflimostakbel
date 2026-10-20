@@ -101,14 +101,6 @@ export default function Footer() {
                     {t.footer.changelog}
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/profile"
-                    className="text-[14px] text-gray-2 transition-colors hover:text-blue"
-                  >
-                    {t.nav.profile}
-                  </Link>
-                </li>
                 {legalLinks.map((l) => (
                   <li key={l.href}>
                     <Link

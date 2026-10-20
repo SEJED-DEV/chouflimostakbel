@@ -1,9 +1,9 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useRef } from "react";
-import { Sun } from "@phosphor-icons/react/dist/ssr/Sun";
-import { Moon } from "@phosphor-icons/react/dist/ssr/Moon";
+
 import { useTheme } from "./ThemeProvider";
 
 /**
@@ -18,11 +18,7 @@ import { useTheme } from "./ThemeProvider";
  *
  * Both are skipped entirely under prefers-reduced-motion.
  */
-export default function ThemeToggle({
-  variant = "desktop",
-}: {
-  variant?: "desktop" | "compact";
-}) {
+export default function ThemeToggle() {
   const { resolved, toggle, ready } = useTheme();
   const reduce = useReducedMotion();
   const ref = useRef<HTMLButtonElement>(null);
@@ -31,9 +27,7 @@ export default function ThemeToggle({
   const label = isDark ? "Switch to light theme" : "Switch to dark theme";
 
   const cls =
-    variant === "compact"
-      ? "flex h-9 w-9 items-center justify-center rounded-full text-gray-2 transition-colors hover:bg-ink/[0.06] hover:text-ink"
-      : "flex items-center gap-1.5 rounded-full px-3 py-2 text-[14px] font-medium text-gray-2 transition-colors duration-200 hover:bg-ink/[0.06] hover:text-ink";
+    "flex items-center gap-1.5 rounded-full px-3 py-2 text-[14px] font-medium text-gray-2 transition-colors duration-200 hover:bg-ink/[0.06] hover:text-ink";
 
   function handleClick() {
     if (reduce) {
@@ -123,7 +117,7 @@ export default function ThemeToggle({
             }
             className="absolute inset-0 flex items-center justify-center"
           >
-            {isDark ? <Moon size={18} weight="fill" /> : <Sun size={18} weight="fill" />}
+            {isDark ? <Icon name="moon" size={18} /> : <Icon name="sun" size={18} />}
           </motion.span>
         </AnimatePresence>
       </span>

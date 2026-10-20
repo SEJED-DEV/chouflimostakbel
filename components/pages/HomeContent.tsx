@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import Link from "next/link";
 import Image from "next/image";
 import Reveal, { Rule } from "@/components/Reveal";
@@ -7,7 +8,7 @@ import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import ScrubText from "@/components/ScrubText";
 import Card from "@/components/SpotlightCard";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+
 import { useSlice } from "@/components/i18n/slice";
 import { home } from "@/components/i18n/home";
 
@@ -62,9 +63,8 @@ export default function HomeContent() {
                     </p>
                     <span className="mt-6 inline-flex items-center gap-1.5 text-[16px] font-medium text-white">
                       {t.paths.explore}
-                      <ArrowRight
+                      <Icon name="arrow-right"
                         size={16}
-                        weight="bold"
                         className="transition-transform group-hover:translate-x-1"
                       />
                     </span>
@@ -93,9 +93,8 @@ export default function HomeContent() {
                     </div>
                     <span className="mt-7 inline-flex items-center gap-1.5 text-[16px] font-medium text-blue">
                       {t.paths.explore}
-                      <ArrowRight
+                      <Icon name="arrow-right"
                         size={16}
-                        weight="bold"
                         className="transition-transform group-hover:translate-x-1"
                       />
                     </span>
@@ -122,9 +121,8 @@ export default function HomeContent() {
                     </div>
                     <span className="mt-7 inline-flex items-center gap-1.5 text-[16px] font-medium text-blue">
                       {t.paths.explore}
-                      <ArrowRight
+                      <Icon name="arrow-right"
                         size={16}
-                        weight="bold"
                         className="transition-transform group-hover:translate-x-1"
                       />
                     </span>
@@ -154,9 +152,8 @@ export default function HomeContent() {
               className="group mt-9 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-[17px] font-medium text-black transition-transform duration-300 hover:scale-[1.02]"
             >
               {t.manifesto.cta}
-              <ArrowRight
+              <Icon name="arrow-right"
                 size={16}
-                weight="bold"
                 className="transition-transform group-hover:translate-x-0.5"
               />
             </Link>

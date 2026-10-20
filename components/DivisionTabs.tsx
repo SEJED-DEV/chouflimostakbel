@@ -1,9 +1,9 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Check } from "@phosphor-icons/react/dist/ssr/Check";
-import { Minus } from "@phosphor-icons/react/dist/ssr/Minus";
+
 import Card from "./SpotlightCard";
 import type { DivisionTabsCopy } from "./i18n/divisions";
 
@@ -96,9 +96,8 @@ export default function DivisionTabs({ data }: { data: DivisionTabsCopy }) {
                       <ul className="mt-3 space-y-2.5">
                         {d.pros.map((p) => (
                           <li key={p} className="flex items-start gap-2.5">
-                            <Check
+                            <Icon name="check"
                               size={15}
-                              weight="bold"
                               className="mt-1 shrink-0 text-blue"
                             />
                             <span className="text-[14.5px] leading-snug text-gray-2">
@@ -115,9 +114,8 @@ export default function DivisionTabs({ data }: { data: DivisionTabsCopy }) {
                       <ul className="mt-3 space-y-2.5">
                         {d.cons.map((c) => (
                           <li key={c} className="flex items-start gap-2.5">
-                            <Minus
+                            <Icon name="minus"
                               size={15}
-                              weight="bold"
                               className="mt-1 shrink-0 text-gray"
                             />
                             <span className="text-[14.5px] leading-snug text-gray-2">

@@ -116,7 +116,7 @@ uses them yet, and they are not small.
 
 ```bash
 npm run supabase:start   # the five containers
-npm run db:reset         # apply supabase/migrations
+npm run db:migrate      # apply pending supabase/migrations (never drops data)
 npm run db:check         # prove the policies actually bind
 npm run supabase:stop    # stop them
 ```

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSlice } from "@/components/i18n/slice";
 import { account } from "@/components/i18n/account";
 import { useAuth } from "@/components/AuthProvider";
@@ -25,6 +26,7 @@ export default function AuthForm({
   onDone?: (profile: { displayName: string }) => void;
 }) {
   const t = useSlice(account);
+  const router = useRouter();
   const { refresh } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -68,6 +70,10 @@ export default function AuthForm({
       }
 
       await refresh();
+      // The reader has somewhere to be. Staying on the form after signing
+      // in was the whole bug: `/login` and `/signup` now send a
+      // signed-in reader away, so this has to actually move them.
+      router.replace("/profile");
       onDone?.(payload.profile);
     } catch {
       setError("generic");

@@ -1,12 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ShareNetwork } from "@phosphor-icons/react/dist/ssr/ShareNetwork";
-import { Copy } from "@phosphor-icons/react/dist/ssr/Copy";
-import { ArrowSquareOut } from "@phosphor-icons/react/dist/ssr/ArrowSquareOut";
-import { DownloadSimple } from "@phosphor-icons/react/dist/ssr/DownloadSimple";
-import { Moon } from "@phosphor-icons/react/dist/ssr/Moon";
-import { Sun } from "@phosphor-icons/react/dist/ssr/Sun";
+import Icon, { type IconName } from "@/components/Icons";
 import { useTheme } from "./ThemeProvider";
 import { useT } from "./LanguageProvider";
 import { canPromptDirectly, promptInstall, INSTALL_SHEET } from "@/lib/pwa";
@@ -30,7 +25,7 @@ import { canPromptDirectly, promptInstall, INSTALL_SHEET } from "@/lib/pwa";
 interface MenuItem {
   id: string;
   label: string;
-  Icon: typeof ShareNetwork;
+  icon: IconName;
   run: () => void;
 }
 
@@ -109,20 +104,20 @@ export default function ContextMenu() {
         items.push({
           id: "open",
           label: t.contextMenu.openInNewTab,
-          Icon: ArrowSquareOut,
+          icon: "external-link",
           run: () => window.open(absolute, "_blank", "noopener,noreferrer"),
         });
         items.push({
           id: "copy-link",
           label: t.contextMenu.copyLink,
-          Icon: Copy,
+          icon: "copy",
           run: () => void navigator.clipboard?.writeText(absolute),
         });
       } else {
         items.push({
           id: "copy-page",
           label: t.contextMenu.copyPage,
-          Icon: Copy,
+          icon: "copy",
           run: () => void navigator.clipboard?.writeText(window.location.href),
         });
       }
@@ -130,7 +125,7 @@ export default function ContextMenu() {
       items.push({
         id: "share",
         label: t.contextMenu.share,
-        Icon: ShareNetwork,
+        icon: "share",
         run: () => {
           const url = link
             ? new URL(link.href, window.location.href).href
@@ -147,7 +142,7 @@ export default function ContextMenu() {
         items.push({
           id: "install",
           label: t.contextMenu.installApp,
-          Icon: DownloadSimple,
+          icon: "download",
           run: () => {
             void promptInstall().then((done) => {
               if (!done) INSTALL_SHEET.open();
@@ -159,7 +154,7 @@ export default function ContextMenu() {
       items.push({
         id: "theme",
         label: resolved === "dark" ? t.contextMenu.lightTheme : t.contextMenu.darkTheme,
-        Icon: resolved === "dark" ? Sun : Moon,
+        icon: resolved === "dark" ? "sun" : "moon",
         run: toggleTheme,
       });
 
@@ -223,7 +218,6 @@ export default function ContextMenu() {
       }}
     >
       {menu.items.map((item, i) => {
-        const { Icon } = item;
         return (
           <button
             key={item.id}
@@ -239,7 +233,11 @@ export default function ContextMenu() {
               i === active ? "bg-blue/10 text-ink" : "text-gray-2"
             }`}
           >
-            <Icon size={16} weight="regular" className="shrink-0 text-blue" />
+            <Icon
+              name={item.icon}
+              size={16}
+              className="shrink-0 text-blue"
+            />
             {item.label}
           </button>
         );

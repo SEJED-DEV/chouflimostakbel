@@ -2,18 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House } from "@phosphor-icons/react/dist/ssr/House";
-import { Signpost } from "@phosphor-icons/react/dist/ssr/Signpost";
-import { Books } from "@phosphor-icons/react/dist/ssr/Books";
-import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
-import { Newspaper } from "@phosphor-icons/react/dist/ssr/Newspaper";
-import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle";
-import { User } from "@phosphor-icons/react/dist/ssr/User";
-import { MailIcon, InfoIcon } from "./SiteIcons";
+import Icon, { type IconName } from "./Icons";
 import Logo from "./Logo";
+import SettingsButton from "./SettingsSheet";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
-import DownloadButton from "./DownloadButton";
 import { useLanguage } from "./LanguageProvider";
 import { useAuth } from "./AuthProvider";
 
@@ -21,10 +14,10 @@ import { useAuth } from "./AuthProvider";
  * The guides - the three audiences the site is for.
  */
 const guides = [
-  { href: "/dropouts", labelKey: "dropouts", Icon: Signpost },
-  { href: "/divisions", labelKey: "divisions", Icon: Books },
-  { href: "/graduates", labelKey: "graduates", Icon: GraduationCap },
-] as const;
+  { href: "/dropouts", labelKey: "dropouts", icon: "signpost" },
+  { href: "/divisions", labelKey: "divisions", icon: "books" },
+  { href: "/graduates", labelKey: "graduates", icon: "graduation-cap" },
+] as const satisfies { href: string; labelKey: string; icon: IconName }[];
 
 /**
  * The bottom tab bar, and the part of the desktop navigation that matters.
@@ -34,18 +27,18 @@ const guides = [
  * there.
  */
 const tabs = [
-  { href: "/", labelKey: "home", Icon: House },
+  { href: "/", labelKey: "home", icon: "house" },
   ...guides,
-  { href: "/blogs", labelKey: "blogs", Icon: Newspaper },
-  { href: "/profile", labelKey: "profile", Icon: UserCircle },
-] as const;
+  { href: "/blogs", labelKey: "blogs", icon: "newspaper" },
+  { href: "/profile", labelKey: "profile", icon: "circle-user" },
+] as const satisfies { href: string; labelKey: string; icon: IconName }[];
 
 /**
  * Desktop: a floating frosted capsule with links.
  *
  * Mobile: no capsule. The iOS-style bottom tab bar takes over, and the
- * language and theme controls move into the footer, where they are still
- * reachable.
+ * language and theme controls move into the settings sheet - reached from
+ * the profile page - and into the footer, where they are still reachable.
  */
 export default function Nav() {
   const pathname = usePathname();
@@ -114,7 +107,7 @@ export default function Nav() {
                 href="/profile"
                 className="ml-2 inline-flex max-w-[11rem] items-center gap-1.5 rounded-full bg-blue px-4 py-2 text-[14px] font-medium text-white transition-colors duration-200 hover:bg-blue-hi"
               >
-                <User size={16} weight="bold" />
+                <Icon name="user" size={16} />
                 <span className="truncate">{profile.displayName}</span>
               </Link>
             ) : (
@@ -129,6 +122,7 @@ export default function Nav() {
             <div className="ms-1 flex items-center border-s border-sep ps-1">
               <ThemeToggle />
               <LanguageSwitcher />
+              <SettingsButton />
             </div>
           </div>
         </nav>
@@ -142,7 +136,6 @@ export default function Nav() {
       >
         {tabs.map((l) => {
           const active = pathname === l.href;
-          const { Icon } = l;
           return (
             <Link
               key={l.href}
@@ -151,8 +144,8 @@ export default function Nav() {
               className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 py-2.5"
             >
               <Icon
+                name={l.icon}
                 size={23}
-                weight={active ? "fill" : "regular"}
                 className={active ? "text-blue" : "text-gray"}
               />
               <span

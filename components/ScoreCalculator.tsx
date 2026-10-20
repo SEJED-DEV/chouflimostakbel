@@ -1,8 +1,9 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
+
 import {
   SECTIONS,
   SECTION_ORDER,
@@ -260,9 +261,8 @@ export default function ScoreCalculator() {
           className="flex w-full items-center justify-between gap-3 text-left"
         >
           <span className="text-[13px] font-semibold text-ink">{c.formulaLabel}</span>
-          <CaretDown
+          <Icon name="caret-down"
             size={14}
-            weight="bold"
             className={`shrink-0 text-gray transition-transform duration-300 ${
               showWorking ? "rotate-180" : ""
             }`}

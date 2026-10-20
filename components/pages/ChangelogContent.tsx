@@ -2,12 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CaretDown } from "@phosphor-icons/react/dist/ssr/CaretDown";
-import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr/MagnifyingGlass";
-import { Plus } from "@phosphor-icons/react/dist/ssr/Plus";
-import { Wrench } from "@phosphor-icons/react/dist/ssr/Wrench";
-import { ArrowClockwise } from "@phosphor-icons/react/dist/ssr/ArrowClockwise";
-import { Minus } from "@phosphor-icons/react/dist/ssr/Minus";
+import Icon, { type IconName } from "@/components/Icons";
 import Reveal, { Rule } from "@/components/Reveal";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog, type ChangeKind, type ChangelogEntry } from "@/components/i18n/changelog";
@@ -27,12 +22,12 @@ type Filter = ChangeKind | "all";
 const KINDS: {
   id: ChangeKind;
   color: string;
-  Icon: typeof Plus;
+  icon: IconName;
 }[] = [
-  { id: "added", color: "#0071e3", Icon: Plus },
-  { id: "fixed", color: "#34c759", Icon: Wrench },
-  { id: "changed", color: "#ff9f0a", Icon: ArrowClockwise },
-  { id: "removed", color: "#ff453a", Icon: Minus },
+  { id: "added", color: "#0071e3", icon: "plus" },
+  { id: "fixed", color: "#34c759", icon: "wrench" },
+  { id: "changed", color: "#ff9f0a", icon: "arrow-rotate-right" },
+  { id: "removed", color: "#ff453a", icon: "minus" },
 ];
 
 /** The dark-mode counterparts of the two colours that change. */
@@ -135,7 +130,8 @@ export default function ChangelogContent() {
         <div className="mx-auto max-w-3xl px-6 sm:px-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
-              <MagnifyingGlass
+              <Icon
+                name="search"
                 size={16}
                 className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray"
               />
@@ -230,9 +226,9 @@ export default function ChangelogContent() {
                             </p>
                           </div>
 
-                          <CaretDown
+                          <Icon
+                            name="caret-down"
                             size={18}
-                            weight="bold"
                             className={`mt-1 shrink-0 text-gray transition-transform duration-300 ${
                               isOpen ? "rotate-180" : ""
                             }`}
@@ -253,11 +249,14 @@ export default function ChangelogContent() {
                                 {KINDS.map((k) => {
                                   const items = changes.filter((c) => c.kind === k.id);
                                   if (!items.length) return null;
-                                  const { Icon } = k;
                                   return (
                                     <div key={k.id} className="mb-5 last:mb-0">
                                       <p className="flex items-center gap-1.5 text-[11.5px] font-semibold tracking-[0.07em] text-gray uppercase">
-                                        <Icon size={13} weight="bold" style={{ color: k.color }} />
+                                        <Icon
+                                          name={k.icon}
+                                          size={13}
+                                          style={{ color: k.color }}
+                                        />
                                         {label(k.id)}
                                       </p>
                                       <ul className="mt-3 space-y-2.5">

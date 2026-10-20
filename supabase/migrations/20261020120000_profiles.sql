@@ -3,8 +3,9 @@
 -- ============================================================
 --
 -- Supabase's Postgres, run locally by `supabase start`. Applied with
--- `supabase db reset`, which drops and recreates the local database from
--- every file in this folder in filename order.
+-- `npm run db:migrate`, which runs only the files in this folder that have
+-- not been applied yet. The database is never dropped or recreated: this is
+-- real data now, and the way to add a column is to add a column.
 --
 -- GoTrue - Supabase Auth - owns the account: the password, the sessions, the
 -- refresh tokens, the recovery flow. Everything it already does well. What

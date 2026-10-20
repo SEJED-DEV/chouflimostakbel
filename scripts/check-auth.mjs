@@ -7,7 +7,7 @@
 // out, and checks the answers a real reader would get.
 //
 // It needs the site running: `npm run build && npm run start -- --port 3000`,
-// and Supabase up: `npm run supabase:start && npm run db:reset`.
+// and Supabase up: `npm run supabase:start && npm run db:migrate`.
 import { readFileSync } from "node:fs";
 
 const SITE = process.argv[2] || "http://localhost:3000";

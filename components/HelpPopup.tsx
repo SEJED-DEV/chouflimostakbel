@@ -1,11 +1,10 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { RocketLaunch } from "@phosphor-icons/react/dist/ssr/RocketLaunch";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { X } from "@phosphor-icons/react/dist/ssr/X";
+
 import { useLanguage } from "./LanguageProvider";
 import { REPO_URL } from "@/lib/site";
 
@@ -99,7 +98,7 @@ export default function HelpPopup() {
               aria-label="Close"
               className="absolute top-5 end-5 flex h-8 w-8 items-center justify-center rounded-full text-gray transition-colors hover:bg-ink/[0.06] hover:text-ink"
             >
-              <X size={15} weight="bold" />
+              <Icon name="xmark" size={15} />
             </button>
 
             <div className="text-center">
@@ -107,7 +106,7 @@ export default function HelpPopup() {
                 aria-hidden
                 className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue text-white"
               >
-                <RocketLaunch size={24} weight="fill" />
+                <Icon name="rocket" size={24} />
               </div>
 
               <h2 className="mt-5 text-[22px] font-semibold tracking-[-0.02em] text-ink">
@@ -124,7 +123,7 @@ export default function HelpPopup() {
                   className="inline-flex items-center justify-center gap-1.5 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-colors duration-300 hover:bg-blue-hi"
                 >
                   {t.help.yes}
-                  <ArrowRight size={15} weight="bold" />
+                  <Icon name="arrow-right" size={15} />
                 </Link>
                 <button
                   type="button"

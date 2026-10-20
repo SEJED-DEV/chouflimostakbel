@@ -1,10 +1,8 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { WarningCircle } from "@phosphor-icons/react/dist/ssr/WarningCircle";
-import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
+
+import Icon from "@/components/Icons";
 import EmailOff from "./EmailOff";
 import SocialLinks from "./SocialLinks";
 import { socialLinks, site, isLiveHost } from "@/lib/site";
@@ -125,7 +123,7 @@ export default function Contact({
             /* The form is closed until the site runs on its own domain. */
             <div className="card-soft rounded-3xl bg-bg p-8 text-center sm:p-10">
               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-alt text-blue">
-                <Bell size={22} weight="regular" />
+                <Icon name="bell" size={22} />
               </div>
               <h3 className="mt-5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
                 {t.contact.comingSoonTitle}
@@ -139,14 +137,14 @@ export default function Contact({
                   className="mt-6 inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-colors duration-300 hover:bg-blue-hi"
                 >
                   {t.contact.emailUs}
-                  <ArrowRight size={16} weight="bold" />
+                  <Icon name="arrow-right" size={16} />
                 </a>
               </EmailOff>
               <p className="mt-4 font-mono text-[12.5px] text-gray">{site.email}</p>
             </div>
           ) : status === "sent" ? (
             <div className="card-soft flex flex-col items-center rounded-3xl bg-bg p-10 text-center">
-              <CheckCircle size={44} weight="fill" className="text-blue" />
+              <Icon name="circle-check" size={44} className="text-blue" />
               <p className="mt-5 text-[22px] font-semibold text-ink">{t.contact.sentTitle}</p>
               <p className="mt-2 text-[16px] text-gray-2">{t.contact.sentBody}</p>
               <button
@@ -169,9 +167,8 @@ export default function Contact({
                   role="alert"
                   className="mb-6 flex gap-3 rounded-2xl bg-bg-alt p-4 text-start"
                 >
-                  <WarningCircle
+                  <Icon name="circle-warning"
                     size={20}
-                    weight="fill"
                     className="mt-0.5 shrink-0 text-blue"
                   />
                   <div>
@@ -247,9 +244,8 @@ export default function Contact({
               >
                 {status === "sending" ? t.contact.sending : t.contact.send}
                 {status !== "sending" && (
-                  <ArrowRight
+                  <Icon name="arrow-right"
                     size={17}
-                    weight="bold"
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 )}

@@ -48,6 +48,28 @@ export interface AccountCopy {
   switchToSignIn: string;
   switchToSignUp: string;
 
+  /** The settings surface. */
+  settingsTitle: string;
+  settingsSub: string;
+  appearance: string;
+  light: string;
+  dark: string;
+  /** "Follow the system" - the third theme state. */
+  system: string;
+  language: string;
+
+  /** The profile's own section. */
+  photo: string;
+  changePhoto: string;
+  removePhoto: string;
+  banner: string;
+  dateOfBirth: string;
+  dateOfBirthHint: string;
+  /** "Member since {date}" */
+  memberSince: string;
+  /** "{name}'s profile photo" */
+  photoAlt: string;
+
   profileTitle: string;
   profileSub: string;
   yourPosts: string;
@@ -58,6 +80,8 @@ export interface AccountCopy {
     invalidEmail: string;
     weakPassword: string;
     invalidName: string;
+    invalidPhoto: string;
+    invalidDate: string;
     emailTaken: string;
     wrongCredentials: string;
     rate: string;
@@ -81,6 +105,24 @@ export const account: Slice<AccountCopy> = {
     profileSub: "This is where your profile lives. What you write appears here, and this is the page people will see.",
     yourPosts: "Your posts",
     yourPostsBody: "Nothing here yet. When you write something, it will show up here.",
+
+    settingsTitle: "Settings.",
+    settingsSub: "How the platform looks, and how it speaks.",
+    appearance: "Appearance",
+    light: "Light",
+    dark: "Dark",
+    system: "Automatic",
+    language: "Language",
+
+    photo: "Profile photo",
+    changePhoto: "Change photo",
+    removePhoto: "Remove",
+    banner: "Banner",
+    dateOfBirth: "Date of birth",
+    dateOfBirthHint: "Optional. It shows as an age - the date itself is never public.",
+    memberSince: "Member since {date}",
+    photoAlt: "{name}'s profile photo",
+
     identifier: "Username or email",
     identifierPlaceholder: "Your username, or your email",
     handle: "Username",
@@ -108,6 +150,8 @@ invalidHandle: "A username is 3 to 30 characters: letters, digits, dots, dashes 
 handleTaken: "That username is taken.",      invalidEmail: "That does not look like an email address.",
       weakPassword: "Use at least ten characters.",
       invalidName: "Tell us what to call you.",
+      invalidPhoto: "That file is not an image we can use.",
+      invalidDate: "That is not a date we can use.",
       emailTaken: "There is already an account with that address.",
       wrongCredentials: "That address and password do not match.",
       rate: "Too many attempts. Wait a little, then try again.",
@@ -130,6 +174,24 @@ handleTaken: "That username is taken.",      invalidEmail: "That does not look l
     profileSub: "C’est ici que vit votre profil. Ce que vous écrivez apparaît ici, et c’est la page que les gens verront.",
     yourPosts: "Vos articles",
     yourPostsBody: "Rien ici pour l’instant. Quand vous écrirez quelque chose, cela apparaîtra ici.",
+
+    settingsTitle: "Réglages.",
+    settingsSub: "Comment la plateforme se présente, et comment elle parle.",
+    appearance: "Apparence",
+    light: "Clair",
+    dark: "Sombre",
+    system: "Automatique",
+    language: "Langue",
+
+    photo: "Photo de profil",
+    changePhoto: "Changer la photo",
+    removePhoto: "Retirer",
+    banner: "Bannière",
+    dateOfBirth: "Date de naissance",
+    dateOfBirthHint: "Facultatif. Elle apparaît comme un âge - la date elle-même n’est jamais publique.",
+    memberSince: "Membre depuis {date}",
+    photoAlt: "Photo de profil de {name}",
+
     identifier: "Nom d’utilisateur ou e-mail",
     identifierPlaceholder: "Votre nom d’utilisateur, ou votre e-mail",
     handle: "Nom d’utilisateur",
@@ -157,6 +219,8 @@ invalidHandle: "Un nom d’utilisateur fait de 3 à 30 caractères : lettres, ch
 handleTaken: "Ce nom d’utilisateur est pris.",      invalidEmail: "Cela ne ressemble pas à une adresse e-mail.",
       weakPassword: "Utilisez au moins dix caractères.",
       invalidName: "Dites-nous comment vous appeler.",
+      invalidPhoto: "Ce fichier n'est pas une image que nous pouvons utiliser.",
+      invalidDate: "Ce n'est pas une date que nous pouvons utiliser.",
       emailTaken: "Il existe déjà un compte avec cette adresse.",
       wrongCredentials: "Cette adresse et ce mot de passe ne correspondent pas.",
       rate: "Trop de tentatives. Patientez un peu, puis réessayez.",
@@ -179,6 +243,24 @@ handleTaken: "Ce nom d’utilisateur est pris.",      invalidEmail: "Cela ne res
     profileSub: "هنا يقيم ملفّك الشخصي. ما تكتبه يظهر هنا، وهذه هي الصفحة التي يراها الناس.",
     yourPosts: "مقالاتك",
     yourPostsBody: "لا شيء هنا بعد. حين تكتب شيئًا سيظهر هنا.",
+
+    settingsTitle: "الإعدادات.",
+    settingsSub: "كيف تبدو المنصّة، وكيف تتحدّث.",
+    appearance: "المظهر",
+    light: "فاتح",
+    dark: "داكن",
+    system: "تلقائي",
+    language: "اللغة",
+
+    photo: "صورة الملفّ",
+    changePhoto: "غيّر الصورة",
+    removePhoto: "أزلها",
+    banner: "الشعار العريض",
+    dateOfBirth: "تاريخ الميلاد",
+    dateOfBirthHint: "اختياري. يُعرض كعمر — أمّا التاريخ فلا يظهر للعامة أبدًا.",
+    memberSince: "عضو منذ {date}",
+    photoAlt: "صورة الملفّ الشخصي لـ{name}",
+
     identifier: "اسم المستخدم أو البريد",
     identifierPlaceholder: "اسم المستخدم، أو البريد الإلكتروني",
     handle: "اسم المستخدم",
@@ -206,6 +288,8 @@ invalidHandle: "اسم المستخدم من ٣ إلى ٣٠ حرفًا: حروف
 handleTaken: "اسم المستخدم هذا محجوز.",      invalidEmail: "لا يبدو هذا عنوان بريد إلكتروني.",
       weakPassword: "استخدم عشرة أحرف على الأقل.",
       invalidName: "أخبرنا بماذا نناديك.",
+      invalidPhoto: "هذا الملف ليس صورة يمكننا استخدامها.",
+      invalidDate: "هذه ليست تاريخًا يمكننا استخدامه.",
       emailTaken: "يوجد حساب بهذا العنوان بالفعل.",
       wrongCredentials: "العنوان وكلمة المرور لا يتطابقان.",
       rate: "محاولات كثيرة. انتظر قليلًا ثم أعد المحاولة.",

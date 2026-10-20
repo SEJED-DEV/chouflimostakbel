@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import AuthPage from "@/components/pages/AuthPage";
+import { currentProfile } from "@/lib/auth";
+
+/** Reads the session cookie, so this cannot be statically rendered. */
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Create an account",
@@ -10,6 +15,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  // A signed-in reader has no business here either.
+  if (await currentProfile()) redirect("/profile");
   return <AuthPage mode="signUp" />;
 }

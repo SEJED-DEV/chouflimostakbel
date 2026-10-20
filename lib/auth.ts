@@ -39,6 +39,12 @@ export interface Profile {
   email: string | null;
   verified_at: string | null;
   created_at: string;
+  /** A data URL, resized and compressed before it got here. */
+  avatar_url: string | null;
+  banner_url: string | null;
+  date_of_birth: string | null;
+  /** The vocabulary the database's constraint allows; see `lib/roles.ts`. */
+  roles: string[];
 }
 
 /** Lower-case and trim, which is what the database stores anyway. */
@@ -87,7 +93,9 @@ export async function currentProfile(): Promise<Profile | null> {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("id, handle, display_name, email, verified_at, created_at")
+      .select(
+        "id, handle, display_name, email, verified_at, created_at, avatar_url, banner_url, date_of_birth, roles",
+      )
       .eq("id", user.id)
       .maybeSingle();
 
@@ -95,7 +103,8 @@ export async function currentProfile(): Promise<Profile | null> {
     // Treat that as signed out rather than as an error.
     if (error || !data) return null;
 
-    return data as Profile;
+    // A profile created before roles existed has none, not a null.
+    return { ...data, roles: data.roles ?? [] } as Profile;
   } catch {
     // A database that is down must not look like a signed-in reader.
     return null;

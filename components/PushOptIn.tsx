@@ -1,8 +1,8 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useEffect, useState } from "react";
-import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
-import { CheckCircle } from "@phosphor-icons/react/dist/ssr/CheckCircle";
+
 import { useSlice } from "@/components/i18n/slice";
 import { push as pushCopy } from "@/components/i18n/push";
 import {
@@ -88,7 +88,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
       <div
         className={`inline-flex items-center gap-2.5 rounded-full border border-sep bg-bg-alt px-4 py-2 text-[13.5px] text-gray-2 ${className}`}
       >
-        <CheckCircle size={16} weight="fill" className="shrink-0 text-blue" />
+        <Icon name="circle-check" size={16} className="shrink-0 text-blue" />
         <span>{t.on}</span>
         <button
           type="button"
@@ -132,7 +132,7 @@ export default function PushOptIn({ className = "" }: { className?: string }) {
         disabled={busy}
         className="inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[13.5px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60 disabled:opacity-60"
       >
-        <Bell size={16} weight="regular" className="text-blue" />
+        <Icon name="bell" size={16} className="text-blue" />
         {busy ? t.on : t.enable}
       </button>
       <p className="mt-2 text-[13px] leading-relaxed text-gray">{t.explain}</p>

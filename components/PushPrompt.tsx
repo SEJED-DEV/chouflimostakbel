@@ -1,8 +1,8 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useEffect, useState } from "react";
-import { Bell } from "@phosphor-icons/react/dist/ssr/Bell";
-import { X } from "@phosphor-icons/react/dist/ssr/X";
+
 import { useSlice } from "@/components/i18n/slice";
 import { push as pushCopy } from "@/components/i18n/push";
 import { enablePush, iosWithoutApp, pushSupported } from "@/lib/push-client";
@@ -82,7 +82,7 @@ export default function PushPrompt({ className = "" }: { className?: string }) {
       role="status"
     >
       <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bg-alt">
-        <Bell size={18} weight="regular" className="text-blue" />
+        <Icon name="bell" size={18} className="text-blue" />
       </span>
 
       <div className="min-w-0 flex-1">
@@ -120,7 +120,7 @@ export default function PushPrompt({ className = "" }: { className?: string }) {
         aria-label={t.later}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray transition-colors hover:bg-ink/[0.06] hover:text-ink"
       >
-        <X size={14} weight="bold" />
+        <Icon name="xmark" size={14} />
       </button>
     </div>
   );

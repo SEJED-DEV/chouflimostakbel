@@ -1,5 +1,6 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import Link from "next/link";
 import Reveal, { Rule } from "@/components/Reveal";
 import Card from "@/components/SpotlightCard";
@@ -7,8 +8,6 @@ import HelpPopup from "@/components/HelpPopup";
 import { useSlice } from "@/components/i18n/slice";
 import { soon } from "@/components/i18n/soon";
 import { REPO_URL } from "@/lib/site";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
 
 /**
  * The roadmap, published.
@@ -41,7 +40,7 @@ export default function SoonContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-blue px-7 py-3 text-[17px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi hover:scale-[1.03]"
               >
                 {t.hero.cta}
-                <ArrowRight size={16} weight="bold" />
+                <Icon name="arrow-right" size={16} />
               </a>
               <a
                 href={REPO_URL}
@@ -50,9 +49,8 @@ export default function SoonContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-bg-alt px-6 py-3 text-[17px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
               >
                 {t.hero.ctaSecondary}
-                <ArrowUpRight
+                <Icon name="arrow-up-right"
                   size={15}
-                  weight="bold"
                   className="text-gray-2"
                 />
               </a>
@@ -323,7 +321,7 @@ export default function SoonContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-blue px-6 py-3 text-[16px] font-medium text-white shadow-[0_8px_24px_rgba(0,113,227,0.28)] transition-all duration-300 hover:bg-blue-hi"
               >
                 {t.contribute.repoCta}
-                <ArrowUpRight size={15} weight="bold" />
+                <Icon name="arrow-up-right" size={15} />
               </a>
               <a
                 href={`${REPO_URL}/issues`}
@@ -332,7 +330,7 @@ export default function SoonContent() {
                 className="inline-flex items-center gap-2 rounded-full bg-bg-alt px-6 py-3 text-[16px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
               >
                 {t.contribute.issuesCta}
-                <ArrowUpRight size={15} weight="bold" className="text-gray-2" />
+                <Icon name="arrow-up-right" size={15} className="text-gray-2" />
               </a>
             </div>
 

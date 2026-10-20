@@ -1,12 +1,13 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import Image from "next/image";
 import Reveal, { Rule, ZoomFrame } from "@/components/Reveal";
 import Contact from "@/components/Contact";
 import Hero from "@/components/Hero";
 import ScrubText from "@/components/ScrubText";
 import AtfpCarousel from "@/components/AtfpPan";
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+
 import { useSlice } from "@/components/i18n/slice";
 import { dropouts } from "@/components/i18n/dropouts";
 
@@ -128,9 +129,8 @@ export default function DropoutsContent() {
                     </h3>
                     <p className="mt-1.5 text-[15px] text-gray">{p.domain}</p>
                   </div>
-                  <ArrowUpRight
+                  <Icon name="arrow-up-right"
                     size={24}
-                    weight="bold"
                     className="shrink-0 text-blue transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                   />
                 </a>

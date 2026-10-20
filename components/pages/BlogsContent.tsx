@@ -1,7 +1,9 @@
 "use client";
 
+
+import Icon from "@/components/Icons";
 import Link from "next/link";
-import { Newspaper } from "@phosphor-icons/react/dist/ssr/Newspaper";
+
 import Reveal, { Rule } from "@/components/Reveal";
 import { useSlice } from "@/components/i18n/slice";
 import { blogs } from "@/components/i18n/blogs";
@@ -38,7 +40,7 @@ export default function BlogsContent() {
         <div className="mx-auto max-w-3xl px-6 sm:px-8">
           <div className="card-soft rounded-3xl bg-bg p-8 text-center sm:p-10">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-bg-alt">
-              <Newspaper size={22} weight="regular" className="text-blue" />
+              <Icon name="newspaper" size={22} className="text-blue" />
             </div>
             <h2 className="mt-5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
               {t.empty}

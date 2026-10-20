@@ -1,22 +1,18 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { useState, useRef, useEffect } from "react";
 import { useLanguage, LANGS } from "./LanguageProvider";
-import { Globe } from "@phosphor-icons/react/dist/ssr/Globe";
 
 /**
- * Compact language control for the navigation bar.
+ * Language control for the navigation bar.
  *
  * Switching happens entirely client-side - no reload, no route change. The
  * whole tree cross-fades via the key on <AnimatePresence> in the provider, so
  * text morphs instead of popping.
  */
-export default function LanguageSwitcher({
-  variant = "desktop",
-}: {
-  variant?: "desktop" | "compact";
-}) {
+export default function LanguageSwitcher() {
   const { lang, setLang } = useLanguage();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -39,21 +35,6 @@ export default function LanguageSwitcher({
   }, [open]);
 
   const current = LANGS.find((l) => l.id === lang)!;
-
-  if (variant === "compact") {
-    // Small screens: tap the globe to cycle through languages.
-    const idx = LANGS.findIndex((l) => l.id === lang);
-    return (
-      <button
-        type="button"
-        onClick={() => setLang(LANGS[(idx + 1) % LANGS.length].id)}
-        aria-label={`Language: ${current.label}. Tap to change.`}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-gray-2 transition-colors hover:bg-ink/[0.06] hover:text-ink"
-      >
-        <Globe size={19} weight="regular" />
-      </button>
-    );
-  }
 
   return (
     <div className="relative" ref={ref}>

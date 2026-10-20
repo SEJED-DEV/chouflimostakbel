@@ -21,7 +21,7 @@ Then start Supabase and apply the schema:
 
 ```bash
 npm run supabase:start   # five containers: db, auth, rest, gateway, edge
-npm run db:reset         # apply supabase/migrations
+npm run db:migrate      # apply pending supabase/migrations (never drops data)
 ```
 
 `supabase start` prints a URL, an anon key and a service role key. Put them

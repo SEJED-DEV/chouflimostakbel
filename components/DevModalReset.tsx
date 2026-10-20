@@ -10,8 +10,13 @@
  *   cmbResetInstall()    only the install prompt
  *   cmbResetLanguage()   only the language sheet
  *
- * Development only. It is a no-op in production builds.
+ * Development only. It is a no-op in production builds, and it installs
+ * itself on the client - there is no `window` on the server, and touching one
+ * during render throws away the page being rendered.
  */
+"use client";
+
+import { useEffect } from "react";
 
 const KEYS = {
   language: "cmb-lang",
@@ -20,23 +25,33 @@ const KEYS = {
 } as const;
 
 export default function DevModalReset() {
-  if (process.env.NODE_ENV === "production") return null;
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
 
-  const clear = (...keys: (keyof typeof KEYS)[]) => {
-    try {
-      keys.forEach((k) => window.localStorage.removeItem(KEYS[k]));
-      console.log("[cmb] cleared:", keys.join(", "));
-    } catch {
-      console.warn("[cmb] localStorage unavailable");
-    }
-  };
+    const clear = (...keys: (keyof typeof KEYS)[]) => {
+      try {
+        keys.forEach((k) => window.localStorage.removeItem(KEYS[k]));
+        console.log("[cmb] cleared:", keys.join(", "));
+      } catch {
+        console.warn("[cmb] localStorage unavailable");
+      }
+    };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const w = window as unknown as Record<string, unknown>;
-  w.cmbResetModals = () => clear("language", "welcome", "install");
-  w.cmbResetWelcome = () => clear("welcome");
-  w.cmbResetInstall = () => clear("install");
-  w.cmbResetLanguage = () => clear("language");
+    const w = window as unknown as Record<string, unknown>;
+    w.cmbResetModals = () => clear("language", "welcome", "install");
+    w.cmbResetWelcome = () => clear("welcome");
+    w.cmbResetInstall = () => clear("install");
+    w.cmbResetLanguage = () => clear("language");
+
+    return () => {
+      [
+        "cmbResetModals",
+        "cmbResetWelcome",
+        "cmbResetInstall",
+        "cmbResetLanguage",
+      ].forEach((k) => delete w[k]);
+    };
+  }, []);
 
   return null;
 }

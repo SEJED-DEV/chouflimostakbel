@@ -1,10 +1,10 @@
 "use client";
 
+import Icon from "@/components/Icons";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { X } from "@phosphor-icons/react/dist/ssr/X";
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
+
 import { useLanguage } from "./LanguageProvider";
 import { useSlice } from "@/components/i18n/slice";
 import { changelog, type ChangelogEntry, type ChangeKind } from "@/components/i18n/changelog";
@@ -150,7 +150,7 @@ export default function WhatsNewPopup() {
               aria-label="Close"
               className="absolute top-5 end-5 flex h-8 w-8 items-center justify-center rounded-full text-gray transition-colors hover:bg-ink/[0.06] hover:text-ink"
             >
-              <X size={15} weight="bold" />
+              <Icon name="xmark" size={15} />
             </button>
 
             {/* Version badge */}
@@ -203,7 +203,7 @@ export default function WhatsNewPopup() {
                 className="inline-flex items-center justify-center gap-1.5 rounded-full bg-blue px-5 py-2.5 text-[15px] font-medium text-white shadow-[0_6px_18px_rgba(0,113,227,0.26)] transition-colors duration-300 hover:bg-blue-hi"
               >
                 {c.popup.seeAll}
-                <ArrowRight size={15} weight="bold" />
+                <Icon name="arrow-right" size={15} />
               </Link>
               <button
                 type="button"
