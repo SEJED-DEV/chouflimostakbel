@@ -120,8 +120,7 @@ export const changelog: Slice<ChangelogCopy> = {
   en: {
     entries: [
       {
-        version: "v1.1.2",
-        notice: "v1.1.2-r2",
+        version: "v1.2",
         date: "19 October 2026",
         summary:
           "The roadmap page, a contact form that actually delivers, and a site that survives its own updates.",
@@ -280,8 +279,7 @@ export const changelog: Slice<ChangelogCopy> = {
   fr: {
     entries: [
       {
-        version: "v1.1.2",
-        notice: "v1.1.2-r2",
+        version: "v1.2",
         date: "19 octobre 2026",
         summary:
           "La page /soon, un formulaire de contact qui livre enfin, et un site qui survit à ses propres mises à jour.",
@@ -440,8 +438,7 @@ export const changelog: Slice<ChangelogCopy> = {
   ar: {
     entries: [
       {
-        version: "v1.1.2",
-        notice: "v1.1.2-r2",
+        version: "v1.2",
         date: "19 أكتوبر 2026",
         summary:
           "صفحة الطريق، ونموذج تواصل يوصل أخيراً، وموقع يصمد أمام تحديثاته.",

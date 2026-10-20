@@ -7,7 +7,7 @@ generated from `components/i18n/changelog.ts`, which is the single source - do n
 edit it by hand. The site carries the same record in English, French and Arabic at
 [/changelog](https://www.chouflimostakbel/changelog).
 
-## v1.1.2 - 19 October 2026
+## v1.2 - 19 October 2026
 
 The roadmap page, a contact form that actually delivers, and a site that survives its own updates.
 
