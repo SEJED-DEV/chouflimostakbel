@@ -29,7 +29,7 @@ const guides = [
 const tabs = [
   { href: "/", labelKey: "home", icon: "house" },
   ...guides,
-  { href: "/blogs", labelKey: "blogs", icon: "newspaper" },
+  { href: "/community", labelKey: "blogs", icon: "newspaper" },
   { href: "/profile", labelKey: "profile", icon: "circle-user" },
 ] as const satisfies { href: string; labelKey: string; icon: IconName }[];
 
@@ -42,7 +42,7 @@ const tabs = [
  * blogs index wants the full width for the list. The desktop capsule is
  * unaffected - at that size there is no tab bar to compete with.
  */
-const CAPSULE_HIDDEN = ["/blogs", "/profile"];
+const CAPSULE_HIDDEN = ["/community", "/profile"];
 
 /**
  * Desktop: a floating frosted capsule with links.
@@ -109,9 +109,9 @@ export default function Nav() {
                 );
               })}
               <Link
-                href="/blogs"
+                href="/community"
                 className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
-                  pathname === "/blogs" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
+                  pathname === "/community" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
                 }`}
               >
                 {t.nav.blogs}

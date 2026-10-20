@@ -151,7 +151,7 @@ export default function PersonContent({
               {posts.map((post) => (
                 <li key={post.id}>
                   <Link
-                    href={`/blogs/${post.slug}`}
+                    href={`/community/${post.slug}`}
                     className="group block rounded-3xl border border-sep bg-bg p-6 transition-colors duration-300 hover:border-blue/40"
                   >
                     <h3 className="text-[18px] font-semibold leading-snug tracking-[-0.02em] text-ink transition-colors duration-300 group-hover:text-blue">

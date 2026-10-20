@@ -92,6 +92,13 @@ const nextConfig: NextConfig = {
       // built-in one replaced it, and lives on the graduates page.
       { source: "/calculator", destination: "/graduates", permanent: true },
       { source: "/score", destination: "/graduates", permanent: true },
+      // The blogs section is the community. The address followed the name, so
+      // the old prefix is redirected rather than left to 404 - a post URL is
+      // the kind of link that gets pasted into a group chat and outlives the
+      // page it pointed at. The wildcard is listed first so a post keeps its
+      // own slug on the way through.
+      { source: "/blogs/:path*", destination: "/community/:path*", permanent: true },
+      { source: "/blogs", destination: "/community", permanent: true },
     ];
   },
 

@@ -84,7 +84,7 @@ export const en = {
     aboutUs: "About us",
     contactUs: "Contact us",
 
-    blogs: "Blogs",
+    blogs: "Community",
     profile: "Profile",
     login: "Log in",
     signup: "Sign up",
@@ -288,7 +288,7 @@ export const fr: Dictionary = {
     aboutUs: "À propos",
     contactUs: "Contact",
 
-    blogs: "Blogs",
+    blogs: "Communauté",
     profile: "Profil",
     login: "Connexion",
     signup: "Inscription",
@@ -480,7 +480,7 @@ export const ar: Dictionary = {
     aboutUs: "من نحن",
     contactUs: "اتصل بنا",
 
-    blogs: "المدونة",
+    blogs: "المجتمع",
     profile: "الملف الشخصي",
     login: "تسجيل الدخول",
     signup: "إنشاء حساب",

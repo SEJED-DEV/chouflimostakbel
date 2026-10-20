@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     };
   }
 
-  const url = `/blogs/${post.slug}`;
+  const url = `/community/${post.slug}`;
   return {
     title: post.title,
     description: post.excerpt || `${post.author.name} on Choufli Mosta9bel`,

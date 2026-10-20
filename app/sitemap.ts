@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/dropouts", priority: 0.9, freq: "monthly" as const },
     { path: "/divisions", priority: 0.9, freq: "monthly" as const },
     { path: "/graduates", priority: 0.9, freq: "monthly" as const },
-    { path: "/blogs", priority: 0.8, freq: "daily" as const },
+    { path: "/community", priority: 0.8, freq: "daily" as const },
     { path: "/about", priority: 0.6, freq: "yearly" as const },
     { path: "/contact", priority: 0.5, freq: "yearly" as const },
     { path: "/privacy", priority: 0.2, freq: "yearly" as const },
@@ -62,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const postUrls: MetadataRoute.Sitemap = (
       Array.isArray(posts) ? (posts as { slug: string; updated_at: string }[]) : []
     ).map((p) => ({
-      url: `${base}/blogs/${p.slug}`,
+      url: `${base}/community/${p.slug}`,
       lastModified: p.updated_at ? new Date(p.updated_at) : lastModified,
       changeFrequency: "monthly" as const,
       priority: 0.7,

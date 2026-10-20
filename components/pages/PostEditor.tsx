@@ -110,13 +110,13 @@ export default function PostEditor({ post }: { post?: PostSummary & { bodyMd?: s
       // wanted to happen. A draft stays here, because there is nothing to
       // look at and leaving would lose the rest of the evening's work.
       if (nextStatus === "published") {
-        router.push(`/blogs/${result.slug}`);
+        router.push(`/community/${result.slug}`);
         return;
       }
 
       // On a first save the post gets an id and a slug; without this the
       // next save would create a second post rather than update this one.
-      if (!post) router.replace(`/blogs/${result.slug}/edit`);
+      if (!post) router.replace(`/community/${result.slug}/edit`);
       setBusy(false);
     } catch {
       setError(t.errors.network);
@@ -139,7 +139,7 @@ export default function PostEditor({ post }: { post?: PostSummary & { bodyMd?: s
         setConfirming(false);
         return;
       }
-      router.push("/blogs");
+      router.push("/community");
     } catch {
       setError(t.errors.network);
       setDeleting(false);
@@ -158,7 +158,7 @@ export default function PostEditor({ post }: { post?: PostSummary & { bodyMd?: s
         <Reveal>
           <div className="flex flex-wrap items-center justify-between gap-4">
             <Link
-              href="/blogs"
+              href="/community"
               className="inline-flex items-center gap-2 text-[14px] font-medium text-gray-2 transition-colors duration-300 hover:text-ink"
             >
               <Icon name="arrow-right" size={14} className="rotate-180" />
@@ -309,7 +309,7 @@ export default function PostEditor({ post }: { post?: PostSummary & { bodyMd?: s
             )}
 
             <Link
-              href="/blogs"
+              href="/community"
               className="rounded-full px-5 py-2.5 text-[15px] font-medium text-gray-2 transition-colors duration-300 hover:text-ink"
             >
               {t.cancel}

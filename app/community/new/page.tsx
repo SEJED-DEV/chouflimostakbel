@@ -8,9 +8,9 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "New post",
-  description: "Write a post for the Choufli Mosta9bel blogs.",
-  alternates: { canonical: "/blogs/new" },
-  openGraph: { url: "/blogs/new" },
+  description: "Write a post for the Choufli Mosta9bel community.",
+  alternates: { canonical: "/community/new" },
+  openGraph: { url: "/community/new" },
   robots: { index: false, follow: false },
 };
 

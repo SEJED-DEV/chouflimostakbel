@@ -441,7 +441,7 @@ export default function ProfileContent() {
                 {posts.map((post) => (
                   <li key={post.id}>
                     <Link
-                      href={`/blogs/${post.slug}`}
+                      href={`/community/${post.slug}`}
                       className="group flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-sep px-4 py-3 transition-colors duration-300 hover:border-blue/40"
                     >
                       <span className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink transition-colors duration-300 group-hover:text-blue">
@@ -465,7 +465,7 @@ export default function ProfileContent() {
             )}
 
             <Link
-              href="/blogs/new"
+              href="/community/new"
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[14px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
             >
               <Icon name="square-pen" size={15} />
