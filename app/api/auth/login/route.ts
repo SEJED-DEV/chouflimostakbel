@@ -1,14 +1,27 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { startSession } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  authEmailForHandle,
+  handleFromAuthEmail,
+  normaliseHandle,
+} from "@/lib/auth";
 import { tooMany, callerKey } from "@/lib/rate-limit";
 
 /**
  * Sign in.
  *
- * The identifier is the handle, or the address if the reader gave one. A
- * wrong identifier and a wrong password give the same answer, so the form
- * cannot be used to find out who has an account.
+ * A reader types their **handle** and their password. Supabase Auth needs an
+ * address to check a password against, so the handle is turned into the
+ * synthetic one lib/auth.ts builds - the reader never sees it.
+ *
+ * An address also works, if they gave one when they signed up: it is looked
+ * up, mapped back to the handle, and the same thing happens.
+ *
+ * Every failure gives the same answer. Whether the handle does not exist,
+ * the password is wrong, or the account is somehow broken, the reader is
+ * told "invalid" and nothing else. They cannot use this endpoint to work
+ * out which usernames are taken.
  */
 
 export const dynamic = "force-dynamic";
@@ -26,39 +39,73 @@ export async function POST(request: Request) {
   }
 
   const identifier =
-    typeof body.identifier === "string" ? body.identifier.trim().toLowerCase() : "";
+    typeof body.identifier === "string" ? body.identifier.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
 
-  if (!identifier || !password) return problem("wrongCredentials", 401);
+  if (!identifier || !password) return problem("invalid", 400);
 
-  // Brute force protection. Deliberately generous for a family of people
-  // behind one address, and it slows a script down by orders of magnitude.
-  if (tooMany(callerKey(request, "login"), 20, 15 * 60 * 1000)) {
+  if (tooMany(callerKey(request, "login"), 10, 15 * 60 * 1000)) {
     return problem("rate", 429);
   }
 
   try {
-    const result = await db().query("select * from app.verify_password($1, $2)", [
-      identifier,
-      password,
-    ]);
+    const supabase = await createClient();
 
-    if (result.rows.length === 0) {
-      return problem("wrongCredentials", 401);
+    // Work out which address GoTrue should be asked about.
+    let authEmail: string | null;
+
+    if (identifier.includes("@")) {
+      const ours = handleFromAuthEmail(identifier);
+      if (ours) {
+        authEmail = authEmailForHandle(ours);
+      } else {
+        // A real address. Find the handle it belongs to.
+        //
+        // This reads a row the caller does not own, so it cannot go through
+        // the signed-in client - there is no session yet, and the policies
+        // would refuse it. It is the server asking on its own behalf, and
+        // the only thing it does with the answer is try a password against
+        // it. Nothing about the row comes back to the caller.
+        const { data } = await createAdminClient()
+          .from("profiles")
+          .select("handle")
+          .eq("email", identifier.toLowerCase())
+          .maybeSingle();
+
+        authEmail = data ? authEmailForHandle(data.handle) : null;
+      }
+    } else {
+      authEmail = authEmailForHandle(normaliseHandle(identifier));
     }
 
-    const row = result.rows[0];
-    await startSession(row.profile_id as string, request);
+    if (!authEmail) return problem("invalidCredentials", 401);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: authEmail,
+      password,
+    });
+
+    // Wrong handle and wrong password both land here, and both are answered
+    // the same way.
+    if (error || !data.user) return problem("invalidCredentials", 401);
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, handle, display_name, email, verified_at")
+      .eq("id", data.user.id)
+      .maybeSingle();
 
     return NextResponse.json({
       ok: true,
-      profile: {
-        id: row.profile_id,
-        handle: row.profile_handle,
-        displayName: row.profile_display_name,
-        email: row.profile_email,
-        verified: Boolean(row.profile_verified_at),
-      },
+      profile: profile
+        ? {
+            id: profile.id,
+            handle: profile.handle,
+            displayName: profile.display_name,
+            email: profile.email,
+            verified: profile.verified_at !== null,
+          }
+        : null,
     });
   } catch (error) {
     console.error("login failed", error);

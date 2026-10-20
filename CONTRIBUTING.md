@@ -8,7 +8,7 @@ went wrong for someone who needed it".
 
 ## Getting it running
 
-You need **Node 22** and **PostgreSQL 17**.
+You need **Node 22** and **Docker**. Supabase runs in it.
 
 ```bash
 git clone https://github.com/SEJED-DEV/chouflimostakbel.git
@@ -17,16 +17,19 @@ npm install
 cp .env.example .env.local
 ```
 
-The project keeps its own Postgres instance rather than using whatever is on
-your machine, so nothing you have installed gets touched:
+Then start Supabase and apply the schema:
 
 ```bash
-npm run db:start     # start it, on port 5433
-npm run db:setup     # create the roles, the database, and the schema
+npm run supabase:start   # five containers: db, auth, rest, gateway, edge
+npm run db:reset         # apply supabase/migrations
 ```
 
-`db:setup` writes a `DATABASE_URL` into `.env.local` with a generated
-password. It is safe to run again.
+`supabase start` prints a URL, an anon key and a service role key. Put them
+in `.env.local` — `.env.example` says which is which. It is safe to run again.
+
+> **Ports.** Supabase takes 54321-54324 and 54327. If another project of yours
+> is already running, `supabase stop --project-id <name>` frees them, and it
+> **keeps that project's data volume** so nothing is lost.
 
 ```bash
 npm run dev          # http://localhost:3000
@@ -36,19 +39,27 @@ npm run dev          # http://localhost:3000
 > before killing it - another project may be using it. Kill by PID, never
 > `Stop-Process -Name node`, which kills every Node process on the machine.
 
-### The database, briefly
+### Supabase, briefly
 
-Two roles, on purpose:
+The application never decides who may read a row. It presents a signed-in
+reader, the API checks their JWT, and the policies - written against
+`auth.uid()` - decide. If you are adding a table, enable row level security
+and think hard about what `anon` may see. Today `anon` has no table grants at
+all: it reaches the schema and finds nothing in it. That is deliberate.
 
-- `chouflimostakbel` owns the tables. Migrations only.
-- `chouflimostakbel_app` runs the app. **Not** the owner, so the row level
-  security policies apply to it.
+Three roles:
 
-The application never decides who may read a row. It says who the caller is
-and the database decides. If you are adding a query that reads a table, use
-`asProfile()` from `lib/db.ts` so the identity is set and the policies
-apply. `npm run db:check` proves the policies still bind - please run it
-after touching `db/schema.sql`.
+- `anon` — no session, no table grants.
+- `authenticated` — a signed-in reader. The policies apply.
+- `service_role` — the server. Bypasses the policies, so use it only where
+  there is no caller yet, and say why in a comment.
+
+There is **no password column anywhere in this schema**. Supabase Auth holds
+the hash in its own, behind its own API. If you find yourself writing one,
+stop.
+
+`npm run db:check` proves the policies still bind — please run it after
+touching a migration.
 
 ---
 

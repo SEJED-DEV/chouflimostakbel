@@ -101,67 +101,82 @@ CDN rule that overrides it will bring the stale-chunk error back.
 
 ---
 
-## The database
+## Supabase
 
-Plain Postgres with row level security — which is what the self-hosted
-Supabase is underneath, so the schema moves to it without changing.
+Everything that holds state runs on [Supabase](https://supabase.com): the
+database, and Supabase Auth for sign-in. One stack rather than four unrelated
+services bolted together, and because we host it ourselves the data never
+leaves our own machines and no third-party bill grows with the audience. The
+trade is that backups, upgrades and uptime are ours.
 
-The rule the whole thing rests on: **the application never decides who may
-read a row.** It says who the caller is, and the database decides. A rule
-that says "only your own rows" cannot be bypassed, because the browser never
-talks to Postgres — only the server does, and the server tells the database
-who it is acting for.
-
-Two roles, on purpose:
-
-| Role | Used for | RLS applies? |
-|---|---|---|
-| `chouflimostakbel` | Owns the tables. Migrations only. | No |
-| `chouflimostakbel_app` | Runs the application. | **Yes** |
-
-### Running it locally
-
-The project keeps its own Postgres instance, separate from anything else on
-the machine: its own data directory (`.pgdata`, git-ignored), its own port
-(5433), and nothing of the system's is touched.
+Locally it is five containers — Postgres, GoTrue, PostgREST, the gateway and
+the edge runtime. The optional ones are switched off in `supabase/config.toml`
+(Studio, Realtime, Storage, the local mailbox, log draining): nothing here
+uses them yet, and they are not small.
 
 ```bash
-npm run db:start     # start the instance
-npm run db:setup     # create the roles, the database, and the schema
-npm run db:check     # prove the policies actually bind
-npm run db:stop      # stop it
+npm run supabase:start   # the five containers
+npm run db:reset         # apply supabase/migrations
+npm run db:check         # prove the policies actually bind
+npm run supabase:stop    # stop them
 ```
 
-`db:setup` writes `DATABASE_URL` into `.env.local` with a generated
-password. It is safe to run again.
+`supabase start` prints a URL, an anon key and a service role key; `.env.example`
+says where each one goes. If the ports clash with another project,
+`supabase stop --project-id <name>` frees them — **its data volume is kept**,
+so nothing is lost.
 
-> The instance is started with a trimmed `PATH`. The backend processes inherit
-> it, and a `PATH` carrying another build of the same libraries — Git for
-> Windows ships its own — makes them fail to load.
+### The rule
+
+**The application never decides who may read a row.** It presents a signed-in
+reader, and the database decides. PostgREST checks the caller's JWT, and the
+policies are written against `auth.uid()`, so a rule like "only your own rows"
+cannot be bypassed by anything on the client.
+
+| Role | What it is | RLS applies? |
+|---|---|---|
+| `anon` | No session. No table grants at all — it reaches the schema and finds nothing in it | — |
+| `authenticated` | A signed-in reader | **Yes** |
+| `service_role` | The server, on the one route that creates an account | Bypasses, by design |
 
 ### The schema
 
-`db/schema.sql`, in three tables:
+`supabase/migrations/`, one table:
 
-- **profiles** — a person: address, a bcrypt hash, a name, a handle
-- **sessions** — a signed-in session. The cookie carries a random token; only
-  its hash is stored, so a copy of the table hands nobody a working session
-- **email_verifications** — a pending address confirmation
+- **profiles** — a person: a handle, a display name, an optional address
 
-The operations that happen *before* we know who the caller is — creating an
-account, checking a password, finding a session — are `SECURITY DEFINER`
-functions. They are the only way in, and they check their own conditions.
+There is deliberately **no password column**. Supabase Auth holds the hash in
+its own schema, behind its own API, and SQL cannot reach it. There are no
+`sessions` or `email_verifications` tables either: refresh tokens, expiry and
+recovery are what GoTrue already does well, and reimplementing them is how
+sessions end up leaky.
 
-The password is hashed by the database, with bcrypt through `pgcrypto`. The
-application never stores a hash and never compares a password itself.
+There is no public read on `profiles` either. When the blogs have authors, the
+post will carry the author's handle with it, so nobody needs to look a person
+up — which keeps a profile private by default, which is the right default for
+a site used by teenagers.
 
 ### Accounts
 
-`/account` — create an account, sign in, sign out. `npm run check:auth` runs
-the whole flow against a running server: register, sign in with the wrong
-password, sign in with the right one, refuse a weak password, refuse an
-address already taken, and confirm that signing out deletes the session row
-rather than just the cookie.
+You sign in with a **username**. Supabase Auth has no such thing — it holds an
+address and a password, and nothing else will do — so a reader chooses a
+handle and GoTrue is handed one built from it:
+`handle@users.chouflimostakbel.tn`. The reader never sees it, never types it,
+and nothing is ever sent to it: the domain has no mail exchanger, so there is
+nowhere for a message to arrive. The handle is what they know; the address is
+the form GoTrue insists on.
+
+The subdomain is deliberate: `contact@chouflimostakbel.tn` is the project's
+published address, and the two must never be confused.
+
+Their own address, if they gave one, lives in `profiles.email`. It is for
+notifications and for recovery, it is optional, and it is not the key.
+
+`npm run check:auth` runs the whole flow against a running server: sign up
+with no address, sign in with the handle, sign in again with the address
+added later, edit the profile, sign out — and confirm that every failure gives
+exactly the same answer, whether the password is wrong or the handle does not
+exist, so the endpoint cannot be used to work out which usernames are taken.
 
 ---
 
@@ -194,9 +209,8 @@ Set `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` in `.env.local`
 first. **Back the private key up**: changing it invalidates every existing
 subscription, and every reader would have to turn notifications on again.
 
-Subscriptions live in Postgres when `DATABASE_URL` is set — the self-hosted
-Supabase the platform is planned on — and in `data/push.json` otherwise, which
-is fine for one machine but is not a backup.
+Subscriptions live in Supabase when it is configured, and in `data/push.json`
+otherwise, which is fine for one machine but is not a backup.
 
 > **iOS** delivers web push only to an app added to the Home Screen, on
 > iOS 16.4 and later. The opt-in stays hidden on an iOS tab that is not

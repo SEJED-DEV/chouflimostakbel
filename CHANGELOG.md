@@ -18,7 +18,7 @@ The roadmap page, a contact form that actually delivers, and a site that survive
 - Update notifications, if you want them: the app can tell you when the site is updated, in your own language. It is a device token, not an account - no email address, and nothing is tracked.
 - The privacy policy, the terms, the 404 and the error pages now switch language with the rest of the site. An Arabic reader who hit a broken link used to get an English page.
 - The contact form opens by itself on the project's own domain and stays closed on preview builds, so a half-finished version never collects messages it cannot deliver.
-- Accounts. A username and a password, on our own Postgres, with the row level security policies deciding who may read what. An email address is not required - the platform does not need one.
+- Accounts. A username and a password, on Supabase, with the row level security policies deciding who may read what. An email address is not required - the platform does not need one.
 - The account page is gone, split into /login and /signup, and joined by a profile page of your own.
 - A blogs section, empty for now, and honest about being empty.
 - A context menu of your own: open in a new tab, copy the link, share, install the app, and flip the theme.
@@ -36,6 +36,7 @@ The roadmap page, a contact form that actually delivers, and a site that survive
 - The cost risks on /soon are split apart: the AI cost, which is metered per call, and the infrastructure cost, which is ours now that the backend is self-hosted.
 - The domain is defined in one place now. Moving it used to mean four files, which had already drifted apart.
 - The changelog page itself is rebuilt: each release collapses to one line, the newest stays open, and the changes are grouped by kind and searchable. A long changelog no longer means a long scroll.
+- Sign-in runs on Supabase Auth rather than sessions of our own. The password, the refresh tokens and the recovery flow are its. The handle is still what you sign in with: GoTrue insists on an address, so it is handed one built from the handle, which the reader never sees and nothing is ever sent to.
 - On a phone there is no top bar any more. The tab bar at the bottom is the navigation, and it takes the space it needs so nothing hides underneath it.
 - The blue button in the navigation is now Log in, and it becomes your name once you are signed in.
 

@@ -1,33 +1,36 @@
 // Proves the row level security policies actually bind.
 //
-//   node --experimental-strip-types scripts/check-rls.mjs
+//   npm run db:check
 //
 // The point of RLS is that the application cannot read or change a row it
-// should not. This checks that by trying, as the application role, to do
-// exactly that - and then confirming through the owner that nothing moved.
-import { Client } from "pg";
+// should not. This checks that by trying, through the real API, to do
+// exactly that.
+//
+// It goes through PostgREST with a signed JWT, which is the same path a
+// browser takes - not through a privileged connection that could be lying
+// about what the policies allow. Each identity gets a token whose `sub`
+// claim is their user id, and that claim is what auth.uid() returns.
+import { createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-const url = readFileSync(".env.local", "utf8").match(/^DATABASE_URL=(.*)$/m)?.[1]?.trim();
-if (!url) {
-  console.error("No DATABASE_URL in .env.local. Run npm run db:setup first.");
+const env = readFileSync(".env.local", "utf8");
+const value = (name) => env.match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim();
+
+const API = value("NEXT_PUBLIC_SUPABASE_URL");
+const ANON = value("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+const SERVICE = value("SUPABASE_SERVICE_ROLE_KEY");
+const JWT_SECRET = value("SUPABASE_JWT_SECRET") || "super-secret-jwt-token-with-at-least-32-characters-long";
+
+if (!API || !ANON || !SERVICE) {
+  console.error(
+    "Supabase is not configured. Run `npm run supabase:start`, then copy the\n" +
+      "values it prints into .env.local.",
+  );
   process.exit(1);
 }
 
-const parsed = new URL(url);
-const base = {
-  host: parsed.hostname,
-  port: Number(parsed.port || 5432),
-  password: decodeURIComponent(parsed.password),
-  database: parsed.pathname.slice(1),
-  connectionTimeoutMillis: 8000,
-};
-
-/** The application role. Not the owner, so the policies bind it. */
-const app = new Client({ ...base, user: decodeURIComponent(parsed.username) });
-/** The owner. Owns the tables, so it sees everything - which is how we check
- *  that the application really did not change anything. */
-const owner = new Client({ ...base, user: "chouflimostakbel" });
+const REST = `${API}/rest/v1`;
+const AUTH = `${API}/auth/v1`;
 
 let pass = 0;
 let fail = 0;
@@ -36,145 +39,219 @@ function check(name, ok, detail) {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  (${detail})` : ""}`);
 }
 
-await app.connect();
-await owner.connect();
+/** Sign a token the way Supabase's own keys are signed. */
+function tokenFor(userId, role = "authenticated") {
+  const encode = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
+  const now = Math.floor(Date.now() / 1000);
+  const header = encode({ alg: "HS256", typ: "JWT" });
+  const payload = encode({
+    iss: "supabase",
+    role,
+    sub: userId,
+    exp: now + 3600,
+    iat: now,
+  });
+  const sig = createHmac("sha256", JWT_SECRET)
+    .update(`${header}.${payload}`)
+    .digest("base64url");
+  return `${header}.${payload}.${sig}`;
+}
+
+/** Ask PostgREST as one identity. */
+async function as(jwt, path, init = {}) {
+  const res = await fetch(`${REST}/${path}`, {
+    ...init,
+    headers: {
+      apikey: ANON,
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "application/json",
+      ...init.headers,
+    },
+  });
+  const text = await res.text();
+  let body = null;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text;
+  }
+  return { status: res.status, body };
+}
+
+/** Ask GoTrue's admin API. */
+async function admin(path, init = {}) {
+  const res = await fetch(`${AUTH}${path}`, {
+    ...init,
+    headers: {
+      apikey: SERVICE,
+      Authorization: `Bearer ${SERVICE}`,
+      "Content-Type": "application/json",
+      ...init.headers,
+    },
+  });
+  const text = await res.text();
+  return { status: res.status, body: text ? JSON.parse(text) : null };
+}
 
 const stamp = Date.now();
-const handleA = `rls-a-${stamp}`;
-const handleB = `rls-b-${stamp}`;
+const made = [];
 
-const a = await app.query("select * from app.register($1, $2, $3, $4)", [
-  handleA,
-  null,
-  "a-password-long-enough",
-  "Account A",
-]);
-const b = await app.query("select * from app.register($1, $2, $3, $4)", [
-  handleB,
-  `rls-b-${stamp}@example.test`,
-  "b-password-long-enough",
-  "Account B",
-]);
-const idA = a.rows[0].profile_id;
-const idB = b.rows[0].profile_id;
-
-// 1. With no identity set, the application role sees nothing.
-const anon = await app.query("select count(*)::int as n from profiles");
-check("sees no profiles without an identity", anon.rows[0].n === 0, `${anon.rows[0].n} visible`);
-
-// 2. It cannot insert directly either - only the register function may.
-let insertBlocked = false;
-try {
-  await app.query(
-    "insert into profiles (email, password_hash, display_name) values ($1, 'x', $2)",
-    [`rls-direct-${stamp}@example.test`, "Sneaky"],
-  );
-} catch (e) {
-  insertBlocked = /row-level security|permission denied/i.test(e.message);
+async function makeUser(handle) {
+  const email = `${handle}@users.chouflimostakbel.tn`;
+  const { body } = await admin(`/admin/users`, {
+    method: "POST",
+    body: JSON.stringify({
+      email,
+      password: "a-password-long-enough",
+      email_confirm: true,
+      user_metadata: { handle },
+    }),
+  });
+  if (!body?.id) throw new Error(`could not create ${handle}: ${JSON.stringify(body)}`);
+  made.push(body.id);
+  return body.id;
 }
-check("cannot insert a profile directly", insertBlocked);
 
-// 3. As A, it sees itself.
-await app.query("begin");
-await app.query("select set_config('app.profile_id', $1, true)", [idA]);
-const asA = await app.query("select id, display_name from profiles order by id");
+const idA = await makeUser(`rls-a-${stamp}`);
+const idB = await makeUser(`rls-b-${stamp}`);
+const idC = await makeUser(`rls-c-${stamp}`);
+
+// Written by the service role, which is what the sign-up route does.
+for (const [id, handle, displayName, email] of [
+  [idA, `rls-a-${stamp}`, "Account A", null],
+  [idB, `rls-b-${stamp}`, "Account B", `rls-b-${stamp}@example.test`],
+]) {
+  const { status } = await fetch(`${REST}/profiles`, {
+    method: "POST",
+    headers: {
+      apikey: ANON,
+      Authorization: `Bearer ${SERVICE}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify({ id, handle, display_name: displayName, email }),
+  });
+  if (status >= 400) throw new Error(`could not seed profile ${handle}`);
+}
+
+const jwtA = tokenFor(idA);
+const jwtB = tokenFor(idB);
+const jwtC = tokenFor(idC);
+
+// 1. With no session, there is nothing to read. GoTrue's role has no grant
+//    on the table at all, so the request is refused before any policy runs -
+//    which is the stronger answer, since it does not even confirm the table
+//    is there.
+const anon = await as(ANON, "profiles?select=id");
+const anonSeesNothing =
+  (Array.isArray(anon.body) && anon.body.length === 0) ||
+  (anon.status === 401 || anon.status === 403);
+check(
+  "sees no profiles without a session",
+  anonSeesNothing,
+  `HTTP ${anon.status}`,
+);
+
+// 2. As A, only A's own row comes back.
+const asA = await as(jwtA, "profiles?select=id,handle");
 check(
   "sees only its own profile",
-  asA.rows.length === 1 && asA.rows[0].id === idA,
-  `${asA.rows.length} visible`,
+  Array.isArray(asA.body) &&
+    asA.body.length === 1 &&
+    asA.body[0].id === idA,
+  `${Array.isArray(asA.body) ? asA.body.length : "?"} visible`,
 );
 
-// 4. It cannot see B.
-const seesB = await app.query("select id from profiles where id = $1", [idB]);
-check("cannot see another profile", seesB.rows.length === 0);
-
-// 5. It cannot change B. A filtered update updates nothing rather than
-// raising, so the row count is the thing to check.
-const update = await app.query(
-  "update profiles set display_name = 'Taken' where id = $1",
-  [idB],
-);
-check("the update touched no rows", update.rowCount === 0, `${update.rowCount} rows`);
-await app.query("commit");
-
-// And the row really is unchanged, read by the owner who can see it.
-const bNow = await owner.query("select display_name from profiles where id = $1", [idB]);
+// 3. A cannot read B's row, even asking for it by id.
+const seesB = await as(jwtA, `profiles?select=id&id=eq.${idB}`);
 check(
-  "another profile is unchanged",
-  bNow.rows[0]?.display_name === "Account B",
-  bNow.rows[0]?.display_name,
+  "cannot read another profile",
+  Array.isArray(seesB.body) && seesB.body.length === 0,
 );
 
-// 6. The password is stored as a hash, never as the password.
-const stored = await owner.query("select password_hash from profiles where id = $1", [idA]);
+// 4. A cannot change B's row. A filtered update returns the rows it
+//    changed, so an empty array is the proof.
+const updateB = await as(jwtA, `profiles?id=eq.${idB}`, {
+  method: "PATCH",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ display_name: "Taken" }),
+});
 check(
-  "the password is stored as a hash",
-  !stored.rows[0].password_hash.includes("a-password-long-enough") &&
-    /^\$2[aby]\$/.test(stored.rows[0].password_hash),
-  stored.rows[0].password_hash.slice(0, 10) + "...",
+  "an update to another profile changes nothing",
+  Array.isArray(updateB.body) && updateB.body.length === 0,
+  `${Array.isArray(updateB.body) ? updateB.body.length : "?"} rows`,
 );
 
-// 7. The right password verifies, the wrong one does not.
-const good = await app.query("select * from app.verify_password($1, $2)", [
-  handleA,
-  "a-password-long-enough",
-]);
-const bad = await app.query("select * from app.verify_password($1, $2)", [
-  handleA,
-  "wrong-password-here",
-]);
-const unknown = await app.query("select * from app.verify_password($1, $2)", [
-  `nobody-${stamp}@example.test`,
-  "a-password-long-enough",
-]);
-check("the right password verifies", good.rows.length === 1);
-check("the wrong password does not", bad.rows.length === 0);
-check("an unknown address does not", unknown.rows.length === 0);
+// 5. A can change its own row.
+const updateA = await as(jwtA, `profiles?id=eq.${idA}`, {
+  method: "PATCH",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ display_name: "Renamed" }),
+});
+check(
+  "an update to its own profile works",
+  Array.isArray(updateA.body) &&
+    updateA.body.length === 1 &&
+    updateA.body[0].display_name === "Renamed",
+);
 
-// 8. A short password is refused.
-let tooShort = false;
-try {
-  await app.query("select * from app.register($1, $2, $3, $4)", [
-    `short-${stamp}`,
-    null,
-    "short",
-    "Short",
-  ]);
-} catch (e) {
-  tooShort = /password too short/i.test(e.message);
+// 6. Nobody can write a row under someone else's id. C exists in GoTrue but
+//    has no profile row yet, which is exactly the moment sign-up happens.
+const steal = await as(jwtA, "profiles", {
+  method: "POST",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ id: idC, handle: `rls-stolen-${stamp}`, display_name: "Stolen" }),
+});
+check(
+  "cannot create a profile under another id",
+  steal.status === 401 || steal.status === 403,
+  `HTTP ${steal.status}`,
+);
+
+// 7. C can create its own, which is the sign-up path the app relies on.
+const own = await as(jwtC, "profiles", {
+  method: "POST",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ id: idC, handle: `rls-c-${stamp}`, display_name: "Account C" }),
+});
+check(
+  "can create its own profile",
+  Array.isArray(own.body) && own.body.length === 1,
+  `HTTP ${own.status}`,
+);
+
+// 8. The handle is unique, whatever identity asks.
+const dupe = await as(jwtC, "profiles", {
+  method: "POST",
+  body: JSON.stringify({ id: `00000000-0000-4000-8000-${String(stamp).padStart(12, "0")}`, handle: `rls-c-${stamp}`, display_name: "Impostor" }),
+});
+check(
+  "a duplicate handle is refused",
+  dupe.status >= 400,
+  `HTTP ${dupe.status}`,
+);
+
+// 9. There is no password in this schema at all. GoTrue keeps the hash in
+//    its own, behind its own API. `profiles` has no column that could hold
+//    one - which is a stronger statement than any policy could make.
+const openapi = await fetch(`${REST}/`, {
+  headers: { apikey: ANON, Authorization: `Bearer ${SERVICE}`, Accept: "application/openapi+json" },
+});
+const spec = await openapi.json();
+const profileColumns = Object.keys(
+  spec?.definitions?.profiles?.properties ?? {},
+);
+check(
+  "the profiles table has no password column",
+  profileColumns.length > 0 &&
+    !profileColumns.some((c) => /pass|hash|secret|token/i.test(c)),
+  profileColumns.join(", ").slice(0, 70) || "no columns found",
+);
+
+// Clean up. Deleting the GoTrue user cascades to the profile row.
+for (const id of made) {
+  await admin(`/admin/users/${id}`, { method: "DELETE" }).catch(() => {});
 }
-check("a short password is refused", tooShort);
 
-// 9. A session can be started, found, and ended.
-const token = "test-token-" + stamp;
-await app.query("select app.create_session($1, $2, now() + interval '1 hour', $3, $4)", [
-  idA,
-  token,
-  "test-agent",
-  "127.0.0.1",
-]);
-const sess = await app.query("select * from app.session_profile($1)", [token]);
-check("a session finds its profile", sess.rows.length === 1 && sess.rows[0].profile_id === idA);
-await app.query("select app.delete_session($1)", [token]);
-const gone = await app.query("select * from app.session_profile($1)", [token]);
-check("a deleted session is gone", gone.rows.length === 0);
-
-// 10. An expired session is not honoured.
-const expired = "expired-token-" + stamp;
-await app.query("select app.create_session($1, $2, now() - interval '1 hour', $3, $4)", [
-  idA,
-  expired,
-  "test-agent",
-  "127.0.0.1",
-]);
-const stale = await app.query("select * from app.session_profile($1)", [expired]);
-check("an expired session is not honoured", stale.rows.length === 0);
-
-// Clean up.
-await owner.query("delete from sessions where profile_id = any($1)", [[idA, idB]]);
-await owner.query("delete from profiles where id = any($1)", [[idA, idB]]);
-
-await app.end();
-await owner.end();
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

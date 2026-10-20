@@ -141,7 +141,8 @@ export const changelog: Slice<ChangelogCopy> = {
 
           { text: "The changelog page itself is rebuilt: each release collapses to one line, the newest stays open, and the changes are grouped by kind and searchable. A long changelog no longer means a long scroll.", kind: "changed" },
 
-          { text: "Accounts. A username and a password, on our own Postgres, with the row level security policies deciding who may read what. An email address is not required - the platform does not need one.", kind: "added" },
+          { text: "Accounts. A username and a password, on Supabase, with the row level security policies deciding who may read what. An email address is not required - the platform does not need one.", kind: "added" },
+          { text: "Sign-in runs on Supabase Auth rather than sessions of our own. The password, the refresh tokens and the recovery flow are its. The handle is still what you sign in with: GoTrue insists on an address, so it is handed one built from the handle, which the reader never sees and nothing is ever sent to.", kind: "changed" },
           { text: "The account page is gone, split into /login and /signup, and joined by a profile page of your own.", kind: "added" },
           { text: "A blogs section, empty for now, and honest about being empty.", kind: "added" },
           { text: "On a phone there is no top bar any more. The tab bar at the bottom is the navigation, and it takes the space it needs so nothing hides underneath it.", kind: "changed" },
@@ -300,7 +301,8 @@ export const changelog: Slice<ChangelogCopy> = {
 
           { text: "La page des versions est reconstruite : chaque version tient sur une ligne, la plus récente reste ouverte, et les changements sont regroupés par type et cherchables. Un long journal ne veut plus dire un long défilement.", kind: "changed" },
 
-          { text: "Les comptes. Un nom d'utilisateur et un mot de passe, sur notre propre Postgres, avec les politiques de sécurité au niveau des lignes qui décident qui peut lire quoi. Aucune adresse e-mail n'est requise - la plateforme n'en a pas besoin.", kind: "added" },
+          { text: "Les comptes. Un nom d'utilisateur et un mot de passe, sur Supabase, avec les politiques de sécurité au niveau des lignes qui décident qui peut lire quoi. Aucune adresse e-mail n'est requise - la plateforme n'en a pas besoin.", kind: "added" },
+          { text: "La connexion passe par l'authentification de Supabase, et non par des sessions qui nous appartiennent. Le mot de passe, les jetons de rafraîchissement et la récupération sont les siens. C'est toujours l'identifiant qui sert à se connecter : GoTrue exige une adresse, il en reçoit donc une construite à partir de l'identifiant, que le lecteur ne voit jamais et à laquelle rien n'est jamais envoyé.", kind: "changed" },
           { text: "La page compte a disparu, coupée en /login et /signup, et rejointe par une page de profil qui vous appartient.", kind: "added" },
           { text: "Une section blogs, vide pour l'instant, et honnête sur le fait qu'elle est vide.", kind: "added" },
           { text: "Sur un téléphone, il n'y a plus de barre du haut. La barre d'onglets en bas est la navigation, et elle prend la place qu'il lui faut pour que rien ne passe dessous.", kind: "changed" },
@@ -459,7 +461,8 @@ export const changelog: Slice<ChangelogCopy> = {
 
           { text: "أُعيد بناء صفحة سجلّ الإصدارات: كل إصدار ينطبق في سطر واحد، والأحدث يبقى مفتوحًا، والتغييرات مُجمَّعة حسب نوعها وقابلة للبحث. فالسجلّ الطويل لم يعد يعني تمريرًا طويلًا.", kind: "changed" },
 
-          { text: "الحسابات. اسم مستخدم وكلمة مرور، على Postgres الخاص بنا، مع سياسات أمان مستوى الصفوف هي التي تقرّر من يقرأ ماذا. البريد الإلكتروني ليس مطلوبًا - المنصّة لا تحتاجه.", kind: "added" },
+          { text: "الحسابات. اسم مستخدم وكلمة مرور، على Supabase، مع سياسات أمان مستوى الصفوف هي التي تقرّر من يقرأ ماذا. البريد الإلكتروني ليس مطلوبًا - المنصّة لا تحتاجه.", kind: "added" },
+          { text: "تسجيل الدخول يتمّ عبر تسجيل دخول Supabase، لا عبر جلسات تخصّنا. كلمة السر ورموز التجديد والاسترجاع من اختصاصه. وما يزال اسم المستخدم هو ما يُدخَل به: GoTrue يشترط بريدًا، فيُعطى بريدًا مبنيًا على الاسم، لا يراه القارئ ولا يُمرَّس إليه شيء أبداً.", kind: "changed" },
           { text: "لم تعد صفحة الحساب موجودة. انقسمت إلى /login و /signup، ومعها صفحة ملفّ شخصي لك.", kind: "added" },
           { text: "قسم المدوّنات، فارغ الآن، وصريح بأنه فارغ.", kind: "added" },
           { text: "لم يعد في الهاتف شريط علوي. شريط التبويبات في الأسفل هو التنقّل، وقد أخذ المساحة التي يحتاجها كي لا يختبئ شيء تحته.", kind: "changed" },

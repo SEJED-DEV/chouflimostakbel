@@ -10,14 +10,14 @@
  * thing we keep. A visitor can turn it off at any time, and turning it off
  * deletes the row.
  *
- * Storage is Postgres when DATABASE_URL is set - the self-hosted Supabase
- * that the platform is planned on - and a local file otherwise, so the feature
- * can be exercised before that database exists.
+ * Storage is Supabase when it is configured, and a local file otherwise, so
+ * the feature can be exercised before the database exists.
  */
 
 import webpush from "web-push";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { createAdminClient } from "./supabase/admin";
 
 /* ------------------------------------------------------------------ *
  * Configuration
@@ -75,57 +75,27 @@ interface Store {
   setLastNotifiedVersion(version: string): Promise<void>;
 }
 
-/* --- Postgres --- */
+/* --- Supabase --- */
 
-const SCHEMA = `
-CREATE TABLE IF NOT EXISTS push_subscriptions (
-  endpoint     TEXT PRIMARY KEY,
-  p256dh       TEXT NOT NULL,
-  auth         TEXT NOT NULL,
-  user_agent   TEXT,
-  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE TABLE IF NOT EXISTS push_state (
-  id            INTEGER PRIMARY KEY DEFAULT 1,
-  last_version  TEXT
-);
-`;
+function supabaseStore(): Store {
+  // Built lazily so this module still loads when Supabase is not configured,
+  // and so the file store works on a machine with no database at all.
+  let clientPromise: Promise<ReturnType<typeof createAdminClient>> | null = null;
 
-function postgresStore(url: string): Store {
-  // Imported lazily and dynamically so this module loads as ESM, and so the
-  // file store works on a machine with no database driver at all.
-  let poolPromise: Promise<import("pg").Pool> | null = null;
-  let ready: Promise<void> | null = null;
-
-  function pool(): Promise<import("pg").Pool> {
-    if (!poolPromise) {
-      poolPromise = import("pg").then((pg) => new pg.Pool({ connectionString: url, max: 4 }));
-    }
-    return poolPromise;
-  }
-
-  async function ensureSchema() {
-    if (!ready) {
-      const p = await pool();
-      ready = p
-        .query(SCHEMA)
-        .then(() => undefined)
-        .catch((error) => {
-          // Let the next call try again rather than caching the failure.
-          ready = null;
-          throw error;
-        });
-    }
-    return ready;
+  function client() {
+    if (!clientPromise) clientPromise = Promise.resolve(createAdminClient());
+    return clientPromise;
   }
 
   return {
     async list() {
-      await ensureSchema();
-      const res = await (await pool()).query(
-        "SELECT endpoint, p256dh, auth, user_agent, created_at FROM push_subscriptions",
-      );
-      return res.rows.map((r) => ({
+      const res = await (await client())
+        .from("push_subscriptions")
+        .select("endpoint, p256dh, auth, user_agent, created_at");
+
+      if (res.error) throw res.error;
+
+      return (res.data ?? []).map((r) => ({
         endpoint: r.endpoint as string,
         keys: { p256dh: r.p256dh as string, auth: r.auth as string },
         userAgent: (r.user_agent as string) ?? null,
@@ -134,36 +104,42 @@ function postgresStore(url: string): Store {
     },
 
     async save(record) {
-      await ensureSchema();
-      await (await pool()).query(
-        `INSERT INTO push_subscriptions (endpoint, p256dh, auth, user_agent)
-         VALUES ($1, $2, $3, $4)
-         ON CONFLICT (endpoint) DO UPDATE
-           SET p256dh = EXCLUDED.p256dh,
-               auth = EXCLUDED.auth,
-               user_agent = EXCLUDED.user_agent`,
-        [record.endpoint, record.keys.p256dh, record.keys.auth, record.userAgent],
+      const { error } = await (await client()).from("push_subscriptions").upsert(
+        {
+          endpoint: record.endpoint,
+          p256dh: record.keys.p256dh,
+          auth: record.keys.auth,
+          user_agent: record.userAgent,
+        },
+        { onConflict: "endpoint" },
       );
+      if (error) throw error;
     },
 
     async remove(endpoint) {
-      await ensureSchema();
-      await (await pool()).query("DELETE FROM push_subscriptions WHERE endpoint = $1", [endpoint]);
+      const { error } = await (await client())
+        .from("push_subscriptions")
+        .delete()
+        .eq("endpoint", endpoint);
+      if (error) throw error;
     },
 
     async lastNotifiedVersion() {
-      await ensureSchema();
-      const res = await (await pool()).query("SELECT last_version FROM push_state WHERE id = 1");
-      return (res.rows[0]?.last_version as string) ?? null;
+      const res = await (await client())
+        .from("push_state")
+        .select("last_version")
+        .eq("id", 1)
+        .maybeSingle();
+
+      if (res.error) throw res.error;
+      return (res.data?.last_version as string) ?? null;
     },
 
     async setLastNotifiedVersion(version) {
-      await ensureSchema();
-      await (await pool()).query(
-        `INSERT INTO push_state (id, last_version) VALUES (1, $1)
-         ON CONFLICT (id) DO UPDATE SET last_version = EXCLUDED.last_version`,
-        [version],
-      );
+      const { error } = await (await client())
+        .from("push_state")
+        .upsert({ id: 1, last_version: version }, { onConflict: "id" });
+      if (error) throw error;
     },
   };
 }
@@ -226,8 +202,9 @@ let store: Store | null = null;
 
 export function getStore(): Store {
   if (store) return store;
-  const url = process.env.DATABASE_URL;
-  store = url ? postgresStore(url) : fileStore();
+  const configured =
+    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY;
+  store = configured ? supabaseStore() : fileStore();
   return store;
 }
 

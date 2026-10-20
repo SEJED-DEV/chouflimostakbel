@@ -1,35 +1,29 @@
 import { NextResponse } from "next/server";
 import { currentProfile } from "@/lib/auth";
-import { asProfile } from "@/lib/db";
 
-/** Who is signed in, if anyone. */
+/**
+ * Who is signed in, if anyone.
+ *
+ * The session is validated by Supabase Auth rather than read out of the
+ * cookie, and the profile row comes back through the row level security
+ * policies - the reader's own row, and nothing else. A null profile is a
+ * success: it means nobody is signed in.
+ */
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await currentProfile();
-  if (!session) return NextResponse.json({ ok: true, profile: null });
+  const profile = await currentProfile();
 
-  // Read the profile through the row level security policies, with the
-  // session's identity set. The database decides what this may see, which
-  // is the point of doing it here rather than trusting the session's copy.
-  const result = await asProfile(session.profile_id, (client) =>
-    client.query(
-      "select id, handle, display_name, email, verified_at from profiles where id = $1",
-      [session.profile_id],
-    ),
-  );
-
-  const row = result.rows[0];
-  if (!row) return NextResponse.json({ ok: true, profile: null });
+  if (!profile) return NextResponse.json({ ok: true, profile: null });
 
   return NextResponse.json({
     ok: true,
     profile: {
-      id: row.id,
-      handle: row.handle,
-      displayName: row.display_name,
-      email: row.email,
-      verified: Boolean(row.verified_at),
+      id: profile.id,
+      handle: profile.handle,
+      displayName: profile.display_name,
+      email: profile.email,
+      verified: Boolean(profile.verified_at),
     },
   });
 }

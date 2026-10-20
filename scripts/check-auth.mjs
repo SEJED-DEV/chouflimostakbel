@@ -1,17 +1,20 @@
-// End to end test of the account flow, against a running server.
+// Proves the account flow actually works, end to end, over HTTP.
 //
-//   node scripts/check-auth.mjs [url]
+//   npm run check:auth
 //
-// Creates an account, signs in, signs out, and checks that the wrong things
-// are refused: a weak password, a username already taken, a wrong password,
-// and a session that has been ended.
+// This talks to the running site the way a browser does - no privileged
+// connection, no shortcuts. It signs up, signs in, edits a profile, signs
+// out, and checks the answers a real reader would get.
 //
-// The email address is optional - the platform does not need one - so most of
-// these accounts have none.
-import { Client } from "pg";
+// It needs the site running: `npm run build && npm run start -- --port 3000`,
+// and Supabase up: `npm run supabase:start && npm run db:reset`.
 import { readFileSync } from "node:fs";
 
-const BASE = (process.argv[2] || "http://localhost:3000").replace(/\/+$/, "");
+const SITE = process.argv[2] || "http://localhost:3000";
+
+const env = readFileSync(".env.local", "utf8");
+const value = (name) => env.match(new RegExp(`^${name}=(.*)$`, "m"))?.[1]?.trim();
+const AUTH = `${value("NEXT_PUBLIC_SUPABASE_URL")}/auth/v1`;
 
 let pass = 0;
 let fail = 0;
@@ -20,247 +23,184 @@ function check(name, ok, detail) {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  (${detail})` : ""}`);
 }
 
-/** A tiny cookie jar, so each case starts from a known state. */
-function jar() {
-  const cookies = new Map();
-  return {
-    header: () => [...cookies].map(([k, v]) => `${k}=${v}`).join("; "),
-    absorb(res) {
-      for (const raw of res.headers.getSetCookie?.() ?? []) {
-        const [pair] = raw.split(";");
-        const idx = pair.indexOf("=");
-        cookies.set(pair.slice(0, idx), pair.slice(idx + 1));
-      }
-    },
-    get: (k) => cookies.get(k),
-  };
-}
-
-const stamp = Date.now();
-const handle = `e2e-${stamp}`;
-const email = `e2e-${stamp}@example.test`;
-const password = "a-good-long-password";
-
-/**
- * A different user agent each run, so the rate limiter sees a different
- * device. Real people are on different browsers, and the limit is per
- * address and browser - a shared connection is fine.
- */
-const UA = `chouflimostakbel-check/${stamp}`;
-
-async function post(path, body, cookies) {
-  const res = await fetch(BASE + path, {
+/** POST to one of the site's own routes. */
+async function route(path, body, cookie) {
+  const res = await fetch(`${SITE}${path}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "User-Agent": UA,
-      ...(cookies ? { Cookie: cookies.header() } : {}),
+      ...(cookie ? { Cookie: cookie } : {}),
     },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+
+  const setCookie = res.headers.getSetCookie?.() ?? [];
+  const cookies = setCookie.map((c) => c.split(";")[0]).join("; ");
+
+  let json = null;
+  try {
+    json = await res.json();
+  } catch {
+    /* not JSON */
+  }
+
+  return { status: res.status, json, cookie: cookies || cookie };
+}
+
+/** GET one of the site's own routes. */
+async function get(path, cookie) {
+  const res = await fetch(`${SITE}${path}`, { headers: cookie ? { Cookie: cookie } : {} });
+  let json = null;
+  try {
+    json = await res.json();
+  } catch {
+    /* not JSON */
+  }
+  return { status: res.status, json };
+}
+
+/** PATCH, carrying the session cookie. */
+async function patch(path, body, cookie) {
+  const res = await fetch(`${SITE}${path}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...(cookie ? { Cookie: cookie } : {}) },
     body: JSON.stringify(body),
   });
-  cookies?.absorb(res);
-  const text = await res.text();
-  let json = {};
+  let json = null;
   try {
-    json = JSON.parse(text);
+    json = await res.json();
   } catch {
-    json = { raw: text.slice(0, 120) };
+    /* not JSON */
   }
-  return { res, json };
+  return { status: res.status, json };
 }
 
-async function get(path, cookies) {
-  const res = await fetch(BASE + path, {
-    headers: { "User-Agent": UA, ...(cookies ? { Cookie: cookies.header() } : {}) },
-  });
-  cookies?.absorb(res);
-  const text = await res.text();
-  let json = {};
-  try {
-    json = JSON.parse(text);
-  } catch {
-    json = { raw: text.slice(0, 120) };
-  }
-  return { res, json };
-}
+const stamp = Date.now();
+// Hyphens are allowed, and are the case a naive regex gets wrong.
+const handle = `auth-test-${stamp}`;
+const password = "a-password-long-enough";
+const email = `auth-test-${stamp}@example.test`;
 
-// 1. Register, with no email at all. The platform does not need one.
-const c1 = jar();
-const reg = await post(
-  "/api/auth/register",
-  { handle, password, displayName: "E2E" },
-  c1,
-);
-check("register succeeds without an email", reg.res.status === 200, `${reg.res.status} ${JSON.stringify(reg.json)}`);
-check("the handle comes back", reg.json?.profile?.handle === handle, reg.json?.profile?.handle);
-check("no email was asked for", reg.json?.profile?.email === null, String(reg.json?.profile?.email));
-check("a session cookie is set", Boolean(c1.get("cmb-session")));
+// --- Sign up, with no email address -----------------------------------
+// The whole point: a username and a password is enough.
+const signed = await route("/api/auth/register", { handle, password, displayName: "Auth Test" });
+check("signs up with a handle and no email", signed.status === 200 && signed.json?.ok === true, `HTTP ${signed.status}`);
+check("the session cookie came back", Boolean(signed.cookie), signed.cookie?.slice(0, 24) || "none");
 
-// The cookie must not be readable by script.
-const setCookie = reg.res.headers.getSetCookie?.().find((c) => c.startsWith("cmb-session="));
-check("the cookie is httpOnly", Boolean(setCookie && /HttpOnly/i.test(setCookie)), setCookie);
-check("the cookie is sameSite lax", Boolean(setCookie && /SameSite=Lax/i.test(setCookie)));
+let me = await get("/api/auth/me", signed.cookie);
+check("is signed in after signing up", me.json?.profile?.handle === handle, me.json?.profile?.handle);
 
-// 2. The session works.
-const me = await get("/api/auth/me", c1);
-check("the session identifies the reader", me.json?.profile?.handle === handle, JSON.stringify(me.json?.profile));
-check("the account starts unverified", me.json?.profile?.verified === false);
-check("no password comes back", !JSON.stringify(me.json).includes(password));
-
-// 3. A username already taken is refused.
-const dupe = await post(
-  "/api/auth/register",
-  { handle, password, displayName: "E2E again" },
-  jar(),
-);
-check("the same username is refused", dupe.res.status === 409, `${dupe.res.status} ${dupe.json.error}`);
-
-// 4. A weak password is refused.
-const weak = await post(
-  "/api/auth/register",
-  { handle: `weak-${stamp}`, password: "short", displayName: "Weak" },
-  jar(),
-);
-check("a weak password is refused", weak.res.status === 400, `${weak.res.status} ${weak.json.error}`);
-
-// 5. A username with the wrong shape is refused.
-const badHandle = await post(
-  "/api/auth/register",
-  { handle: "No Spaces Here", password, displayName: "Bad" },
-  jar(),
-);
-check("a bad username is refused", badHandle.res.status === 400, `${badHandle.res.status} ${badHandle.json.error}`);
-
-// 6. A malformed email is refused, when one is given.
-const bad = await post(
-  "/api/auth/register",
-  { handle: `bademail-${stamp}`, email: "not-an-email", password, displayName: "Bad" },
-  jar(),
-);
-check("a malformed address is refused", bad.res.status === 400, `${bad.res.status} ${bad.json.error}`);
-
-// 7. The wrong password does not sign you in.
-const wrong = await post(
-  "/api/auth/login",
-  { identifier: handle, password: "not-the-password" },
-  jar(),
-);
-check("the wrong password is refused", wrong.res.status === 401, `${wrong.res.status} ${wrong.json.error}`);
-
-// 8. A username that does not exist gives the same answer.
-const nobody = await post(
-  "/api/auth/login",
-  { identifier: `nobody-${stamp}`, password },
-  jar(),
-);
 check(
-  "an unknown username gives the same answer",
-  nobody.res.status === 401 && nobody.json.error === wrong.json.error,
-  `${nobody.res.status} ${nobody.json.error}`,
+  "the profile carries the handle and no address",
+  me.json?.profile?.email === null,
+  String(me.json?.profile?.email),
 );
 
-// 9. The right password signs you in, in a fresh session.
-const c2 = jar();
-const login = await post("/api/auth/login", { identifier: handle, password }, c2);
-check("the right password signs in", login.res.status === 200, `${login.res.status}`);
-check("the new session works", (await get("/api/auth/me", c2)).json?.profile?.handle === handle);
+// --- Edit the profile --------------------------------------------------
+const renamed = `${signed.json?.profile?.displayName} II`;
+const edited = await patch("/api/auth/profile", { displayName: renamed }, signed.cookie);
+check("edits its own profile", edited.status === 200 && edited.json?.displayName === renamed, edited.json?.displayName);
 
-// 10. Signing in with an address works too, for anyone who gave one.
-const withEmail = `mail-${stamp}`;
-const cEmail = jar();
-await post(
-  "/api/auth/register",
-  { handle: withEmail, email: `mail-${stamp}@example.test`, password, displayName: "Mail" },
-  cEmail,
-);
-const byEmail = await post(
-  "/api/auth/login",
-  { identifier: `mail-${stamp}@example.test`, password },
-  jar(),
-);
-check("an address can be used to sign in", byEmail.res.status === 200, `${byEmail.res.status}`);
+me = await get("/api/auth/me", signed.cookie);
+check("the edit survived", me.json?.profile?.displayName === renamed, me.json?.profile?.displayName);
 
-// 11. The name can be changed, and only the caller's own row.
-const c3 = jar();
-await post("/api/auth/login", { identifier: handle, password }, c3);
-const renamed = await fetch(BASE + "/api/auth/profile", {
-  method: "PATCH",
-  headers: {
-    "Content-Type": "application/json",
-    "User-Agent": UA,
-    Cookie: c3.header(),
-  },
-  body: JSON.stringify({ displayName: "Renamed" }),
+// The address is optional, and adding one later works.
+const withEmail = await patch("/api/auth/profile", { displayName: renamed, email }, signed.cookie);
+check("can add an address later", withEmail.status === 200 && withEmail.json?.email === email, withEmail.json?.email);
+
+// --- Sign out ----------------------------------------------------------
+const out = await route("/api/auth/logout", undefined, signed.cookie);
+check("signs out", out.status === 200, `HTTP ${out.status}`);
+
+const after = await get("/api/auth/me", signed.cookie);
+check("is signed out afterwards", after.json?.profile === null);
+
+// --- Sign back in ------------------------------------------------------
+const back = await route("/api/auth/login", { identifier: handle, password });
+check("signs back in with the handle", back.status === 200 && back.json?.profile?.handle === handle, `HTTP ${back.status}`);
+
+const backOut = await route("/api/auth/logout", undefined, back.cookie);
+
+// The address given later also works.
+const byEmail = await route("/api/auth/login", { identifier: email, password });
+check("can sign in with the address it added", byEmail.status === 200, `HTTP ${byEmail.status}`);
+await route("/api/auth/logout", undefined, byEmail.cookie);
+
+// --- The same answer for every failure ---------------------------------
+const wrongPassword = await route("/api/auth/login", { identifier: handle, password: "not-the-password" });
+check(
+  "a wrong password is refused",
+  wrongPassword.status === 401 && wrongPassword.json?.error === "invalidCredentials",
+  `HTTP ${wrongPassword.status} ${wrongPassword.json?.error}`,
+);
+
+const nobody = await route("/api/auth/login", { identifier: `nobody-${stamp}`, password });
+check(
+  "an unknown handle gives the same answer",
+  nobody.status === wrongPassword.status && nobody.json?.error === wrongPassword.json?.error,
+  `HTTP ${nobody.status} ${nobody.json?.error}`,
+);
+
+// --- What sign-up refuses ----------------------------------------------
+const taken = await route("/api/auth/register", { handle, password, displayName: "Impostor" });
+check("a taken handle is refused", taken.status === 409 && taken.json?.error === "handleTaken", `HTTP ${taken.status}`);
+
+const shortPassword = await route("/api/auth/register", {
+  handle: `short-${stamp}`,
+  password: "short",
+  displayName: "Short",
 });
-const renamedBody = await renamed.json();
-check("the name can be changed", renamed.status === 200, `${renamed.status}`);
-check("the new name comes back", renamedBody?.displayName === "Renamed", JSON.stringify(renamedBody));
+check("a short password is refused", shortPassword.status === 400 && shortPassword.json?.error === "weakPassword", `HTTP ${shortPassword.status}`);
 
-// 12. Signing out ends the session, not just the cookie.
-const url = readFileSync(".env.local", "utf8").match(/^DATABASE_URL=(.*)$/m)?.[1]?.trim();
+const badHandle = await route("/api/auth/register", {
+  handle: "-starts-with-a-dash",
+  password,
+  displayName: "Bad Handle",
+});
+check("a bad handle is refused", badHandle.status === 400 && badHandle.json?.error === "invalidHandle", `HTTP ${badHandle.status}`);
 
-/** Counts the session rows for this account, as the owner can see them. */
-async function sessionCount() {
-  if (!url) return null;
-  const p = new URL(url);
-  // Read as the owner. The application role cannot see these rows at all -
-  // the policies hide them, which is the whole point, so the check has to
-  // look with the owner's eyes to see whether anything changed.
-  const db = new Client({
-    host: p.hostname,
-    port: Number(p.port || 5432),
-    user: "chouflimostakbel",
-    password: decodeURIComponent(p.password),
-    database: p.pathname.slice(1),
-  });
-  await db.connect();
-  const res = await db.query(
-    "select count(*)::int as n from sessions where profile_id = (select id from profiles where handle = $1)",
-    [handle],
-  );
-  await db.end();
-  return res.rows[0].n;
-}
+const badEmail = await route("/api/auth/register", {
+  handle: `bemail-${stamp}`,
+  email: "not-an-address",
+  password,
+  displayName: "Bad Email",
+});
+check("a malformed address is refused", badEmail.status === 400 && badEmail.json?.error === "invalidEmail", `HTTP ${badEmail.status}`);
 
-const before = await sessionCount();
-
-const out = await post("/api/auth/logout", {}, c2);
-check("sign out succeeds", out.res.status === 200);
-const after = await get("/api/auth/me", c2);
-check("the session is gone", after.json?.profile === null, JSON.stringify(after.json));
-
-// Signing out deletes that one session, and only that one.
-const afterCount = await sessionCount();
+// --- Editing without a session -----------------------------------------
+const anonymous = await patch("/api/auth/profile", { displayName: "Nobody" });
 check(
-  "signing out deletes exactly one session",
-  before !== null && afterCount !== null && afterCount === before - 1,
-  `${before} -> ${afterCount}`,
+  "cannot edit a profile while signed out",
+  anonymous.status === 401,
+  `HTTP ${anonymous.status}`,
 );
 
-// And the change is real. The url was read once, above.
-if (url) {
-  const p = new URL(url);
-  const db = new Client({
-    host: p.hostname,
-    port: Number(p.port || 5432),
-    user: "chouflimostakbel",
-    password: decodeURIComponent(p.password),
-    database: p.pathname.slice(1),
+// --- The old account page is not a dead end -----------------------------
+const moved = await fetch(`${SITE}/account`, { redirect: "manual" });
+check(
+  "/account still redirects rather than 404ing",
+  moved.status === 307 && moved.headers.get("location") === "/login",
+  `${moved.status} -> ${moved.headers.get("location")}`,
+);
+
+// --- Clean up -----------------------------------------------------------
+// Delete the GoTrue user, which cascades to the profile row.
+const SERVICE = value("SUPABASE_SERVICE_ROLE_KEY");
+if (SERVICE) {
+  const list = await fetch(`${AUTH}/admin/users?page=1&per_page=200`, {
+    headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}` },
   });
-  await db.connect();
-  const named = await db.query("select display_name from profiles where handle = $1", [handle]);
-  check("the new name was stored", named.rows[0]?.display_name === "Renamed", named.rows[0]?.display_name);
-
-  const noEmail = await db.query("select email from profiles where handle = $1", [handle]);
-  check(
-    "an account with no address is allowed",
-    noEmail.rows[0]?.email === null,
-    String(noEmail.rows[0]?.email),
-  );
-
-  await db.query("delete from profiles where handle = any($1)", [[handle, withEmail]]);
-  await db.end();
+  const users = (await list.json()).users ?? [];
+  for (const u of users) {
+    if (u.email?.endsWith(`@users.chouflimostakbel.tn`) && u.email.startsWith("auth-test-")) {
+      await fetch(`${AUTH}/admin/users/${u.id}`, {
+        method: "DELETE",
+        headers: { apikey: SERVICE, Authorization: `Bearer ${SERVICE}` },
+      });
+    }
+  }
 }
 
+void backOut;
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

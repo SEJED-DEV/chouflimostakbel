@@ -91,7 +91,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Decided",
         title: "Supabase, for the whole backend.",
-        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.\n\nThe accounts came first, and they changed one of these decisions. We did not need Supabase's sign-in: the same Postgres runs them, with sessions of our own and a username instead of an address. An email address is optional, because the platform does not need one - asking for something you do not need is a good way to lose people.",
+        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.",
       },
       items: [
         {
@@ -124,11 +124,11 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Data access",
-          value: "Plain SQL through the pg driver, over a connection pool. Drizzle was the plan; the first tables did not need it",
+          value: "The Supabase client over PostgREST. Row level security decides what a query may return, so the application never has to",
         },
         {
           label: "Accounts",
-          value: "Our own sessions on the same Postgres: a username and a password. An email address is not required",
+          value: "Supabase Auth. A username and a password; an email address is not required, and GoTrue is given one built from the handle",
         },
         {
           label: "Media",
@@ -319,7 +319,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Décidé",
         title: "Supabase, pour toute la partie serveur.",
-        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont changé l'une de ces décisions. Nous n'avions pas besoin de la connexion de Supabase : c'est le même Postgres qui les fait tourner, avec des sessions qui nous appartiennent et un nom d'utilisateur plutôt qu'une adresse. L'adresse e-mail est facultative, parce que la plateforme n'en a pas besoin - demander ce dont on n'a pas besoin, c'est perdre des gens.",
+        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.",
       },
       items: [
         {
@@ -353,12 +353,12 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Accès aux données",
-          value: "Du SQL simple avec le pilote pg, par-dessus un pool de connexions. Drizzle était prévu ; les premières tables n'en avaient pas besoin",
+          value: "Le client Supabase par-dessus PostgREST. Le Row Level Security décide ce qu'une requête peut renvoyer, l'application n'a donc rien à décider",
         },
         {
           label: "Comptes",
           value:
-            "Nos propres sessions sur le même Postgres : un nom d'utilisateur et un mot de passe. Aucune adresse e-mail n'est requise",
+            "L'authentification de Supabase : un nom d'utilisateur et un mot de passe. Aucune adresse n'est requise, GoTrue en reçoit une construite à partir de l'identifiant",
         },
         {
           label: "Médias",
@@ -550,7 +550,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "قرّر",
         title: "Supabase، من أجل كلّ ما في الخلفية.",
-        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».\n\nالحسابات جت أوّلًا، وهي غيّرت أحد هذه القرارات. لم نحتاج إلى تسجيل دخول Supabase: فـ Postgres نفسه يشغّلها، بجلسات تخصّنا واسم مستخدم بدل البريد. البريد الإلكتروني اختياري، لأن المنصّة لا تحتاجه - وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.",
+        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.",
       },
       items: [
         {
@@ -583,12 +583,12 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "الوصول إلى البيانات",
-          value: "SQL عادي عبر مشغّل pg، فوق مجمّع اتصالات. كان Drizzle مخطّطًا له، لكن الجداول الأولى لم تكن تحتاجه",
+          value: "عميل Supabase فوق PostgREST. أمان مستوى الصفوف هو ما يقرّر ما تستطيع الاستعلامات إعادته، فالتطبيق لا يحتاج أن يقرّر شيئًا",
         },
         {
           label: "الحسابات",
           value:
-            "جلساتنا الخاصة على Postgres نفسه: اسم مستخدم وكلمة مرور. البريد الإلكتروني ليس مطلوبًا",
+            "تسجيل الدخول في Supabase: اسم مستخدم وكلمة مرور. البريد ليس مطلوبًا، وGoTrue يُعطى بريدًا مبنيًا على اسم المستخدم",
         },
         {
           label: "الوسائط",
