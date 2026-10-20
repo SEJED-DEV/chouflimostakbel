@@ -91,7 +91,11 @@ const MANIFEST = {
   bell: "solid/bell",
   globe: "solid/globe",
   moon: "solid/moon",
-  sun: "solid/sun",
+  // Redrawn. Font Awesome's sun is a solid disc, and beside its crescent
+  // moon it reads as a heavier blob than the moon does - the two ends of one
+  // toggle should not look like different weights. This one is a ring with
+  // eight rays, which carries the same visual weight as the crescent.
+  sun: null,
   "circle-info": "solid/circle-info",
   "circle-warning": "solid/circle-exclamation",
   "circle-check": "solid/circle-check",
@@ -136,6 +140,12 @@ const MANIFEST = {
  * so it is delivered-only and is compared against nothing.
  */
 const PINNED = {
+  // Drawn for this platform: Font Awesome's sun is a solid disc, and beside
+  // its crescent moon it reads as the heavier of the two. A ring with eight
+  // capsule rays sits on the same optical footing as the crescent, and the
+  // whole thing stays inside the em-square, so it is sized like every other
+  // icon here rather than needing a box of its own.
+  sun: "M180 320A140 140 0 1 1 460 320A140 140 0 1 1 180 320ZM234 320A86 86 0 1 0 406 320A86 86 0 1 0 234 320ZM307 135A13 13 0 0 0 333 135L333 87A13 13 0 0 0 307 87ZM441.62 179.99A13 13 0 0 0 460.01 198.38L493.95 164.44A13 13 0 0 0 475.56 146.05ZM505 307A13 13 0 0 0 505 333L553 333A13 13 0 0 0 553 307ZM460.01 441.62A13 13 0 0 0 441.62 460.01L475.56 493.95A13 13 0 0 0 493.95 475.56ZM333 505A13 13 0 0 0 307 505L307 553A13 13 0 0 0 333 553ZM198.38 460.01A13 13 0 0 0 179.99 441.62L146.05 475.56A13 13 0 0 0 164.44 493.95ZM135 333A13 13 0 0 0 135 307L87 307A13 13 0 0 0 87 333ZM179.99 198.38A13 13 0 0 0 198.38 179.99L164.44 146.05A13 13 0 0 0 146.05 164.44Z",
   gear:
     "M259.1 73.5C262.1 58.7 275.2 48 290.4 48L350.2 48C365.4 48 378.5 58.7 381.5 73.5L396 143.5C410.1 149.5 423.3 157.2 435.3 166.3L503.1 143.8C517.5 139 533.3 145 540.9 158.2L570.8 210C578.4 223.2 575.7 239.8 564.3 249.9L511 297.3C511.9 304.7 512.3 312.3 512.3 320C512.3 327.7 511.8 335.3 511 342.7L564.4 390.2C575.8 400.3 578.4 417 570.9 430.1L541 481.9C533.4 495 517.6 501.1 503.2 496.3L435.4 473.8C423.3 482.9 410.1 490.5 396.1 496.6L381.7 566.5C378.6 581.4 365.5 592 350.4 592L290.6 592C275.4 592 262.3 581.3 259.3 566.5L244.9 496.6C230.8 490.6 217.7 482.9 205.6 473.8L137.5 496.3C123.1 501.1 107.3 495.1 99.7 481.9L69.8 430.1C62.2 416.9 64.9 400.3 76.3 390.2L129.7 342.7C128.8 335.3 128.4 327.7 128.4 320C128.4 312.3 128.9 304.7 129.7 297.3L76.3 249.8C64.9 239.7 62.3 223 69.8 209.9L99.7 158.1C107.3 144.9 123.1 138.9 137.5 143.7L205.3 166.2C217.4 157.1 230.6 149.5 244.6 143.4L259.1 73.5zM320.3 400C364.5 399.8 400.2 363.9 400 319.7C399.8 275.5 363.9 239.8 319.7 240C275.5 240.2 239.8 276.1 240 320.3C240.2 364.5 276.1 400.2 320.3 400z",
   star:
