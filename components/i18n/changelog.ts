@@ -25,6 +25,18 @@ export interface ChangelogEntry {
   date: string;
   /** One line describing the release as a whole. */
   summary: string;
+  /**
+   * The release told as a story, one string per paragraph.
+   *
+   * This is what the changelog page shows. The list below it is what the
+   * generated CHANGELOG.md shows, and what a developer scanning for "when did
+   * X change" still wants.
+   *
+   * Kept as paragraphs rather than as prose with line breaks so each language
+   * decides its own rhythm, and so a translation is never forced to break a
+   * sentence where English happened to break one.
+   */
+  story?: string[];
   /** Individual changes, most important first. */
   changes: ChangelogChange[];
   /**
@@ -67,6 +79,8 @@ export interface ChangelogCopy {
   /** How many changes a release carries. */
   changeCount: string;
   changeCountOne: string;
+  /** How long a release takes to read when it is told as a story. */
+  storyMinutes: string;
   /** Headings for the groups of changes inside a release. */
   groupAdded: string;
   groupFixed: string;
@@ -124,6 +138,15 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "19 October 2026",
         summary:
           "The roadmap page, a contact form that actually delivers, and a site that survives its own updates.",
+        story: [
+          "Once there was a small website that helped young people in Tunisia decide what to do next. It could tell them about school, about the branches they might choose, about the apprenticeships and the universities waiting at the end. What it could not do was tell anyone what it was planning to become.",
+          "So it started telling. A new page appeared, called the roadmap, where the site writes down - out loud, where anyone can read it - what it is going to build next, why, and what it has not decided yet. It is a promise written in pencil, and the eraser marks are part of the charm.",
+          "Then it fixed an old, quiet dishonesty. The contact form had looked like it worked. You filled it in, you pressed send, and it thanked you politely while dropping your message on the floor. Now the mail actually arrives, and when something is wrong it says so instead of smiling and losing things.",
+          "Next came the accounts. You no longer needed an email address to belong here - a name and a password were enough, because the site had decided that asking for something it did not need was a good way to lose people. Behind the curtain, a quiet helper called Supabase now keeps the passwords safe and remembers who is who, so nobody has to trust a home-made lock.",
+          "And then, on a phone, the top bar disappeared altogether. In its place a small row of tabs settled at the bottom of the screen, close to thumbs, where it takes exactly the room it needs so nothing hides underneath it.",
+          "There was a smaller kindness too, for the dark. Some buttons had turned a very light colour and kept their white writing, so they vanished. They still do the turning - they just bring their words with them now.",
+          "Last of all, and least visible, the site learned to survive its own updates. It checks whether the version you are reading is the newest, and says so honestly, link and all. If a page goes stale underneath you it mends itself instead of leaving a blank white screen where a page should be. Nobody will ever notice this, which is exactly how it should be.",
+        ],
         changes: [
           { text: "A new page: /soon. It publishes the roadmap for the platform to come - accounts, posts, profiles and a feed - along with the decisions taken so far and the ones still open.", kind: "added" },
           { text: "The backend decision is no longer pending. Supabase, self-hosted on our own infrastructure. What that costs us, and what it saves, is written down plainly rather than glossed over.", kind: "changed" },
@@ -169,6 +192,11 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 October 2026",
         summary:
           "Fixes: the install buttons did nothing on phones, iOS had no honest answer, and a few buttons lost their text in dark mode.",
+        story: [
+          "The new site had promised that you could install it, and then, for some people, the buttons that were supposed to do it did nothing at all when tapped. That is a worse failure than never offering: the site had made a promise and quietly broken it, and the people it broke for had no way of knowing it was not their fault.",
+          "So the buttons were mended. Where a browser will not offer to install until you have reloaded the page once, the site now says so instead of waiting in silence. Where you are on an iPhone, and a website genuinely cannot install itself, it stops pretending and gives you the three taps that do work: Share, then Add to Home Screen, then Add. And it stopped offering a lone 'Not now' button, which is not a choice - it is a door with no handle.",
+          "There was one more of the dark-mode buttons that turned pale and kept its white writing, so it vanished into itself. It was fixed, and so was the way it kept happening: the site now changes the writing and the background together.",
+        ],
         changes: [
           { text: "The download buttons in the mobile menu and the footer now work. They were silently broken for anyone who had dismissed the install sheet in the previous week.", kind: "fixed" },
           { text: "The install sheet no longer offers a lone “Not now”. When a browser cannot prompt, it explains what to do instead.", kind: "changed" },
@@ -188,6 +216,14 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 October 2026",
         summary:
           "A complete rebuild of the site, plus installable as an app and light or dark mode.",
+        story: [
+          "Once there was a website that had grown out of four pages of hand-written HTML, and it had begun to feel like four pages of hand-written HTML. So it was taken apart and built again from the beginning - not repainted, rebuilt - and everything you see now is from that second building.",
+          "The first thing the new one learned was to speak. English, French and Arabic, any of them, switched whenever you like, with Arabic set properly right-to-left rather than squeezed into a shape made for Latin letters. A guidance site for Tunisian students that could only speak English had been leaving most of its readers outside.",
+          "Then it learned to fold into a pocket. Added to your home screen it opens full screen, with no browser bar around it, like something you installed rather than somewhere you visited. And because a phone with no signal should not mean a blank page, the pages you have already opened stay readable when the connection drops.",
+          "It learned to be kind about the light, too. Dark theme if you prefer the dark, light if you prefer that, and whichever your phone already chose if you would rather not decide. Along with it came a new set of letters - the typography was rebuilt, in every language.",
+          "And it learned to do one useful sum. A university orientation score calculator, built on the Ministry of Higher Education's own formula, so a student can work out where their marks might take them. Before this the site had merely pointed at somebody else's tool and hoped it still worked.",
+          "Finally, and invisibly, it learned to be found. A sitemap, a robots file, a canonical address for every page, and a proper preview whenever a page is shared into a group chat - which, for a site that spreads by being shared, is the difference between being passed around and being passed over.",
+        ],
         changes: [
           { text: "The site was rebuilt from the ground up. The design, layout and writing are all new - v1.0.0 looked nothing like this.", kind: "added" },
           { text: "A full redesign across every page, built for clarity on a phone first.", kind: "added" },
@@ -209,6 +245,12 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "2 March 2026",
         summary:
           "The original site: four hand-written HTML pages, in English only, with no installable app and no dark mode.",
+        story: [
+          "Before any of this, there was a question that nobody in Tunisia had answered in one place: after school, what are the choices, and what does each one actually lead to? So four pages were written by hand and put on the web, because four pages were better than the shrug that had come before them.",
+          "One of them explained the apprenticeships - the ATFP certifications, the fields each one opens, and where to go and apply. Another compared the branches of the Tunisian high school honestly, subjects and drawbacks together, because a choice made on the advantages alone is a choice made blind. The others spoke to the two people who needed it most: the ones thinking of leaving school, and the ones who had just finished.",
+          "It was English only. There was no dark mode, no way to install it, nothing to read offline. It did not remember you, because it did not know you. Anyone with a question sent it to a Gmail address, and if they wanted to know what happened to their message, there was no policy to tell them.",
+          "It was small and it was rough and it worked, in the way that a first thing works. Everything after this is the story of it growing up.",
+        ],
         changes: [
           { text: "Four static pages - home, school dropouts, high school divisions and graduates.", kind: "added" },
           { text: "The ATFP reference guide: certifications, the fields they open, and where to apply.", kind: "added" },
@@ -242,6 +284,7 @@ export const changelog: Slice<ChangelogCopy> = {
     filterRemoved: "Removed",
     changeCount: "{n} changes",
     changeCountOne: "1 change",
+    storyMinutes: "{n} min read",
     groupAdded: "Added",
     groupFixed: "Fixed",
     groupChanged: "Changed",
@@ -283,6 +326,15 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "19 octobre 2026",
         summary:
           "La page /soon, un formulaire de contact qui livre enfin, et un site qui survit à ses propres mises à jour.",
+        story: [
+          "Il était une fois un petit site qui aidait les jeunes de Tunisie à décider de la suite. Il savait leur parler de l'école, des filières qu'ils pourraient choisir, des apprentissages et des universités qui attendent au bout. Ce qu'il ne savait pas faire, c'était dire à quiconque ce qu'il comptait devenir.",
+          "Alors il s'est mis à le dire. Une nouvelle page est apparue, la feuille de route, où le site écrit - à voix haute, là où tout le monde peut le lire - ce qu'il va construire ensuite, pourquoi, et ce qu'il n'a pas encore décidé. C'est une promesse au crayon, et les traces de gomme font partie du charme.",
+          "Puis il a réparé une vieille malhonnêteté, discrète. Le formulaire de contact avait l'air de fonctionner. On le remplissait, on appuyait sur envoyer, et il remerciait poliment en laissant tomber le message par terre. Maintenant le courrier arrive vraiment, et quand quelque chose ne va pas, il le dit au lieu de sourire et de perdre des choses.",
+          "Les comptes sont venus ensuite. On n'a plus besoin d'une adresse e-mail pour faire partie de tout ça - un nom et un mot de passe suffisent, parce que le site avait décidé que demander ce dont il n'a pas besoin était une bonne façon de perdre les gens. Derrière le rideau, un aide discret nommé Supabase garde les mots de passe à l'abri et se souvient de qui est qui, pour que personne n'ait à faire confiance à une serrure fabriquée à la maison.",
+          "Et puis, sur téléphone, la barre du haut a complètement disparu. À sa place, une petite rangée d'onglets s'est posée en bas de l'écran, à portée de pouce, et elle prend exactement la place qu'il lui faut pour que rien ne se cache dessous.",
+          "Il y a eu une gentillesse plus petite aussi, pour le mode sombre. Certains boutons devenaient très clairs tout en gardant leur texte blanc, et disparaissaient. Ils font toujours la même chose - ils emportent juste leurs mots avec eux, désormais.",
+          "Enfin, et le moins visible de tout, le site a appris à survivre à ses propres mises à jour. Il vérifie si la version que vous lisez est la plus récente, et le dit honnêtement, lien compris. Si une page se périmait sous vous, elle se répare au lieu de laisser un écran blanc là où il devrait y avoir une page. Personne ne le remarquera jamais, et c'est exactement comme ça que ça doit être.",
+        ],
         changes: [
           { text: "Une nouvelle page : /soon. Elle publie la feuille de route de la plateforme à venir - comptes, articles, profils et un fil - avec les décisions déjà prises et celles qui restent à prendre.", kind: "added" },
           { text: "La décision sur le backend n'est plus en attente. Supabase, auto-hébergé sur notre propre infrastructure. Ce que cela nous coûte, et ce que cela nous économise, est écrit noir sur blanc.", kind: "changed" },
@@ -328,6 +380,11 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 octobre 2026",
         summary:
           "Correctifs : les boutons d'installation ne faisaient rien sur mobile, iOS n'avait pas de vraie réponse, et quelques boutons perdaient leur texte en mode sombre.",
+        story: [
+          "Le nouveau site avait promis qu'on pourrait l'installer, et puis, pour certaines personnes, les boutons censés le faire ne faisaient rien du tout quand on appuyait. C'est un pire échec que de ne jamais proposer : le site avait fait une promesse et l'avait tranquillement cassée, et ceux pour qui elle était cassée n'avaient aucun moyen de savoir que ce n'était pas leur faute.",
+          "Alors les boutons ont été réparés. Là où un navigateur ne propose pas l'installation avant que vous ayez rechargé la page une fois, le site le dit maintenant au lieu d'attendre en silence. Là où vous êtes sur un iPhone, et où un site ne peut vraiment pas s'installer lui-même, il cesse de faire semblant et vous donne les trois gestes qui marchent : Partager, puis Sur l'écran d'accueil, puis Ajouter. Et il a cessé de proposer un « Pas maintenant » solitaire, qui n'est pas un choix - c'est une porte sans poignée.",
+          "Il restait un de ces boutons du mode sombre qui pâlissait en gardant son écriture blanche, et disparaissait en lui-même. Il a été corrigé, et la façon dont ça n'arrêtait pas d'arriver aussi : le site change maintenant l'écriture et le fond ensemble.",
+        ],
         changes: [
           { text: "Les boutons de téléchargement du menu mobile et du pied de page fonctionnent enfin. Ils étaient cassés sans rien dire à qui avait fermé la fenêtre d'installation la semaine précédente.", kind: "fixed" },
           { text: "La fenêtre d'installation n'affiche plus un simple « Pas maintenant ». Lorsqu'un navigateur ne peut pas proposer l'installation, elle explique quoi faire à la place.", kind: "changed" },
@@ -347,6 +404,14 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 octobre 2026",
         summary:
           "Une refonte complète du site, plus l'installation comme une application et le mode clair ou sombre.",
+        story: [
+          "Il était une fois un site qui avait grandi à partir de quatre pages de HTML écrites à la main, et il commençait à ressembler à quatre pages de HTML écrites à la main. Alors il a été démonté et reconstruit depuis le début - pas repeint, reconstruit - et tout ce que vous voyez maintenant vient de cette seconde construction.",
+          "La première chose que le nouveau a apprise, c'est à parler. Anglais, français et arabe, au choix, changés quand on veut, avec l'arabe composé correctement de droite à gauche au lieu d'être pressé dans une forme faite pour les lettres latines. Un site d'orientation pour les élèves tunisiens qui ne parlait qu'anglais laissait la plupart de ses lecteurs dehors.",
+          "Puis il a appris à se plier dans une poche. Ajouté à votre écran d'accueil, il s'ouvre en plein écran, sans barre de navigateur autour, comme quelque chose qu'on a installé plutôt qu'un endroit où l'on est passé. Et parce qu'un téléphone sans réseau ne devrait pas vouloir dire une page blanche, les pages déjà ouvertes restent lisibles quand la connexion tombe.",
+          "Il a appris à être gentil avec la lumière, aussi. Thème sombre si vous préférez le sombre, clair si vous préférez ça, et celui que votre téléphone avait déjà choisi si vous préférez ne pas décider. Avec lui est venu un nouvel ensemble de lettres - la typographie a été refaite, dans chaque langue.",
+          "Et il a appris à faire un calcul utile. Un calculateur de score d'orientation universitaire, bâti sur la formule du ministère de l'Enseignement supérieur, pour qu'un élève puisse voir où ses notes pourraient le mener. Avant cela, le site se contentait de pointer vers l'outil de quelqu'un d'autre en espérant qu'il fonctionne encore.",
+          "Enfin, et invisiblement, il a appris à être trouvé. Un sitemap, un fichier robots, une adresse canonique pour chaque page, et un bel aperçu chaque fois qu'une page est partagée dans une conversation de groupe - ce qui, pour un site qui se répand en étant partagé, fait la différence entre être transmis et être ignoré.",
+        ],
         changes: [
           { text: "Le site a été entièrement reconstruit. Le design, la mise en page et les textes sont neufs - la v1.0.0 n'avait rien à voir.", kind: "added" },
           { text: "Une refonte complète de toutes les pages, pensée d'abord pour la clarté sur mobile.", kind: "added" },
@@ -368,6 +433,12 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "2 mars 2026",
         summary:
           "Le site d'origine : quatre pages HTML écrites à la main, en anglais seulement, sans application installable ni mode sombre.",
+        story: [
+          "Avant tout cela, il y avait une question que personne en Tunisie n'avait traitée en un seul endroit : après l'école, quels sont les choix, et où mène réellement chacun d'eux ? Alors quatre pages ont été écrites à la main et mises en ligne, parce que quatre pages valaient mieux que le haussement d'épaules qui les précédait.",
+          "L'une expliquait les apprentissages - les certifications de l'ATFP, les métiers que chacune ouvre, et où aller s'inscrire. Une autre comparait honnêtement les filières du lycée tunisien, les matières et les inconvénients ensemble, parce qu'un choix fait sur les seuls avantages est un choix fait à l'aveugle. Les autres parlaient aux deux personnes qui en avaient le plus besoin : celles qui pensent à quitter l'école, et celles qui viennent de terminer.",
+          "Il n'était qu'en anglais. Pas de mode sombre, aucun moyen de l'installer, rien à lire hors ligne. Il ne se souvenait pas de vous, parce qu'il ne vous connaissait pas. Quiconque avait une question l'envoyait à une adresse Gmail, et s'il voulait savoir ce qu'il advenait de son message, aucune politique ne le lui disait.",
+          "Il était petit, il était brut, et il fonctionnait, comme fonctionne une première chose. Tout ce qui suit est l'histoire de sa croissance.",
+        ],
         changes: [
           { text: "Quatre pages statiques - accueil, décrochés scolaires, filières du lycée et bacheliers.", kind: "added" },
           { text: "Le guide de référence de l'ATFP : les certifications, les métiers qu'elles ouvrent, et où se porter candidat.", kind: "added" },
@@ -401,6 +472,7 @@ export const changelog: Slice<ChangelogCopy> = {
     filterRemoved: "Retraits",
     changeCount: "{n} changements",
     changeCountOne: "1 changement",
+    storyMinutes: "{n} min de lecture",
     groupAdded: "Ajouts",
     groupFixed: "Corrections",
     groupChanged: "Modifications",
@@ -442,6 +514,15 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "19 أكتوبر 2026",
         summary:
           "صفحة الطريق، ونموذج تواصل يوصل أخيراً، وموقع يصمد أمام تحديثاته.",
+        story: [
+          "في قديم الزمان، كان موقع صغير يساعد شباب تونس على اختيار ما بعد المدرسة. كان يعرف أن يحدّثهم عن الدراسة، وعن الشُّعب التي قد يختارونها، وعن التكوين المهني والجامعات التي تنتظر في النهاية. أمّا ما لم يكن يعرف فعله، فهو أن يقول لأحد ما ينوي أن يصير إليه.",
+          "فبدأ يقول. ظهرت صفحة جديدة، هي صفحة الطريق، يكتب فيها الموقع — بصوت مسموع، حيث يمكن للجميع أن يقرأ — ما سيبينيه بعد ذلك، ولماذا، وما لم يقرّره بعد. إنه وعدٌ مكتوب بالقلم الرصاص، وآثار الممحاة جزءٌ من سحره.",
+          "ثم أصلح خدعة قديمة خفيّة. كان نموذج التواصل يبدو ناجحاً. تملأه، وتضغط إرسال، فيشكرك بلطف ويترك رسالتك تسقط على الأرض. الآن يصل البريد حقًّا، وإن اختلّ شيء قاله بدل أن يبتسم ويضيّع الأشياء.",
+          "ثم جاءت الحسابات. لم تعد بحاجة إلى بريد إلكتروني لتكون جزءًا من هذا كله — يكفي اسم وكلمة سرّ، لأن الموقع قرّر أن السؤال عمّا لا تحتاجه طريقة جيدة لخسارة الناس. وخلف الستارة، يبقى مُعين هادئ اسمه Supabase يحفظ كلمات السرّ بأمان ويتذكّر من هو من، حتى لا يُضطرّ أحد إلى الوثوق بقفل صنعناه بأنفسنا.",
+          "ثم اختفت، على الهاتف، الشريط العلوي كلّياً. وفي مكانه استقرّ صفّ صغير من التبويبات أسفل الشاشة، في متناول الإبهام، ولا يأخذ من المساحة إلا قدر ما يحتاج حتى لا يختفي شيء تحته.",
+          "وكانت هناك لفتة أصغر أيضًا، للوضع الليلي. كانت بعض الأزرار تصير فاتحة جدًّا وتحتفظ بنصّها الأبيض، فتختفي. ما زالت تفعل الشيء نفسه — إلا أنها صارت تحمل كلماتها معها.",
+          "وأخيرًا، وهو أخفى ما في الأمر، تعلّم الموقع أن يصمد أمام تحديثاته هو. يتحقّق إن كانت النسخة التي تقرؤها هي الأحدث، ويقول ذلك بصدق، مع الرابط. وإن تلفت صفحة تحتك، فإنها تصلح نفسها بدل أن تترك شاشة بيضاء حيث كان ينبغي أن تكون هناك صفحة. لن يلاحظ أحد ذلك أبدًا، وهذا بالضبط ما ينبغي أن يكون عليه الأمر.",
+        ],
         changes: [
           { text: "صفحة جديدة: ‎/soon. تنشر خطة الطريق للمنصّة القادمة — حسابات، ومقالات، وملفّات شخصية، وخلاصة — مع القرارات المتَّخذة والقرارات التي ما تزال مفتوحة.", kind: "added" },
           { text: "القرار بشأن الخلفية لم يعد معلّقاً. Supabase، باستضافة ذاتية على بنيتنا التحتية. وما ينفقه هذا علينا، وما يوفّره، مكتوب بوضوح لا مُجمَّلاً.", kind: "changed" },
@@ -487,6 +568,11 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 أكتوبر 2026",
         summary:
           "إصلاحات: لم تعمل أزرار التثبيت على الهواتف، ولم يكن هناك جواب صادق على iOS، وفقدت بعض الأزرار نصّها في الوضع الليلي.",
+        story: [
+          "كان الموقع الجديد قد وعد بأنه يمكن تثبيته، ثم لم تفعل الأزرار التي يُفترض أن تفعل ذلك شيئًا على الإطلاق عند النقر، لدى بعض الناس. هذا فشل أسوأ من ألّا تعرض أصلًا: فقد قطع الموقع وعدًا وأخلّ به بهدوء، ولم يكن بوسع من انكسر الوعد في يده أن يعرف أن الذنب ليس ذنبه.",
+          "فأُصلحت الأزرار. وحيث لا يعرض المتصفّح التثبيت قبل أن تعيد تحميل الصفحة مرّة واحدة، يقول الموقع ذلك الآن بدل أن ينتظر في صمت. وحيث تكون على آيفون، وحيث لا يمكن لموقع أن يثبّت نفسه حقًّا، فإنه يتوقّف عن التظاهر ويمنحك الثلاث نقرات التي تعمل: مشاركة، ثم إضافة إلى الشاشة الرئيسية، ثم إضافة. وتوقّف أيضًا عن عرض زرّ «ليس الآن» وحده، فهو ليس خيارًا — بل بابٌ بلا مقبض.",
+          "وبقي واحد من تلك الأزرار الليلية يبهت ويحتفظ بكتابته البيضاء، فيختفي في نفسه. أُصلح هو، وأُصلح معه السبب الذي جعل الأمر يتكرّر: صار الموقع يغيّر الكتابة والخلفية معًا.",
+        ],
         changes: [
           { text: "صار زرّا التحميل في قائمة الهاتف وفي أسفل الصفحة يعملان. كانا معطّلين بصمت لكل من أغلق نافذة التثبيت في الأسبوع الماضي.", kind: "fixed" },
           { text: "لم تعد نافذة التثبيت تعرض زرّ «ليس الآن» وحده. وعندما لا يستطيع المتصفح اقتراح التثبيت، تشرح النافذة ما ينبغي فعله بدلاً من ذلك.", kind: "changed" },
@@ -506,6 +592,14 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "18 أكتوبر 2026",
         summary:
           "إعادة بناء كاملة للموقع، مع إمكانية التثبيت كتطبيق ووضع فاتح أو داكن.",
+        story: [
+          "في قديم الزمان، كان موقعًا نشأ من أربع صفحات HTML مكتوبة يدويًا، وبدأ يبدو كأربع صفحات HTML مكتوبة يدويًا. ففُكِّك وأُعيد بناؤه من الصفر — لا طُلي بالدهان، بل أُعيد بناؤه — وكل ما تراه الآن جاء من ذلك البناء الثاني.",
+          "أول ما تعلّمه الجديد أن يتكلّم. الإنجليزية والفرنسية والعربية، أيّها شئت، تُبدَّل وقتما تشاء، والعربية مُصفَّفة من اليمين إلى اليسار على وجهها الصحيح بدل أن تُحشر في قالب صُنع للحروف اللاتينية. موقع إرشادي لطلبة تونس لا يتحدّث إلا الإنجليزية كان يترك معظم قرّائه في الخارج.",
+          "ثم تعلّم أن يُطوى في جيب. يُضاف إلى شاشتك الرئيسية فيفتح بملء الشاشة، بلا شريط متصفّح حوله، كشيء ثبّته بدل مكان زرته. ولأن هاتفًا بلا شبكة لا ينبغي أن يعني صفحة بيضاء، تبقى الصفحات التي فتحتها من قبل مقروءة حين تنقطع الشبكة.",
+          "وتعلّم أن يكون رفيقًا بالنور أيضًا. وضع داكن إن كنت تفضّل الداكن، وفاتح إن كنت تفضّل ذاك، وأيّهما اختاره هاتفك سلفًا إن كنت تفضّل ألا تقرّر. وجاء معه طقم حروف جديد — أُعيدت التايبوغرافيا في كل لغة.",
+          "وتعلّم أن يحسب حسابًا واحدًا نافعًا. حاسبة معدّل التوجيه الجامعي، مبنيّة على صيغة وزارة التعليم العالي نفسها، ليستطيع الطالب أن يعرف إلى أين قد تبلغه أعداده. قبل ذلك كان الموقع يشير فقط إلى أداة شخص آخر ويأمل أنها ما زالت تعمل.",
+          "وأخيرًا، وبشكل غير مرئي، تعلّم أن يُوجَد. خريطة موقع، وملفّ robots، وعنوان أساسي لكل صفحة، ومعاينة جميلة كلما شُوركت صفحة في محادثة جماعية — وهذا، لموقع ينتشر بالمشاركة، هو الفرق بين أن يُتناقَل وأن يُتجاوَز.",
+        ],
         changes: [
           { text: "أُعيد بناء الموقع من الأساس. التصميم والتنسيق والنصوص كلها جديدة - فالإصدار 1.0.0 لم يكن شيئاً يشبهه.", kind: "added" },
           { text: "تصميم جديد لكل الصفحات، صُمم أولاً لوضوح القراءة على الهاتف.", kind: "added" },
@@ -527,6 +621,12 @@ export const changelog: Slice<ChangelogCopy> = {
         date: "2 مارس 2026",
         summary:
           "الموقع الأصلي: أربع صفحات HTML مكتوبة يدوياً، بالإنجليزية فقط، وبدون تطبيق قابل للتثبيت ولا وضع داكن.",
+        story: [
+          "قبل كل هذا، كان هناك سؤال لم يُجِب عنه أحد في تونس في مكان واحد: بعد المدرسة، ما هي الخيارات، وإلى أين يؤدّي كل خيار منها فعلًا؟ فكُتبت أربع صفحات يدويًا ووُضعت على الويب، لأن أربع صفحات خيرٌ من التكتّل الذي سبقها.",
+          "إحداها شرحت التكوين المهني — شهادات الـ ATFP، والمجالات التي يفتحها كل منها، وأين تذهب لتسجّل. وأخرى قارنت شُعب الثانوية التونسية بصدق، الموادّ والمساوئ معًا، لأن اختيارًا مبنيًّا على المحاسن وحدها اختيارٌ في العَمى. وتحدّثت الأخريان إلى أكثر من احتاجهما: من يفكّر في ترك المدرسة، ومن أنهى للتوّ.",
+          "كان بالإنجليزية فقط. لا وضع داكن، ولا سبيل لتثبيته، ولا شيء يُقرأ دون اتصال. ولم يكن يتذكّرك، لأنه لم يكن يعرفك. ومن كان لديه سؤال أرسله إلى عنوان Gmail، وإن أراد أن يعرف ماذا حدث لرسالته، لم تكن هناك سياسة تخبره.",
+          "كان صغيرًا وخشنًا وقد نجح، بالطريقة التي ينجح بها الشيء الأول. وكل ما يأتي بعد هذا هو حكاية كبره.",
+        ],
         changes: [
           { text: "أربع صفحات ثابتة - الرئيسية، المتسربون من الدراسة، أقسام الثانوية، والخريجون.", kind: "added" },
           { text: "الدليل المرجعي للتكوين المهني ATFP: الشهادات، والحقول التي تفتحها، وأماكن الترشح.", kind: "added" },
@@ -560,6 +660,7 @@ export const changelog: Slice<ChangelogCopy> = {
     filterRemoved: "إزالة",
     changeCount: "{n} تغييرات",
     changeCountOne: "تغيير واحد",
+    storyMinutes: "{n} دقائق قراءة",
     groupAdded: "إضافات",
     groupFixed: "إصلاحات",
     groupChanged: "تعديلات",

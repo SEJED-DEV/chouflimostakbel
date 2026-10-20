@@ -166,7 +166,7 @@ export default function WhatsNewPopup() {
             </p>
 
             {/* Changes for each unseen release */}
-            <div className="mt-5 space-y-4">
+            <div className="mt-5 space-y-5">
               {fresh.map((entry) => (
                 <div key={entry.version}>
                   {fresh.length > 1 && (
@@ -175,21 +175,39 @@ export default function WhatsNewPopup() {
                       <span className="text-gray">{entry.date}</span>
                     </p>
                   )}
-                  <ul className="space-y-2">
-                    {entry.changes.map((change) => (
-                      <li
-                        key={change.text}
-                        className="flex gap-2.5 text-[14.5px] leading-relaxed text-gray-2"
-                      >
-                        <span
-                          aria-hidden
-                          className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: CHANGE_COLOR[change.kind] }}
-                        />
-                        <span>{change.text}</span>
-                      </li>
-                    ))}
-                  </ul>
+
+                  {entry.story?.length ? (
+                    // The same tale the changelog page tells. A release that
+                    // has a story is a release somebody wrote about, and the
+                    // sheet quoting the audit list instead would be the same
+                    // news in a colder voice.
+                    <div className="space-y-3">
+                      {entry.story.map((paragraph, n) => (
+                        <p
+                          key={n}
+                          className="text-[14.5px] leading-[1.68] text-gray-2"
+                        >
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <ul className="space-y-2">
+                      {entry.changes.map((change) => (
+                        <li
+                          key={change.text}
+                          className="flex gap-2.5 text-[14.5px] leading-relaxed text-gray-2"
+                        >
+                          <span
+                            aria-hidden
+                            className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                            style={{ backgroundColor: CHANGE_COLOR[change.kind] }}
+                          />
+                          <span>{change.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               ))}
             </div>

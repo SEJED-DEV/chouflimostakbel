@@ -5,22 +5,31 @@ import { AnimatePresence, motion } from "motion/react";
 import Icon, { type IconName } from "@/components/Icons";
 import Reveal, { Rule } from "@/components/Reveal";
 import { useSlice } from "@/components/i18n/slice";
-import { changelog, type ChangeKind, type ChangelogEntry } from "@/components/i18n/changelog";
+import { changelog, type ChangelogEntry } from "@/components/i18n/changelog";
 import ChangelogCommits from "@/components/ChangelogCommits";
 import DeployStatusLine from "@/components/DeployStatus";
 import PushOptIn from "@/components/PushOptIn";
-
-type Filter = ChangeKind | "all";
+import { readingMinutes } from "@/lib/post-text";
 
 /**
- * The kinds, in the order they are shown inside a release, with the colour
- * and the icon that stand for each one.
+ * How long a release takes to read, when it is told as a story.
+ *
+ * Reuses the site's own reading speed rather than inventing a second one, so
+ * a "2 min" on the changelog means the same as a "2 min" on a post.
+ */
+function storyMinutes(story: readonly string[]): number {
+  return readingMinutes(story.join(" "));
+}
+
+/**
+ * The changed kinds, in the order they are shown inside a release, with the
+ * colour and the icon that stand for each one.
  *
  * The colours are Apple's system colours, the same ones the deploy status
  * uses, so the page stays in one visual language.
  */
 const KINDS: {
-  id: ChangeKind;
+  id: "added" | "fixed" | "changed" | "removed";
   color: string;
   icon: IconName;
 }[] = [
@@ -38,12 +47,11 @@ const DARK_COLOR: Record<string, string> = {
 export default function ChangelogContent() {
   const t = useSlice(changelog);
   const [query, setQuery] = useState("");
-  const [filter, setFilter] = useState<Filter>("all");
   // The newest release starts open. The rest are closed, so the page stays
   // the same height however long the changelog gets.
   const [open, setOpen] = useState<string[]>([t.entries[0]?.version ?? ""]);
 
-  const label = (kind: ChangeKind) =>
+  const label = (kind: (typeof KINDS)[number]["id"]) =>
     kind === "added"
       ? t.groupAdded
       : kind === "fixed"
@@ -52,43 +60,46 @@ export default function ChangelogContent() {
           ? t.groupChanged
           : t.groupRemoved;
 
-  const filters: { id: Filter; text: string }[] = [
-    { id: "all", text: t.filterAll },
-    { id: "added", text: t.filterAdded },
-    { id: "fixed", text: t.filterFixed },
-    { id: "changed", text: t.filterChanged },
-    { id: "removed", text: t.filterRemoved },
-  ];
-
   /**
    * The releases to show, and which of their changes survive the filter.
    *
-   * A release matches on its own text - the version or the summary - or on any
-   * of its changes. When the release itself matches, all of its changes of
-   * the chosen kind are shown; otherwise only the ones that matched.
+   * A release matches on its own text - the version, the summary or any part
+   * of its story - or on any of its changes. When a release is written as a
+   * story, the story IS the content, so the search reads it; that is the only
+   * way a reader can find the paragraph about the contact form.
+   *
+   * There is no kind filter any more. "Added" and "Fixed" are how a developer
+   * files a change, not how a reader looks for one, and a chip that returns
+   * nothing useful is worse than no chip.
    */
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase();
 
     return t.entries
       .map((entry) => {
-        const ofKind = entry.changes.filter((c) => filter === "all" || c.kind === filter);
+        const storyMatches = (entry.story ?? []).some((p) =>
+          p.toLowerCase().includes(q),
+        );
         const entryMatches =
           !q ||
           entry.version.toLowerCase().includes(q) ||
-          entry.summary.toLowerCase().includes(q);
-        const matching = ofKind.filter((c) => c.text.toLowerCase().includes(q));
+          entry.summary.toLowerCase().includes(q) ||
+          storyMatches;
+        const matching = entry.changes.filter((c) =>
+          c.text.toLowerCase().includes(q),
+        );
 
-        if (filter !== "all" && ofKind.length === 0) return null;
         if (q && !entryMatches && matching.length === 0) return null;
 
-        return {
-          entry,
-          changes: q && !entryMatches ? matching : ofKind,
-        };
+        // With a matched release the whole story is shown - a paragraph
+        // pulled out of its tale is harder to read than the tale is.
+        return { entry, changes: matching.length ? matching : entry.changes };
       })
-      .filter((x): x is { entry: ChangelogEntry; changes: ChangelogEntry["changes"] } => x !== null);
-  }, [t.entries, query, filter]);
+      .filter(
+        (x): x is { entry: ChangelogEntry; changes: ChangelogEntry["changes"] } =>
+          x !== null,
+      );
+  }, [t.entries, query]);
 
   const searching = query.trim().length > 0;
 
@@ -102,7 +113,6 @@ export default function ChangelogContent() {
 
   function clear() {
     setQuery("");
-    setFilter("all");
   }
 
   return (
@@ -125,43 +135,23 @@ export default function ChangelogContent() {
         </div>
       </section>
 
-      {/* SEARCH AND FILTERS */}
+      {/* SEARCH */}
       <section className="bg-bg pb-6">
         <div className="mx-auto max-w-3xl px-6 sm:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <div className="relative flex-1">
-              <Icon
-                name="search"
-                size={16}
-                className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray"
-              />
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                aria-label={t.searchPlaceholder}
-                className="input-ios ps-10"
-              />
-            </div>
-
-            <div className="flex flex-wrap gap-1.5">
-              {filters.map((f) => (
-                <button
-                  key={f.id}
-                  type="button"
-                  onClick={() => setFilter(f.id)}
-                  aria-pressed={filter === f.id}
-                  className={
-                    filter === f.id
-                      ? "rounded-full bg-ink px-3.5 py-2 text-[13px] font-medium text-bg transition-colors duration-200"
-                      : "rounded-full bg-bg-alt px-3.5 py-2 text-[13px] font-medium text-gray-2 transition-colors duration-200 hover:text-ink"
-                  }
-                >
-                  {f.text}
-                </button>
-              ))}
-            </div>
+          <div className="relative">
+            <Icon
+              name="search"
+              size={16}
+              className="pointer-events-none absolute start-3.5 top-1/2 -translate-y-1/2 text-gray"
+            />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              aria-label={t.searchPlaceholder}
+              className="input-ios input-ios-leading"
+            />
           </div>
         </div>
       </section>
@@ -216,9 +206,14 @@ export default function ChangelogContent() {
                                 &middot;
                               </span>
                               <span className="text-[13px] text-gray">
-                                {count === 1
-                                  ? t.changeCountOne
-                                  : t.changeCount.replace("{n}", String(count))}
+                                {entry.story?.length
+                                  ? t.storyMinutes.replace(
+                                      "{n}",
+                                      String(storyMinutes(entry.story)),
+                                    )
+                                  : count === 1
+                                    ? t.changeCountOne
+                                    : t.changeCount.replace("{n}", String(count))}
                               </span>
                             </div>
                             <p className="mt-2 text-[16px] leading-relaxed text-gray-2">
@@ -246,37 +241,54 @@ export default function ChangelogContent() {
                               className="overflow-hidden"
                             >
                               <div className="border-t border-sep px-5 pb-6 pt-5 sm:px-6 sm:pb-7">
-                                {KINDS.map((k) => {
-                                  const items = changes.filter((c) => c.kind === k.id);
-                                  if (!items.length) return null;
-                                  return (
-                                    <div key={k.id} className="mb-5 last:mb-0">
-                                      <p className="flex items-center gap-1.5 text-[11.5px] font-semibold tracking-[0.07em] text-gray uppercase">
-                                        <Icon
-                                          name={k.icon}
-                                          size={13}
-                                          style={{ color: k.color }}
-                                        />
-                                        {label(k.id)}
+                                {entry.story?.length ? (
+                                  // The release as a tale. Prose, not a list:
+                                  // reading about a site is not the same as
+                                  // auditing it, and the audit lives in
+                                  // CHANGELOG.md for anyone who wants it.
+                                  <div className="space-y-4">
+                                    {entry.story.map((paragraph, n) => (
+                                      <p
+                                        key={n}
+                                        className="text-[16px] leading-[1.72] text-gray-2"
+                                      >
+                                        {paragraph}
                                       </p>
-                                      <ul className="mt-3 space-y-2.5">
-                                        {items.map((c, n) => (
-                                          <li
-                                            key={n}
-                                            className="flex gap-3 text-[15px] leading-relaxed text-gray-2"
-                                          >
-                                            <span
-                                              aria-hidden
-                                              className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full"
-                                              style={{ backgroundColor: k.color }}
-                                            />
-                                            <span>{c.text}</span>
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                  );
-                                })}
+                                    ))}
+                                  </div>
+                                ) : (
+                                  KINDS.map((k) => {
+                                    const items = changes.filter((c) => c.kind === k.id);
+                                    if (!items.length) return null;
+                                    return (
+                                      <div key={k.id} className="mb-5 last:mb-0">
+                                        <p className="flex items-center gap-1.5 text-[11.5px] font-semibold tracking-[0.07em] text-gray uppercase">
+                                          <Icon
+                                            name={k.icon}
+                                            size={13}
+                                            style={{ color: k.color }}
+                                          />
+                                          {label(k.id)}
+                                        </p>
+                                        <ul className="mt-3 space-y-2.5">
+                                          {items.map((c, n) => (
+                                            <li
+                                              key={n}
+                                              className="flex gap-3 text-[15px] leading-relaxed text-gray-2"
+                                            >
+                                              <span
+                                                aria-hidden
+                                                className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full"
+                                                style={{ backgroundColor: k.color }}
+                                              />
+                                              <span>{c.text}</span>
+                                            </li>
+                                          ))}
+                                        </ul>
+                                      </div>
+                                    );
+                                  })
+                                )}
 
                                 <ChangelogCommits entry={entry} label={t.commitsLabel} />
                               </div>

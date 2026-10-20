@@ -295,6 +295,17 @@ body {
   transition: box-shadow 0.2s var(--ease-apple);
   box-shadow: inset 0 0 0 1px transparent;
 }
+/*
+ * The same field with something sitting at its start - a search icon.
+ *
+ * Tailwind's `ps-*` cannot do this: `.input-ios` is unlayered, so it beats
+ * every layered utility and the padding above wins whatever the markup asks
+ * for. The room is therefore declared here, where it can actually win, and
+ * the icon is placed against the same value so the two cannot drift apart.
+ */
+.input-ios-leading {
+  padding-inline-start: 40px;
+}
 .input-ios::placeholder {
   color: #a1a1a6;
 }
