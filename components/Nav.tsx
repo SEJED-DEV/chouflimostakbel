@@ -36,9 +36,10 @@ const tabs = [
 /**
  * Desktop: a floating frosted capsule with links.
  *
- * Mobile: no capsule. The iOS-style bottom tab bar takes over, and the
- * language and theme controls move into the settings sheet - reached from
- * the profile page - and into the footer, where they are still reachable.
+ * On a phone the same capsule appears, but without the links - it carries the
+ * account, the settings, the theme and the language, and the iOS-style bottom
+ * tab bar underneath does the navigating. The blogs page is the one page it
+ * does not appear on at all.
  */
 export default function Nav() {
   const pathname = usePathname();
@@ -48,7 +49,16 @@ export default function Nav() {
   return (
     <>
       {/* Top capsule - desktop only */}
-      <div className="fixed inset-x-0 top-0 z-50 hidden px-4 pt-4 md:block">
+      {/* On a phone the capsule carries the account, the settings and the
+          theme; the links live in the tab bar below. The blogs page is the
+          one place it stays away - there the page needs the whole width and
+          the tab bar already says where you are. */}
+      <div
+        className={
+          "fixed inset-x-0 top-0 z-50 px-4 pt-4" +
+          (pathname === "/blogs" ? " hidden md:block" : "")
+        }
+      >
         <nav
           aria-label="Main"
           className="frosted mx-auto flex max-w-5xl items-center justify-between rounded-full py-2 pl-4 pr-2"
@@ -69,36 +79,40 @@ export default function Nav() {
           </Link>
 
           <div className="flex items-center gap-1">
-            {tabs.slice(0, 4).map((l) => {
-              const active = pathname === l.href;
-              return (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
-                    active ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
-                  }`}
-                >
-                  {t.nav[l.labelKey]}
-                </Link>
-              );
-            })}
-            <Link
-              href="/blogs"
-              className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
-                pathname === "/blogs" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
-              }`}
-            >
-              {t.nav.blogs}
-            </Link>
-            <Link
-              href="/about"
-              className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
-                pathname === "/about" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
-              }`}
-            >
-              {t.nav.about}
-            </Link>
+            {/* The links belong to the capsule only at the size where the
+                bottom tab bar is not the navigation. */}
+            <div className="hidden items-center gap-1 md:flex">
+              {tabs.slice(0, 4).map((l) => {
+                const active = pathname === l.href;
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
+                      active ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
+                    }`}
+                  >
+                    {t.nav[l.labelKey]}
+                  </Link>
+                );
+              })}
+              <Link
+                href="/blogs"
+                className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
+                  pathname === "/blogs" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
+                }`}
+              >
+                {t.nav.blogs}
+              </Link>
+              <Link
+                href="/about"
+                className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
+                  pathname === "/about" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
+                }`}
+              >
+                {t.nav.about}
+              </Link>
+            </div>
 
             {/* The blue action becomes the account: a name when signed in,
                 and a way in when not. */}

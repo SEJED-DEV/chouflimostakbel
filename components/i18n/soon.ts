@@ -75,14 +75,14 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "On the way",
       title: "A bigger",
       titleAccent: "platform.",
-      sub: "Accounts, blogs, custom profiles, and a feed that learns what you actually came here for. Still being built, in the open.",
+      sub: "Accounts, profiles and role badges are live. Still being built, in the open: an editor anyone can write in, and a feed that learns what you actually came here for.",
       cta: "See the roadmap",
       ctaSecondary: "Follow along on GitHub",
     },
 
     intro: {
       title: "Why this exists.",
-      body: "Today the site is a static set of guides with no accounts and no database. The next phase turns it into something you can log into, write on, and be shown things that matter to you. None of it is built yet - this page is the plan, published as we go.",
+      body: "When this started it was a static set of guides with no accounts and no database. It is neither any more: you sign in with a username rather than an address, and you keep a profile - a photo, a banner, a birthday, and whatever badges the platform has granted you. What is still missing is the reason people will come back: writing posts, reading them, and being shown the ones that actually matter to you. This page is the plan for that, published as we go.",
     },
 
     questions: {
@@ -91,7 +91,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Decided",
         title: "Supabase, for the whole backend.",
-        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.",
+        body: "Supabase covers the database and sign-in in one place, so we are not assembling and running two unrelated services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.\n\nThe stack we actually run is deliberately smaller than the one Supabase offers: Postgres and Supabase Auth, and nothing else. File storage, Realtime and analytics are switched off - photos are resized in the browser and stored as data on the profile row, which takes an image host off the list of things that can be down.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.",
       },
       items: [
         {
@@ -110,13 +110,13 @@ export const soon: Slice<SoonCopy> = {
     },
 
     stack: {
-      title: "What it would run on",
-      sub: "Supabase bundles the database, sign-in, file storage and live updates into one coherent stack, instead of bolting four unrelated services together. But since we host it ourselves, running it, upgrading it, backing it up and keeping it patched land on us too: the saving is the assembly, the cost is the operations.",
+      title: "What it runs on",
+      sub: "Supabase bundles the database and sign-in into one coherent stack, instead of bolting unrelated services together. Since we host it ourselves, running it, upgrading it, backing it up and keeping it patched land on us too: the saving is the assembly, the cost is the operations. Most of what Supabase also ships is deliberately switched off until it earns its place.",
       items: [
         {
           label: "Platform",
           value:
-            "Supabase - Postgres, sign-in, file storage and live updates in one place, self-hosted on our own infrastructure",
+            "Supabase - Postgres and sign-in in one place, self-hosted on our own infrastructure",
         },
         {
           label: "Database",
@@ -132,19 +132,23 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Media",
-          value: "Supabase Storage, with images resized on upload",
+          value:
+            "No image host at all. Photos are cropped and compressed to WebP in the browser, and stored as data on the profile row - so there is no upload service, no bucket, and one less thing that can be down",
         },
         {
           label: "Live updates",
-          value: "Supabase Realtime, one subscription per signed-in reader",
+          value:
+            "Not running yet. One subscription per signed-in reader, when reactions and comments land",
         },
         {
           label: "Permissions",
-          value: "Row Level Security, so the database enforces who may do what",
+          value:
+            "Row Level Security, so the database enforces who may do what - including refusing to let anyone grant themselves a role",
         },
         {
           label: "Transactional email",
-          value: "A separate provider, for verification and notifications",
+          value:
+            "Deferred until the domain is live. The platform works without one, and asking for an address nobody reads is how you lose people",
         },
       ],
     },
@@ -156,12 +160,12 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "Foundations",
-          body: "The database, accounts and storage. This is the whole foundation - nothing else can start until it exists. The database and the accounts are built and working; storage and transactional email are not.",
+          body: "The database, the accounts, and the profile table everything else hangs off. This is the whole foundation - nothing else can start until it exists. Postgres, Supabase Auth, the profiles schema and the role badges are built and working. Storage was deliberately left out: photos are resized in the browser and stored as data. Transactional email waits on the domain.",
           points: [
             "Postgres and schema",
             "Sign-in and sessions",
-            "Media uploads",
-            "Transactional email",
+            "Roles, granted in the database",
+            "Transactional email, waiting on the domain",
           ],
         },
         {
@@ -303,14 +307,14 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "En préparation",
       title: "Une plateforme",
       titleAccent: "plus grande.",
-      sub: "Des comptes, des articles, des profils personnalisés, et un fil qui comprend ce que vous êtes vraiment venu chercher ici. Encore en construction, et tout est public.",
+      sub: "Les comptes, les profils et les badges sont en ligne. Ce qui reste à construire, au grand jour : un éditeur où chacun peut écrire, et un fil qui comprend ce que vous êtes vraiment venu chercher ici.",
       cta: "Voir la feuille de route",
       ctaSecondary: "Suivre sur GitHub",
     },
 
     intro: {
       title: "Pourquoi cette page existe.",
-      body: "Aujourd'hui, le site est un ensemble statique de guides, sans comptes et sans base de données. La prochaine étape en fait un lieu où l'on se connecte, où l'on écrit, et où l'on vous montre ce qui compte pour vous. Rien de tout cela n'existe encore - cette page est le plan, publié au fil de l'eau.",
+      body: "Au début, ce n'était qu'un ensemble statique de guides, sans comptes et sans base de données. Ce n'est plus le cas : on se connecte avec un identifiant plutôt qu'avec une adresse, et l'on garde un profil - une photo, une bannière, une date de naissance, et les badges que la plateforme vous a attribués. Ce qui manque encore, c'est la raison pour laquelle on reviendra : écrire des articles, les lire, et voir ceux qui comptent vraiment pour vous. Cette page est le plan, publié au fil de l'eau.",
     },
 
     questions: {
@@ -319,7 +323,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Décidé",
         title: "Supabase, pour toute la partie serveur.",
-        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.",
+        body: "Supabase couvre la base de données et l'authentification au même endroit, sans avoir à assembler et à exploiter deux services sans lien entre eux. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.\n\nLa pile que nous exploitons réellement est volontairement plus petite que celle que Supabase propose : Postgres et l'authentification de Supabase, et rien d'autre. Le stockage de fichiers, Realtime et l'analyse sont désactivés - les photos sont redimensionnées dans le navigateur et stockées comme données sur la ligne du profil, ce qui retire un hébergeur d'images de la liste de ce qui peut tomber en panne.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.",
       },
       items: [
         {
@@ -338,13 +342,13 @@ export const soon: Slice<SoonCopy> = {
     },
 
     stack: {
-      title: "Sur quoi cela tournerait",
-      sub: "Supabase réunit la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct dans une pile cohérente, au lieu d'assembler quatre services sans lien entre eux. Mais puisque nous l'hébergeons nous-mêmes, l'exploiter, le mettre à niveau, en assurer les sauvegardes et les correctifs revient aussi à nous : l'économie porte sur l'assemblage, le coût porte sur l'exploitation.",
+      title: "Sur quoi cela tourne",
+      sub: "Supabase réunit la base de données et l'authentification dans une pile cohérente, au lieu d'assembler des services sans lien entre eux. Puisque nous l'hébergeons nous-mêmes, l'exploiter, le mettre à niveau, en assurer les sauvegardes et les correctifs revient aussi à nous : l'économie porte sur l'assemblage, le coût porte sur l'exploitation. La plupart de ce que Supabase fournit encore est désactivé volontairement, jusqu'à ce qu'il le mérite.",
       items: [
         {
           label: "Plateforme",
           value:
-            "Supabase - Postgres, authentification, stockage des fichiers et mises à jour en direct au même endroit, auto-hébergé sur notre propre infrastructure",
+            "Supabase - Postgres et authentification au même endroit, auto-hébergé sur notre propre infrastructure",
         },
         {
           label: "Base de données",
@@ -362,20 +366,23 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Médias",
-          value: "Supabase Storage, avec redimensionnement des images à l'envoi",
+          value:
+            "Aucun hébergeur d'images. Les photos sont recadrées et compressées en WebP dans le navigateur, puis stockées comme données sur la ligne du profil : pas de service d'envoi, pas de bac, une chose de moins qui peut tomber en panne",
         },
         {
           label: "Mises à jour en direct",
-          value: "Supabase Realtime, un abonnement par lecteur connecté",
+          value:
+            "Pas encore en service. Un abonnement par lecteur connecté, quand les réactions et les commentaires arriveront",
         },
         {
           label: "Permissions",
           value:
-            "Row Level Security, pour que la base de données applique qui peut faire quoi",
+            "Row Level Security, pour que la base de données applique qui peut faire quoi - y compris refuser à quiconque de s'attribuer un badge",
         },
         {
           label: "E-mails transactionnels",
-          value: "Un fournisseur distinct, pour la vérification et les notifications",
+          value:
+            "Reportés tant que le domaine n'est pas en ligne. La plateforme fonctionne sans, et demander une adresse que personne ne lit, c'est perdre des gens",
         },
       ],
     },
@@ -387,20 +394,20 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "Les fondations",
-          body: "La base de données, les comptes et le stockage. C'est toute la fondation - rien d'autre ne peut commencer avant qu'elle existe. La base de données et les comptes sont construits et fonctionnent ; le stockage et les e-mails transactionnels ne le sont pas.",
+          body: "La base de données, les comptes, et la table des profils à laquelle tout le reste se rattache. C'est toute la fondation - rien d'autre ne peut commencer avant qu'elle existe. Postgres, l'authentification de Supabase, le schéma des profils et les badges sont construits et fonctionnent. Le stockage a été laissé de côté volontairement : les photos sont redimensionnées dans le navigateur et stockées comme données. Les e-mails transactionnels attendent le domaine.",
           points: [
             "Postgres et le schéma",
             "Connexion et sessions",
-            "Envoi de médias",
-            "E-mails transactionnels",
+            "Les badges, attribués dans la base",
+            "E-mails transactionnels, en attente du domaine",
           ],
         },
         {
           n: "1",
           name: "Profils et publication",
-          body: "Des profils personnalisés, et un éditeur où chacun peut écrire un article, avec brouillons et historique des modifications. Le profil existe et vous pouvez le renommer ; l'éditeur n'existe pas encore.",
+          body: "Les profils sont terminés : une photo, une bannière, une date de naissance, la date d'inscription, et les badges que la plateforme vous a attribués - le tout avec une surface de réglages pour le thème et la langue. Il reste l'éditeur : un endroit où chacun peut écrire un article, avec brouillons et historique des modifications. Il n'existe pas encore.",
           points: [
-            "Profils personnalisés avec des thèmes",
+            "Photo, bannière, naissance, badges",
             "Éditeur Markdown",
             "Brouillons, versions, suppression",
             "Public ou non répertorié, article par article",
@@ -525,7 +532,7 @@ export const soon: Slice<SoonCopy> = {
       body: "Chaque décision, correction de bug et version est écrite et archivée. Si vous voulez suivre, lisez le code, signalez ce qui vous paraît bancal, ou prenez une partie en charge - le dépôt est la version honnête de cette page.",
       repoCta: "Voir le dépôt",
       issuesCta: "Ouvrir un ticket",
-      note: "Rien ici n'est encore en ligne. Les pages de ce site sont la partie stable ; le plan, c'est le reste.",
+      note: "Les guides, les comptes et les profils sont en ligne. L'écriture, la lecture et le fil sont le reste.",
     },
   },
 
@@ -534,14 +541,14 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "قريباً",
       title: "منصة",
       titleAccent: "أكبر.",
-      sub: "حسابات، ومقالات، وملفّات شخصية مخصّصة، وخلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً. ما زالت قيد البناء، وكل شيء مكشوف.",
+      sub: "الحسابات والملفّات الشخصية وشارات الأدوار تعمل الآن. وما يزال قيد البناء، في العلن: محرّر يكتب فيه أيّ شخص، وخلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً.",
       cta: "اطّلع على خارطة الطريق",
       ctaSecondary: "تابعنا على GitHub",
     },
 
     intro: {
       title: "لماذا هذه الصفحة.",
-      body: "اليوم، الموقع مجموعة من الأدلة الثابتة، بلا حسابات وبلا قاعدة بيانات. المرحلة القادمة تحوّله إلى مكان تسجّل الدخول إليه، وتكتب فيه، ويُعرض لك فيه ما يهمّك فعلاً. لا شيء من ذلك مبنيّ بعد - هذه الصفحة هي الخطة، تُنشر بالتوازي مع التنفيذ.",
+      body: "في البداية كان الموقع مجموعة أدلة ثابتة، بلا حسابات وبلا قاعدة بيانات. وقد صار ذلك غير صحيح: تسجّل الدخول باسم مستخدم بدل بريد، وتحتفظ بملفّ شخصي - صورة وشعاراً عريضاً وتاريخ ميلاد، وما منحته المنصّة من شارات. وما يزال ناقصاً ما يجعل الناس يعودون: كتابة المقالات وقراءتها، وعرض ما يهمّك فعلاً. هذه الصفحة هي الخطة لذلك، تُنشر بالتوازي مع التنفيذ.",
     },
 
     questions: {
@@ -550,7 +557,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "قرّر",
         title: "Supabase، من أجل كلّ ما في الخلفية.",
-        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.",
+        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في مكان واحد، فلا نضطر إلى تجميع خدمتين لا صلة بينهما وتشغيلهما. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».\n\nالمنظومة التي نشغّلها فعلاً أصغر عمداً ممّا يقدّمه Supabase: Postgres وتسجيل الدخول في Supabase، ولا شيء سواهما. أمّا تخزين الملفات والتحديثات المباشرة والتحليلات فمعطّلة - فالصور تُصغَّر داخل المتصفح وتُخزَّن كبيانات في صفّ الملفّ الشخصي، فيختفي مضيف الصور من قائمة ما قد يتعطّل.\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.",
       },
       items: [
         {
@@ -569,13 +576,13 @@ export const soon: Slice<SoonCopy> = {
     },
 
     stack: {
-      title: "ما الذي سيُبنى عليه",
-      sub: "Supabase لا يزال يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في منظومة واحدة متجانسة، بدل تجميع أربع خدمات لا صلة بينها. لكن بما أننا نستضيفه بأنفسنا، فإن تشغيله وترقيته وأخذ النسخ الاحتياطي منه وتصحيح ثغراته تقع علينا نحن أيضاً: التوفير في التجميع، والتكلفة في التشغيل.",
+      title: "على ماذا تعمل المنصّة",
+      sub: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في منظومة واحدة متجانسة، بدل تجميع خدمات لا صلة بينها. وبما أننا نستضيفه بأنفسنا، فإن تشغيله وترقيته وأخذ النسخ الاحتياطي منه وتصحيح ثغراته تقع علينا نحن أيضاً: التوفير في التجميع، والتكلفة في التشغيل. ومعظم ما يقدّمه Supabase أيضاً معطّل عمداً، حتى يستحقّ مكانه.",
       items: [
         {
           label: "المنصّة",
           value:
-            "Supabase - Postgres وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، باستضافة ذاتية على بنيتنا التحتية",
+            "Supabase - Postgres وتسجيل الدخول في مكان واحد، باستضافة ذاتية على بنيتنا التحتية",
         },
         {
           label: "قاعدة البيانات",
@@ -592,19 +599,23 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "الوسائط",
-          value: "تخزين الملفات في Supabase، مع تغيير حجم الصور عند الرفع",
+          value:
+            "لا مضيف صور إطلاقاً. تُقصّ الصور وتُضغط بصيغة WebP داخل المتصفح، ثم تُخزَّن كبيانات في صفّ الملفّ الشخصي - فلا خدمة رفع، ولا حاوية تخزين، وشيء أقلّ قد يتعطّل",
         },
         {
           label: "التحديثات المباشرة",
-          value: "التحديثات المباشرة في Supabase، اشتراك واحد لكل قارئ مسجَّل الدخول",
+          value:
+            "لا تعمل بعد. اشتراك واحد لكل قارئ مسجَّل الدخول، حين تصل التفاعلات والتعليقات",
         },
         {
           label: "الصلاحيات",
-          value: "أمان مستوى الصفوف، فتطبّق قاعدة البيانات نفسها من يحقّ له فعل ماذا",
+          value:
+            "أمان مستوى الصفوف، فتطبّق قاعدة البيانات نفسها من يحقّ له فعل ماذا - بما في ذلك رفض السماح لأحدٍ بأن يمنح نفسه شارة",
         },
         {
           label: "بريد المعاملات",
-          value: "مزوّد منفصل، من أجل التحقّق والإشعارات",
+          value:
+            "مؤجَّل حتى يعمل النطاق. المنصّة تعمل بدونه، وطلب بريد لا يقرأه أحد طريقةٌ مضمونة لتفقد الناس",
         },
       ],
     },
@@ -616,20 +627,20 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "الأساسات",
-          body: "قاعدة البيانات والحسابات والتخزين. هذه هي الأساس كلّه - لا شيء آخر يمكن أن يبدأ قبل أن يوجد. قاعدة البيانات والحسابات مبنيّة وتعمل؛ أما التخزين والبريد المعاملات فلا يزالان.",
+          body: "قاعدة البيانات والحسابات، وجدول الملفّات الشخصية الذي يتعلّق به كل شيء آخر. هذا هو الأساس كلّه - لا شيء آخر يمكن أن يبدأ قبل أن يوجد. Postgres وتسجيل الدخول في Supabase ومخطّط الملفّات الشخصية وشارات الأدوار مبنيّة وتعمل. أمّا التخزين فترك عمداً: الصور تُصغَّر داخل المتصفح وتُخزَّن كبيانات. وبريد المعاملات ينتظر النطاق.",
           points: [
             "Postgres والمخطّط",
             "تسجيل الدخول والجلسات",
-            "رفع الوسائط",
-            "بريد المعاملات",
+            "الشارات، تُمنح داخل قاعدة البيانات",
+            "بريد المعاملات، بانتظار النطاق",
           ],
         },
         {
           n: "1",
           name: "الملفّات الشخصية والنشر",
-          body: "ملفّات شخصية مخصّصة، ومحرّر يكتب فيه أيّ شخص مقالاً، مع مسودّات وسجلّ للتعديلات. الملفّ الشخصي موجود ويمكنك تغيير اسمه؛ أما المحرّر فلا يزال.",
+          body: "الملفّات الشخصية اكتملت: صورة وشعار عريض وتاريخ ميلاد وتاريخ الانضمام، والشارات التي منحتها لك المنصّة - مع سطح إعدادات للمظهر واللغة. وما يبقى هو المحرّر: مكان يكتب فيه أيّ شخص مقالاً، مع مسودّات وسجلّ للتعديلات. لم يأتِ بعد.",
           points: [
-            "ملفّات شخصية مخصّصة مع مواضيع",
+            "الصورة والشعار والميلاد والشارات",
             "محرّر Markdown",
             "مسودّات وإصدارات وحذف",
             "عام أو غير مُدرج، لكل مقال",
@@ -754,7 +765,7 @@ export const soon: Slice<SoonCopy> = {
       body: "كل قرار وإصلاح علة وإصدار مكتوب ومُودَع. إن أردت المتابعة، فاقرأ الشيفرة، أو بلّغ عن أمر محيّر يصادفك، أو خُذ على عاتقك جزءاً منه - المستودع هو النسخة الصادقة من هذه الصفحة.",
       repoCta: "اطّلع على المستودع",
       issuesCta: "افتح مسألة",
-      note: "لا شيء هنا يعمل بعد. صفحات هذا الموقع هي الجزء المستقرّ؛ والخطة هي الباقي.",
+      note: "الأدلة والحسابات والملفّات الشخصية تعمل الآن. أمّا الكتابة والقراءة والخلاصة فهي الباقي.",
     },
   },
 };
