@@ -6,7 +6,9 @@ import SocialLinks from "./SocialLinks";
 import DownloadButton from "./DownloadButton";
 import PushPrompt from "./PushPrompt";
 import EmailOff from "./EmailOff";
-import { site, socialLinks } from "@/lib/site";
+import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
+import { site, socialLinks, REPO_URL } from "@/lib/site";
 import { useT } from "./LanguageProvider";
 
 export default function Footer() {
@@ -99,6 +101,14 @@ export default function Footer() {
                     {t.footer.changelog}
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/profile"
+                    className="text-[14px] text-gray-2 transition-colors hover:text-blue"
+                  >
+                    {t.nav.profile}
+                  </Link>
+                </li>
                 {legalLinks.map((l) => (
                   <li key={l.href}>
                     <Link
@@ -109,9 +119,26 @@ export default function Footer() {
                     </Link>
                   </li>
                 ))}
+                <li>
+                  <a
+                    href={`${REPO_URL}/blob/main/CONTRIBUTING.md`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[14px] text-gray-2 transition-colors hover:text-blue"
+                  >
+                    {t.footer.contribute}
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
+        </div>
+
+        {/* On a phone there is no top bar, so the language and theme controls
+            live here instead. */}
+        <div className="mt-10 flex items-center gap-3 md:hidden">
+          <ThemeToggle />
+          <LanguageSwitcher />
         </div>
 
         <PushPrompt className="mt-12" />

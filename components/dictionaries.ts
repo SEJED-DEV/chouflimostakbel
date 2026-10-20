@@ -63,6 +63,16 @@ export const subjects = {
 } as const;
 
 export const en = {
+
+  contextMenu: {
+    openInNewTab: "Open in a new tab",
+    copyLink: "Copy the link",
+    copyPage: "Copy the page address",
+    share: "Share",
+    installApp: "Install the app",
+    lightTheme: "Light theme",
+    darkTheme: "Dark theme",
+  },
   nav: {
     home: "Home",
     dropouts: "Dropouts",
@@ -73,7 +83,12 @@ export const en = {
     language: "Language",
     aboutUs: "About us",
     contactUs: "Contact us",
-  },
+
+    blogs: "Blogs",
+    profile: "Profile",
+    login: "Log in",
+    signup: "Sign up",
+    handle: "Username",  },
 
   langPicker: {
     title: "Choose your language",
@@ -220,7 +235,8 @@ export const en = {
   },
 
   footer: {
-    blurb: "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
+
+    contribute: "Contribute",    blurb: "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
     explore: "Explore",
     contact: "Contact",
     legal: "Legal",
@@ -251,6 +267,16 @@ type Widen<T> = T extends string
 export type Dictionary = Widen<typeof en>;
 
 export const fr: Dictionary = {
+
+  contextMenu: {
+    openInNewTab: "Ouvrir dans un nouvel onglet",
+    copyLink: "Copier le lien",
+    copyPage: "Copier l’adresse de la page",
+    share: "Partager",
+    installApp: "Installer l’application",
+    lightTheme: "Thème clair",
+    darkTheme: "Thème sombre",
+  },
   nav: {
     home: "Accueil",
     dropouts: "Décrochés",
@@ -261,7 +287,12 @@ export const fr: Dictionary = {
     language: "Langue",
     aboutUs: "À propos",
     contactUs: "Contact",
-  },
+
+    blogs: "Blogs",
+    profile: "Profil",
+    login: "Connexion",
+    signup: "Inscription",
+    handle: "Nom d’utilisateur",  },
 
   langPicker: {
     title: "Choisissez votre langue",
@@ -406,7 +437,8 @@ export const fr: Dictionary = {
   },
 
   footer: {
-    blurb: "Des chemins concrets vers un avenir stable pour la jeunesse tunisienne, avec ou sans Bac.",
+
+    contribute: "Contribuer",    blurb: "Des chemins concrets vers un avenir stable pour la jeunesse tunisienne, avec ou sans Bac.",
     explore: "Explorer",
     contact: "Contact",
     legal: "Légal",
@@ -427,6 +459,16 @@ export const fr: Dictionary = {
 };
 
 export const ar: Dictionary = {
+
+  contextMenu: {
+    openInNewTab: "فتح في تبويب جديد",
+    copyLink: "نسخ الرابط",
+    copyPage: "نسخ عنوان الصفحة",
+    share: "مشاركة",
+    installApp: "تثبيت التطبيق",
+    lightTheme: "المظهر الفاتح",
+    darkTheme: "المظهر الداكن",
+  },
   nav: {
     home: "الرئيسية",
     dropouts: "المتسربون",
@@ -437,7 +479,12 @@ export const ar: Dictionary = {
     language: "اللغة",
     aboutUs: "من نحن",
     contactUs: "اتصل بنا",
-  },
+
+    blogs: "المدونة",
+    profile: "الملف الشخصي",
+    login: "تسجيل الدخول",
+    signup: "إنشاء حساب",
+    handle: "اسم المستخدم",  },
 
   langPicker: {
     title: "اختر لغتك",
@@ -581,7 +628,8 @@ export const ar: Dictionary = {
   },
 
   footer: {
-    blurb: "طرق حقيقية نحو مستقبل مستقر للشباب التونسي، مع البكالوريا أو بدونها.",
+
+    contribute: "ساهم",    blurb: "طرق حقيقية نحو مستقبل مستقر للشباب التونسي، مع البكالوريا أو بدونها.",
     explore: "استكشاف",
     contact: "اتصل بنا",
     legal: "قانوني",

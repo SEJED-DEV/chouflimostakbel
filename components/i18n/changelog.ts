@@ -121,6 +121,7 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.2",
+        notice: "v1.1.2-r2",
         date: "19 October 2026",
         summary:
           "The roadmap page, a contact form that actually delivers, and a site that survives its own updates.",
@@ -139,6 +140,14 @@ export const changelog: Slice<ChangelogCopy> = {
           { text: "The domain is defined in one place now. Moving it used to mean four files, which had already drifted apart.", kind: "changed" },
 
           { text: "The changelog page itself is rebuilt: each release collapses to one line, the newest stays open, and the changes are grouped by kind and searchable. A long changelog no longer means a long scroll.", kind: "changed" },
+
+          { text: "Accounts. A username and a password, on our own Postgres, with the row level security policies deciding who may read what. An email address is not required - the platform does not need one.", kind: "added" },
+          { text: "The account page is gone, split into /login and /signup, and joined by a profile page of your own.", kind: "added" },
+          { text: "A blogs section, empty for now, and honest about being empty.", kind: "added" },
+          { text: "On a phone there is no top bar any more. The tab bar at the bottom is the navigation, and it takes the space it needs so nothing hides underneath it.", kind: "changed" },
+          { text: "The blue button in the navigation is now Log in, and it becomes your name once you are signed in.", kind: "changed" },
+          { text: "A context menu of your own: open in a new tab, copy the link, share, install the app, and flip the theme.", kind: "added" },
+          { text: "CONTRIBUTING.md, and a CHANGELOG.md generated from the same data the site uses, so the two can never disagree.", kind: "added" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
@@ -271,6 +280,7 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.2",
+        notice: "v1.1.2-r2",
         date: "19 octobre 2026",
         summary:
           "La page /soon, un formulaire de contact qui livre enfin, et un site qui survit à ses propres mises à jour.",
@@ -289,6 +299,14 @@ export const changelog: Slice<ChangelogCopy> = {
           { text: "Le domaine est défini à un seul endroit maintenant. Le changer demandait quatre fichiers, qui avaient déjà divergé.", kind: "changed" },
 
           { text: "La page des versions est reconstruite : chaque version tient sur une ligne, la plus récente reste ouverte, et les changements sont regroupés par type et cherchables. Un long journal ne veut plus dire un long défilement.", kind: "changed" },
+
+          { text: "Les comptes. Un nom d'utilisateur et un mot de passe, sur notre propre Postgres, avec les politiques de sécurité au niveau des lignes qui décident qui peut lire quoi. Aucune adresse e-mail n'est requise - la plateforme n'en a pas besoin.", kind: "added" },
+          { text: "La page compte a disparu, coupée en /login et /signup, et rejointe par une page de profil qui vous appartient.", kind: "added" },
+          { text: "Une section blogs, vide pour l'instant, et honnête sur le fait qu'elle est vide.", kind: "added" },
+          { text: "Sur un téléphone, il n'y a plus de barre du haut. La barre d'onglets en bas est la navigation, et elle prend la place qu'il lui faut pour que rien ne passe dessous.", kind: "changed" },
+          { text: "Le bouton bleu de la navigation est maintenant « Connexion », et il devient votre nom une fois connecté.", kind: "changed" },
+          { text: "Un menu contextuel à vous : ouvrir dans un nouvel onglet, copier le lien, partager, installer l'application, et changer de thème.", kind: "added" },
+          { text: "CONTRIBUTING.md, et un CHANGELOG.md généré depuis les mêmes données que le site, pour que les deux ne puissent pas diverger.", kind: "added" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },
@@ -421,6 +439,7 @@ export const changelog: Slice<ChangelogCopy> = {
     entries: [
       {
         version: "v1.1.2",
+        notice: "v1.1.2-r2",
         date: "19 أكتوبر 2026",
         summary:
           "صفحة الطريق، ونموذج تواصل يوصل أخيراً، وموقع يصمد أمام تحديثاته.",
@@ -439,6 +458,14 @@ export const changelog: Slice<ChangelogCopy> = {
           { text: "النطاق صار معرّفاً في مكان واحد. تغييره كان يتطلّب أربعة ملفات، وقد تباعدت فعلاً.", kind: "changed" },
 
           { text: "أُعيد بناء صفحة سجلّ الإصدارات: كل إصدار ينطبق في سطر واحد، والأحدث يبقى مفتوحًا، والتغييرات مُجمَّعة حسب نوعها وقابلة للبحث. فالسجلّ الطويل لم يعد يعني تمريرًا طويلًا.", kind: "changed" },
+
+          { text: "الحسابات. اسم مستخدم وكلمة مرور، على Postgres الخاص بنا، مع سياسات أمان مستوى الصفوف هي التي تقرّر من يقرأ ماذا. البريد الإلكتروني ليس مطلوبًا - المنصّة لا تحتاجه.", kind: "added" },
+          { text: "لم تعد صفحة الحساب موجودة. انقسمت إلى /login و /signup، ومعها صفحة ملفّ شخصي لك.", kind: "added" },
+          { text: "قسم المدوّنات، فارغ الآن، وصريح بأنه فارغ.", kind: "added" },
+          { text: "لم يعد في الهاتف شريط علوي. شريط التبويبات في الأسفل هو التنقّل، وقد أخذ المساحة التي يحتاجها كي لا يختبئ شيء تحته.", kind: "changed" },
+          { text: "الزر الأزرق في التنقّل صار «تسجيل الدخول»، ثم يصير اسمك بعد أن تسجّل الدخول.", kind: "changed" },
+          { text: "قائمة سياق خاصة بك: فتح في تبويب جديد، ونسخ الرابط، ومشاركة، وتثبيت التطبيق، وتبديل المظهر.", kind: "added" },
+          { text: "ملفّ CONTRIBUTING.md، وملفّ CHANGELOG.md مولَّد من البيانات نفسها التي يستعملها الموقع، فلا يمكن للاثنين أن يختلفا.", kind: "added" },
         ],
         commits: [
           { hash: "9fe2316", summary: "Add a /soon page publishing the platform roadmap" },

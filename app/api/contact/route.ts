@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { site } from "@/lib/site";
+import { tooMany, callerKey } from "@/lib/rate-limit";
 
 /**
  * Contact form endpoint.
@@ -29,44 +30,6 @@ const LIMITS = { name: 80, email: 200, message: 4000 };
 /** Per address. Deliberately generous - real people do send several. */
 const RATE = { max: 5, windowMs: 60 * 60 * 1000 };
 
-/**
- * In-memory rate limiting.
- *
- * This is a spam control, not a security boundary: it resets on redeploy and
- * does not coordinate across instances. A shared store would be needed if
- * this ever sits behind more than one process.
- */
-const hits = new Map<string, number[]>();
-
-function rateLimited(key: string, now: number): boolean {
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < RATE.windowMs);
-
-  if (recent.length >= RATE.max) {
-    hits.set(key, recent);
-    return true;
-  }
-
-  recent.push(now);
-  hits.set(key, recent);
-
-  // Keep the map from growing without bound on a long-running server.
-  if (hits.size > 5000) {
-    for (const [k, times] of hits) {
-      if (!times.some((t) => now - t < RATE.windowMs)) hits.delete(k);
-    }
-  }
-
-  return false;
-}
-
-/** Identifies the caller well enough to rate limit them. */
-function callerKey(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  const ip = forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
-  const agent = request.headers.get("user-agent") ?? "";
-  return `${ip}|${agent.slice(0, 40)}`;
-}
-
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function escapeHtml(value: string): string {
@@ -83,8 +46,6 @@ function problem(message: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  const now = Date.now();
-
   let body: {
     name?: unknown;
     email?: unknown;
@@ -105,7 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  if (rateLimited(callerKey(request), now)) {
+  if (tooMany(callerKey(request, "contact"), RATE.max, RATE.windowMs)) {
     return problem("rate", 429);
   }
 

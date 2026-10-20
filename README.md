@@ -101,6 +101,70 @@ CDN rule that overrides it will bring the stale-chunk error back.
 
 ---
 
+## The database
+
+Plain Postgres with row level security — which is what the self-hosted
+Supabase is underneath, so the schema moves to it without changing.
+
+The rule the whole thing rests on: **the application never decides who may
+read a row.** It says who the caller is, and the database decides. A rule
+that says "only your own rows" cannot be bypassed, because the browser never
+talks to Postgres — only the server does, and the server tells the database
+who it is acting for.
+
+Two roles, on purpose:
+
+| Role | Used for | RLS applies? |
+|---|---|---|
+| `chouflimostakbel` | Owns the tables. Migrations only. | No |
+| `chouflimostakbel_app` | Runs the application. | **Yes** |
+
+### Running it locally
+
+The project keeps its own Postgres instance, separate from anything else on
+the machine: its own data directory (`.pgdata`, git-ignored), its own port
+(5433), and nothing of the system's is touched.
+
+```bash
+npm run db:start     # start the instance
+npm run db:setup     # create the roles, the database, and the schema
+npm run db:check     # prove the policies actually bind
+npm run db:stop      # stop it
+```
+
+`db:setup` writes `DATABASE_URL` into `.env.local` with a generated
+password. It is safe to run again.
+
+> The instance is started with a trimmed `PATH`. The backend processes inherit
+> it, and a `PATH` carrying another build of the same libraries — Git for
+> Windows ships its own — makes them fail to load.
+
+### The schema
+
+`db/schema.sql`, in three tables:
+
+- **profiles** — a person: address, a bcrypt hash, a name, a handle
+- **sessions** — a signed-in session. The cookie carries a random token; only
+  its hash is stored, so a copy of the table hands nobody a working session
+- **email_verifications** — a pending address confirmation
+
+The operations that happen *before* we know who the caller is — creating an
+account, checking a password, finding a session — are `SECURITY DEFINER`
+functions. They are the only way in, and they check their own conditions.
+
+The password is hashed by the database, with bcrypt through `pgcrypto`. The
+application never stores a hash and never compares a password itself.
+
+### Accounts
+
+`/account` — create an account, sign in, sign out. `npm run check:auth` runs
+the whole flow against a running server: register, sign in with the wrong
+password, sign in with the right one, refuse a weak password, refuse an
+address already taken, and confirm that signing out deletes the session row
+rather than just the cookie.
+
+---
+
 ## Update notifications
 
 When the site is updated, everyone who turned on update alerts gets a
@@ -289,12 +353,46 @@ Rendered in the **footer** and the **contact section** on every page.
 | `/dropouts` | ATFP certifications + second chance schools |
 | `/divisions` | Tunisian high school divisions, compared |
 | `/graduates` | University orientation + the score calculator |
+| `/blogs` | The blogs. Empty for now, and honest about it |
 | `/about` | About the project + contact form (`#contact`) |
 | `/contact` | The contact form on a page of its own |
+| `/login` | Sign in |
+| `/signup` | Create an account — a username and a password is enough |
+| `/profile` | Your own profile |
 | `/changelog` | Release history, newest first, with the deploy status |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
 | `/soon` | The roadmap for the platform to come |
+
+### The navigation
+
+**On a phone there is no top bar.** The tab bar at the bottom is the
+navigation — home, the three guides, blogs, and your profile — and the body
+carries the padding it needs so nothing hides underneath it. The language and
+theme controls live in the footer on a phone, and in the top bar on a
+desktop.
+
+**On a desktop** the capsule holds the links, and the blue button is the
+account: it says **Log in** until you are signed in, and your name afterwards.
+
+**A right click opens the site's own menu** — open in a new tab, copy the
+link, share, install the app, flip the theme. Touch is left alone, because a
+long press on a phone is for selecting text. Shift and right click gives the
+browser's own menu back.
+
+---
+
+## Contributing and the changelog
+
+**[CONTRIBUTING.md](CONTRIBUTING.md)** is the guide for anyone picking this
+up: how to run it, what has to pass before a push, the design rules, and the
+commit convention.
+
+**`CHANGELOG.md` is generated.** `components/i18n/changelog.ts` is the single
+source — the same data the site's changelog page uses — and
+`scripts/write-changelog-md.mjs` writes the file at the root, before every
+build. So GitHub and the site can never disagree about what shipped. Edit the
+slice, never the Markdown.
 
 ---
 

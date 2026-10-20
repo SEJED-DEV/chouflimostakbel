@@ -11,6 +11,8 @@ import DevModalReset from "@/components/DevModalReset";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
+import { AuthProvider } from "@/components/AuthProvider";
+import ContextMenu from "@/components/ContextMenu";
 import { site } from "@/lib/site";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
@@ -190,12 +192,15 @@ export default function RootLayout({
         />
         <ThemeProvider>
           <LanguageProvider>
-            <Nav />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <LanguagePicker />
-            <WhatsNewPopup />
-            <InstallPrompt />
+            <AuthProvider>
+              <Nav />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <LanguagePicker />
+              <WhatsNewPopup />
+              <InstallPrompt />
+              <ContextMenu />
+            </AuthProvider>
           </LanguageProvider>
         </ThemeProvider>
         <ServiceWorkerRegister />

@@ -6,33 +6,56 @@ import { House } from "@phosphor-icons/react/dist/ssr/House";
 import { Signpost } from "@phosphor-icons/react/dist/ssr/Signpost";
 import { Books } from "@phosphor-icons/react/dist/ssr/Books";
 import { GraduationCap } from "@phosphor-icons/react/dist/ssr/GraduationCap";
+import { Newspaper } from "@phosphor-icons/react/dist/ssr/Newspaper";
+import { UserCircle } from "@phosphor-icons/react/dist/ssr/UserCircle";
+import { User } from "@phosphor-icons/react/dist/ssr/User";
 import { MailIcon, InfoIcon } from "./SiteIcons";
 import Logo from "./Logo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import ThemeToggle from "./ThemeToggle";
 import DownloadButton from "./DownloadButton";
 import { useLanguage } from "./LanguageProvider";
+import { useAuth } from "./AuthProvider";
 
-const links = [
-  { href: "/", labelKey: "home", Icon: House },
+/**
+ * The guides - the three audiences the site is for.
+ */
+const guides = [
   { href: "/dropouts", labelKey: "dropouts", Icon: Signpost },
   { href: "/divisions", labelKey: "divisions", Icon: Books },
   { href: "/graduates", labelKey: "graduates", Icon: GraduationCap },
 ] as const;
 
 /**
- * Desktop: a floating frosted capsule with links. Mobile: the capsule shows
- * only the logo, and navigation moves to an iOS-style bottom tab bar -
- * frosted, safe-area aware, blue active state.
+ * The bottom tab bar, and the part of the desktop navigation that matters.
+ *
+ * On a phone there is no top bar at all - the tab bar is the navigation. That
+ * is why the account lives in the tab bar and not in a capsule that is not
+ * there.
+ */
+const tabs = [
+  { href: "/", labelKey: "home", Icon: House },
+  ...guides,
+  { href: "/blogs", labelKey: "blogs", Icon: Newspaper },
+  { href: "/profile", labelKey: "profile", Icon: UserCircle },
+] as const;
+
+/**
+ * Desktop: a floating frosted capsule with links.
+ *
+ * Mobile: no capsule. The iOS-style bottom tab bar takes over, and the
+ * language and theme controls move into the footer, where they are still
+ * reachable.
  */
 export default function Nav() {
   const pathname = usePathname();
   const { t } = useLanguage();
+  const { profile } = useAuth();
 
   return (
     <>
-      {/* Top capsule */}
-      <div className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
+      {/* Top capsule - desktop only */}
+      <div className="fixed inset-x-0 top-0 z-50 hidden px-4 pt-4 md:block">
         <nav
           aria-label="Main"
           className="frosted mx-auto flex max-w-5xl items-center justify-between rounded-full py-2 pl-4 pr-2"
@@ -52,8 +75,8 @@ export default function Nav() {
             </span>
           </Link>
 
-          <div className="hidden items-center gap-1 md:flex">
-            {links.map((l) => {
+          <div className="flex items-center gap-1">
+            {tabs.slice(0, 4).map((l) => {
               const active = pathname === l.href;
               return (
                 <Link
@@ -68,59 +91,56 @@ export default function Nav() {
               );
             })}
             <Link
+              href="/blogs"
+              className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
+                pathname === "/blogs" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
+              }`}
+            >
+              {t.nav.blogs}
+            </Link>
+            <Link
               href="/about"
               className={`rounded-full px-4 py-2 text-[14px] font-medium transition-colors duration-200 ${
-                pathname === "/about"
-                  ? "bg-ink/[0.06] text-ink"
-                  : "text-gray-2 hover:text-ink"
+                pathname === "/about" ? "bg-ink/[0.06] text-ink" : "text-gray-2 hover:text-ink"
               }`}
             >
               {t.nav.about}
             </Link>
-            <Link
-              href="/dropouts"
-              className="ml-2 rounded-full bg-blue px-4 py-2 text-[14px] font-medium text-white transition-colors duration-200 hover:bg-blue-hi"
-            >
-              {t.nav.getStarted}
-            </Link>
+
+            {/* The blue action becomes the account: a name when signed in,
+                and a way in when not. */}
+            {profile ? (
+              <Link
+                href="/profile"
+                className="ml-2 inline-flex max-w-[11rem] items-center gap-1.5 rounded-full bg-blue px-4 py-2 text-[14px] font-medium text-white transition-colors duration-200 hover:bg-blue-hi"
+              >
+                <User size={16} weight="bold" />
+                <span className="truncate">{profile.displayName}</span>
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className="ml-2 rounded-full bg-blue px-4 py-2 text-[14px] font-medium text-white transition-colors duration-200 hover:bg-blue-hi"
+              >
+                {t.nav.login}
+              </Link>
+            )}
+
             <div className="ms-1 flex items-center border-s border-sep ps-1">
               <ThemeToggle />
               <LanguageSwitcher />
             </div>
           </div>
-
-          {/* Small-screen utilities: language + info + contact */}
-          <div className="flex items-center gap-1 md:hidden">
-            <ThemeToggle variant="compact" />
-            <DownloadButton />
-            <LanguageSwitcher variant="compact" />
-            <Link
-              href="/about"
-              aria-label={t.nav.aboutUs}
-              className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
-                pathname === "/about" ? "bg-ink/[0.06] text-ink" : "text-gray-2"
-              }`}
-            >
-              <InfoIcon size={20} />
-            </Link>
-            <Link
-              href="/about#contact"
-              aria-label={t.nav.contactUs}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-gray-2 transition-colors"
-            >
-              <MailIcon size={20} />
-            </Link>
-          </div>
         </nav>
       </div>
 
-      {/* Bottom tab bar - mobile only, iOS-style */}
+      {/* Bottom tab bar - the only navigation on a phone */}
       <nav
         aria-label="Primary"
         className="frosted fixed inset-x-0 bottom-0 z-50 flex items-stretch justify-around border-t border-black/[0.07] pb-[env(safe-area-inset-bottom)] md:hidden"
         style={{ boxShadow: "0 -1px 20px rgba(0,0,0,0.06)" }}
       >
-        {links.map((l) => {
+        {tabs.map((l) => {
           const active = pathname === l.href;
           const { Icon } = l;
           return (
@@ -128,15 +148,15 @@ export default function Nav() {
               key={l.href}
               href={l.href}
               aria-current={active ? "page" : undefined}
-              className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5"
+              className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 py-2.5"
             >
               <Icon
-                size={24}
+                size={23}
                 weight={active ? "fill" : "regular"}
                 className={active ? "text-blue" : "text-gray"}
               />
               <span
-                className={`text-[11px] leading-none ${
+                className={`max-w-full truncate text-[10.5px] leading-none ${
                   active ? "font-medium text-blue" : "text-gray"
                 }`}
               >

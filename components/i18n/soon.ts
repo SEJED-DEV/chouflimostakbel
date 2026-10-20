@@ -91,7 +91,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Decided",
         title: "Supabase, for the whole backend.",
-        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.",
+        body: "Supabase covers the database, sign-in, file storage and live updates in one place, so we are not assembling and running four separate services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only verified accounts can publish\" cannot be bypassed by a client.\n\nThe accounts came first, and they changed one of these decisions. We did not need Supabase's sign-in: the same Postgres runs them, with sessions of our own and a username instead of an address. An email address is optional, because the platform does not need one - asking for something you do not need is a good way to lose people.",
       },
       items: [
         {
@@ -124,11 +124,11 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Data access",
-          value: "Drizzle, over the Supabase connection pool",
+          value: "Plain SQL through the pg driver, over a connection pool. Drizzle was the plan; the first tables did not need it",
         },
         {
           label: "Accounts",
-          value: "Supabase Auth - email, with Google or GitHub as social sign-in",
+          value: "Our own sessions on the same Postgres: a username and a password. An email address is not required",
         },
         {
           label: "Media",
@@ -156,7 +156,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "Foundations",
-          body: "The database, accounts and storage. This is the whole foundation - nothing else can start until it exists.",
+          body: "The database, accounts and storage. This is the whole foundation - nothing else can start until it exists. The database and the accounts are built and working; storage and transactional email are not.",
           points: [
             "Postgres and schema",
             "Sign-in and sessions",
@@ -167,7 +167,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "Profiles and posting",
-          body: "Custom profiles, and an editor where anyone can write a post, with drafts and edit history.",
+          body: "Custom profiles, and an editor where anyone can write a post, with drafts and edit history. The profile exists and you can rename it; the editor does not.",
           points: [
             "Custom profiles with topics",
             "Markdown editor",
@@ -319,7 +319,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "Décidé",
         title: "Supabase, pour toute la partie serveur.",
-        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.",
+        body: "Supabase couvre la base de données, l'authentification, le stockage des fichiers et les mises à jour en direct au même endroit, sans avoir à assembler et à exploiter quatre services distincts. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seuls les comptes vérifiés peuvent publier » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont changé l'une de ces décisions. Nous n'avions pas besoin de la connexion de Supabase : c'est le même Postgres qui les fait tourner, avec des sessions qui nous appartiennent et un nom d'utilisateur plutôt qu'une adresse. L'adresse e-mail est facultative, parce que la plateforme n'en a pas besoin - demander ce dont on n'a pas besoin, c'est perdre des gens.",
       },
       items: [
         {
@@ -353,12 +353,12 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "Accès aux données",
-          value: "Drizzle, par-dessus le pool de connexions de Supabase",
+          value: "Du SQL simple avec le pilote pg, par-dessus un pool de connexions. Drizzle était prévu ; les premières tables n'en avaient pas besoin",
         },
         {
           label: "Comptes",
           value:
-            "Supabase Auth - adresse e-mail, avec Google ou GitHub comme connexion sociale",
+            "Nos propres sessions sur le même Postgres : un nom d'utilisateur et un mot de passe. Aucune adresse e-mail n'est requise",
         },
         {
           label: "Médias",
@@ -387,7 +387,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "Les fondations",
-          body: "La base de données, les comptes et le stockage. C'est toute la fondation - rien d'autre ne peut commencer avant qu'elle existe.",
+          body: "La base de données, les comptes et le stockage. C'est toute la fondation - rien d'autre ne peut commencer avant qu'elle existe. La base de données et les comptes sont construits et fonctionnent ; le stockage et les e-mails transactionnels ne le sont pas.",
           points: [
             "Postgres et le schéma",
             "Connexion et sessions",
@@ -398,7 +398,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "Profils et publication",
-          body: "Des profils personnalisés, et un éditeur où chacun peut écrire un article, avec brouillons et historique des modifications.",
+          body: "Des profils personnalisés, et un éditeur où chacun peut écrire un article, avec brouillons et historique des modifications. Le profil existe et vous pouvez le renommer ; l'éditeur n'existe pas encore.",
           points: [
             "Profils personnalisés avec des thèmes",
             "Éditeur Markdown",
@@ -550,7 +550,7 @@ export const soon: Slice<SoonCopy> = {
       decided: {
         label: "قرّر",
         title: "Supabase، من أجل كلّ ما في الخلفية.",
-        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».",
+        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول وتخزين الملفات والتحديثات المباشرة في مكان واحد، فلا نضطر إلى تجميع أربع خدمات منفصلة وتشغيلها. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يُنشر إلّا من حسابات موثّقة».\n\nالحسابات جت أوّلًا، وهي غيّرت أحد هذه القرارات. لم نحتاج إلى تسجيل دخول Supabase: فـ Postgres نفسه يشغّلها، بجلسات تخصّنا واسم مستخدم بدل البريد. البريد الإلكتروني اختياري، لأن المنصّة لا تحتاجه - وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.",
       },
       items: [
         {
@@ -583,12 +583,12 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           label: "الوصول إلى البيانات",
-          value: "Drizzle، فوق مجمّع اتصالات Supabase",
+          value: "SQL عادي عبر مشغّل pg، فوق مجمّع اتصالات. كان Drizzle مخطّطًا له، لكن الجداول الأولى لم تكن تحتاجه",
         },
         {
           label: "الحسابات",
           value:
-            "مصادقة Supabase - بالبريد الإلكتروني، مع Google أو GitHub دخولاً اجتماعياً",
+            "جلساتنا الخاصة على Postgres نفسه: اسم مستخدم وكلمة مرور. البريد الإلكتروني ليس مطلوبًا",
         },
         {
           label: "الوسائط",
@@ -616,7 +616,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "0",
           name: "الأساسات",
-          body: "قاعدة البيانات والحسابات والتخزين. هذه هي الأساس كلّه - لا شيء آخر يمكن أن يبدأ قبل أن يوجد.",
+          body: "قاعدة البيانات والحسابات والتخزين. هذه هي الأساس كلّه - لا شيء آخر يمكن أن يبدأ قبل أن يوجد. قاعدة البيانات والحسابات مبنيّة وتعمل؛ أما التخزين والبريد المعاملات فلا يزالان.",
           points: [
             "Postgres والمخطّط",
             "تسجيل الدخول والجلسات",
@@ -627,7 +627,7 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "1",
           name: "الملفّات الشخصية والنشر",
-          body: "ملفّات شخصية مخصّصة، ومحرّر يكتب فيه أيّ شخص مقالاً، مع مسودّات وسجلّ للتعديلات.",
+          body: "ملفّات شخصية مخصّصة، ومحرّر يكتب فيه أيّ شخص مقالاً، مع مسودّات وسجلّ للتعديلات. الملفّ الشخصي موجود ويمكنك تغيير اسمه؛ أما المحرّر فلا يزال.",
           points: [
             "ملفّات شخصية مخصّصة مع مواضيع",
             "محرّر Markdown",
