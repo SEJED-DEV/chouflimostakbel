@@ -34,29 +34,41 @@ const tabs = [
 ] as const satisfies { href: string; labelKey: string; icon: IconName }[];
 
 /**
+ * Pages the top capsule stays off.
+ *
+ * On a phone the capsule and the bottom tab bar are both navigation chrome,
+ * and on these two pages the page itself is already carrying what the capsule
+ * would: the profile has its own settings gear and its own banner, and the
+ * blogs index wants the full width for the list. The desktop capsule is
+ * unaffected - at that size there is no tab bar to compete with.
+ */
+const CAPSULE_HIDDEN = ["/blogs", "/profile"];
+
+/**
  * Desktop: a floating frosted capsule with links.
  *
  * On a phone the same capsule appears, but without the links - it carries the
  * account, the settings, the theme and the language, and the iOS-style bottom
- * tab bar underneath does the navigating. The blogs page is the one page it
- * does not appear on at all.
+ * tab bar underneath does the navigating. It stays off the pages in
+ * `CAPSULE_HIDDEN`.
  */
 export default function Nav() {
   const pathname = usePathname();
   const { t } = useLanguage();
   const { profile } = useAuth();
+  const capsuleHidden = CAPSULE_HIDDEN.includes(pathname);
 
   return (
     <>
       {/* Top capsule - desktop only */}
       {/* On a phone the capsule carries the account, the settings and the
-          theme; the links live in the tab bar below. The blogs page is the
-          one place it stays away - there the page needs the whole width and
-          the tab bar already says where you are. */}
+          theme; the links live in the tab bar below. It stands aside on the
+          pages in CAPSULE_HIDDEN, where the page needs the whole width and
+          already says - or carries - what the capsule would. */}
       <div
         className={
           "fixed inset-x-0 top-0 z-50 px-4 pt-4" +
-          (pathname === "/blogs" ? " hidden md:block" : "")
+          (capsuleHidden ? " hidden md:block" : "")
         }
       >
         <nav
