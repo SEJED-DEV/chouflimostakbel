@@ -1,4 +1,5 @@
 import type { Slice } from "./types";
+import type { RoleKey } from "@/lib/roles";
 
 /**
  * The account page.
@@ -74,6 +75,14 @@ export interface AccountCopy {
   profileSub: string;
   yourPosts: string;
   yourPostsBody: string;
+  /**
+   * What each badge is called, in this language.
+   *
+   * Keyed by the stored role, so these names are for people to read and the
+   * keys are what the database holds. Shown as a tooltip where a badge is
+   * drawn as an icon alone.
+   */
+  roleNames: Record<RoleKey, string>;
   errors: {
     invalidHandle: string;
     handleTaken: string;
@@ -105,6 +114,14 @@ export const account: Slice<AccountCopy> = {
     profileSub: "This is where your profile lives. What you write appears here, and this is the page people will see.",
     yourPosts: "Your posts",
     yourPostsBody: "Nothing here yet. When you write something, it will show up here.",
+
+    roleNames: {
+      leadership: "Leadership",
+      dev: "Developer",
+      staff: "Staff",
+      contributor: "Contributor",
+      secret: "Secret",
+    },
 
     settingsTitle: "Settings.",
     settingsSub: "How the platform looks, and how it speaks.",
@@ -175,6 +192,14 @@ handleTaken: "That username is taken.",      invalidEmail: "That does not look l
     yourPosts: "Vos articles",
     yourPostsBody: "Rien ici pour l’instant. Quand vous écrirez quelque chose, cela apparaîtra ici.",
 
+    roleNames: {
+      leadership: "Direction",
+      dev: "Développeur",
+      staff: "Équipe",
+      contributor: "Contributeur",
+      secret: "Secret",
+    },
+
     settingsTitle: "Réglages.",
     settingsSub: "Comment la plateforme se présente, et comment elle parle.",
     appearance: "Apparence",
@@ -243,6 +268,14 @@ handleTaken: "Ce nom d’utilisateur est pris.",      invalidEmail: "Cela ne res
     profileSub: "هنا يقيم ملفّك الشخصي. ما تكتبه يظهر هنا، وهذه هي الصفحة التي يراها الناس.",
     yourPosts: "مقالاتك",
     yourPostsBody: "لا شيء هنا بعد. حين تكتب شيئًا سيظهر هنا.",
+
+    roleNames: {
+      leadership: "القيادة",
+      dev: "مطوّر",
+      staff: "الفريق",
+      contributor: "مساهم",
+      secret: "سرّي",
+    },
 
     settingsTitle: "الإعدادات.",
     settingsSub: "كيف تبدو المنصّة، وكيف تتحدّث.",

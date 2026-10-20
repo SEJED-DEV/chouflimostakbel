@@ -1,5 +1,6 @@
 import { createClient } from "./supabase/server";
 import { renderMarkdown } from "./post-text";
+import { normaliseRoles, type RoleKey } from "./roles";
 
 // The pure text work - slugs, tags, reading time, markdown - lives in
 // `post-text.ts`, which a client component may import. This file reads the
@@ -29,7 +30,13 @@ export interface PostSummary {
   readingMinutes: number;
   /** The account that wrote it. Kept apart from the byline, which is a copy. */
   authorId: string;
-  author: { handle: string; name: string; avatar: string | null };
+  author: {
+    handle: string;
+    name: string;
+    avatar: string | null;
+    /** The badges the account held when the post was written. */
+    roles: RoleKey[];
+  };
 }
 
 /** A post plus its body: rendered for reading, source for editing. */
@@ -42,7 +49,7 @@ export interface Post extends PostSummary {
 const SELECT =
   "id, slug, title, excerpt, tags, status, published_at, created_at, " +
   "updated_at, reading_minutes, author_id, author_handle, author_name, " +
-  "author_avatar";
+  "author_avatar, author_roles";
 
 /**
  * Rows, as plain objects.
@@ -73,6 +80,7 @@ function toSummary(row: Record<string, unknown>): PostSummary {
       handle: row.author_handle as string,
       name: (row.author_name as string) || (row.author_handle as string),
       avatar: (row.author_avatar as string | null) ?? null,
+      roles: normaliseRoles(row.author_roles),
     },
   };
 }

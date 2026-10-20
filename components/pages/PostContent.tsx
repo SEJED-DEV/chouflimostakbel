@@ -4,6 +4,7 @@ import Icon from "@/components/Icons";
 import Link from "next/link";
 
 import Reveal, { Rule } from "@/components/Reveal";
+import RoleIcons from "@/components/RoleIcons";
 import { useSlice } from "@/components/i18n/slice";
 import { blogs } from "@/components/i18n/blogs";
 import { useAuth } from "@/components/AuthProvider";
@@ -71,23 +72,36 @@ export default function PostContent({ post }: { post: Post }) {
 
             <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-3">
               <div className="flex items-center gap-2.5">
-                {post.author.avatar ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={post.author.avatar}
-                    alt=""
-                    className="h-9 w-9 rounded-full object-cover"
-                    width={36}
-                    height={36}
-                  />
-                ) : (
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-bg-alt">
-                    <Icon name="user" size={15} className="text-gray" />
-                  </span>
-                )}
-                <span className="text-[15px] text-gray-2">
-                  <span className="font-medium text-ink">{post.author.name}</span>
-                  <span className="text-gray"> · @{post.author.handle}</span>
+                <Link
+                  href={`/u/${post.author.handle}`}
+                  className="shrink-0"
+                  aria-hidden="true"
+                  tabIndex={-1}
+                >
+                  {post.author.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={post.author.avatar}
+                      alt=""
+                      className="h-9 w-9 rounded-full object-cover"
+                      width={36}
+                      height={36}
+                    />
+                  ) : (
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-bg-alt">
+                      <Icon name="user" size={15} className="text-gray" />
+                    </span>
+                  )}
+                </Link>
+                <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[15px] text-gray-2">
+                  <Link
+                    href={`/u/${post.author.handle}`}
+                    className="font-medium text-ink underline-offset-2 transition-colors duration-200 hover:text-blue hover:underline"
+                  >
+                    {post.author.name}
+                  </Link>
+                  <RoleIcons roles={post.author.roles} size={14} />
+                  <span className="text-gray">@{post.author.handle}</span>
                 </span>
               </div>
 

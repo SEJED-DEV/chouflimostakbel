@@ -3,12 +3,13 @@
 import Icon from "@/components/Icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import Reveal, { Rule } from "@/components/Reveal";
+import RoleIcons from "@/components/RoleIcons";
 import { useSlice } from "@/components/i18n/slice";
-import { blogs } from "@/components/i18n/blogs";
+import { blogs, type BlogsCopy } from "@/components/i18n/blogs";
 import { useAuth } from "@/components/AuthProvider";
 import { useLanguage } from "@/components/LanguageProvider";
+import { isOlderThan, relativeLabel, relativeTime } from "@/lib/time";
 import type { PostSummary } from "@/lib/posts";
 
 /**
@@ -24,66 +25,117 @@ import type { PostSummary } from "@/lib/posts";
  * else's draft changes the answer.
  */
 
-/** The byline, and where a reader can go to read more by the same person. */
+/**
+ * The byline: who wrote it, what they are, and where to find them.
+ *
+ * The handle links to the person's public page. It sits outside the card's
+ * own link rather than inside it, because a link within a link is invalid
+ * HTML and a reader aiming at the name would get the post instead. The
+ * badges are drawn as icons alone - see `RoleIcons` for why - and carry
+ * their names as tooltips.
+ */
 function Byline({ post }: { post: PostSummary }) {
   return (
     <div className="flex items-center gap-2.5">
-      {post.author.avatar ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={post.author.avatar}
-          alt=""
-          className="h-7 w-7 rounded-full object-cover"
-          width={28}
-          height={28}
-        />
-      ) : (
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bg-alt">
-          <Icon name="user" size={13} className="text-gray" />
-        </span>
-      )}
-      <span className="text-[14px] text-gray-2">
-        <span className="font-medium text-ink">{post.author.name}</span>
-        <span className="text-gray"> · @{post.author.handle}</span>
+      <Link
+        href={`/u/${post.author.handle}`}
+        className="shrink-0"
+        // The photo is decorative next to the name, which is the real link
+        // text, so it is not announced twice.
+        aria-hidden="true"
+        tabIndex={-1}
+      >
+        {post.author.avatar ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.author.avatar}
+            alt=""
+            className="h-7 w-7 rounded-full object-cover"
+            width={28}
+            height={28}
+          />
+        ) : (
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-bg-alt">
+            <Icon name="user" size={13} className="text-gray" />
+          </span>
+        )}
+      </Link>
+
+      <span className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[14px] text-gray-2">
+        <Link
+          href={`/u/${post.author.handle}`}
+          className="truncate font-medium text-ink underline-offset-2 transition-colors duration-200 hover:text-blue hover:underline"
+        >
+          {post.author.name}
+        </Link>
+        <RoleIcons roles={post.author.roles} />
+        <span className="text-gray">@{post.author.handle}</span>
       </span>
     </div>
   );
 }
 
-function PostCard({ post }: { post: PostSummary }) {
+/**
+ * When a post landed, as "14 min ago" when that is easier to read than a date.
+ *
+ * `now` is handed in rather than read here. A component that asks the clock
+ * while rendering gives the server one answer and the browser another, and
+ * React calls that a mismatch - but reading it only in an effect would keep
+ * the relative form out of the HTML, where search engines and readers without
+ * JavaScript would never see it. Taking it from the server page gives one
+ * value to both renders, and the server is where the page is built anyway.
+ */
+function postedStamp(
+  publishedAt: string | null,
+  now: string,
+  lang: string,
+  t: BlogsCopy,
+): string | null {
+  if (!publishedAt) return null;
+
+  const absolute = new Intl.DateTimeFormat(lang, { dateStyle: "long" }).format(
+    new Date(publishedAt),
+  );
+
+  // Past a week the count stops helping and the date reads better.
+  if (isOlderThan(publishedAt, now)) return absolute;
+
+  return t.postedAgo.replace(
+    "{when}",
+    relativeLabel(t, relativeTime(publishedAt, now)),
+  );
+}
+
+function PostCard({ post, now }: { post: PostSummary; now: string }) {
   const t = useSlice(blogs);
   const { lang } = useLanguage();
 
-  // Shown in the reader's own language, and only where there is a date: a
-  // draft has never been published, so it has none.
-  const date = post.publishedAt
-    ? new Intl.DateTimeFormat(lang, { dateStyle: "long" }).format(
-        new Date(post.publishedAt),
-      )
-    : null;
+  const stamp = postedStamp(post.publishedAt, now, lang, t);
 
   return (
     <Reveal>
-      <Link
-        href={`/blogs/${post.slug}`}
-        className="group block rounded-3xl border border-sep bg-bg p-6 transition-colors duration-300 hover:border-blue/40 sm:p-7"
-      >
+      <article className="card-soft rounded-3xl border border-sep bg-bg p-6 transition-colors duration-300 hover:border-blue/40 sm:p-7">
         <div className="flex flex-wrap items-center gap-2">
           {post.status === "draft" && (
             <span className="rounded-full bg-bg-alt px-2.5 py-0.5 text-[12px] font-medium text-gray-2">
               {t.draft}
             </span>
           )}
-          {date && (
-            <span className="text-[13px] text-gray">{date}</span>
-          )}
+          {stamp && <span className="text-[13px] text-gray">{stamp}</span>}
           <span className="text-[13px] text-gray">
             {t.minRead.replace("{n}", String(post.readingMinutes))}
           </span>
         </div>
 
-        <h2 className="mt-3 text-[21px] font-semibold leading-tight tracking-[-0.02em] text-ink transition-colors duration-300 group-hover:text-blue">
-          {post.title}
+        <h2 className="mt-3 text-[21px] font-semibold leading-tight tracking-[-0.02em] text-ink">
+          {/* The heading carries the link, so the card is reachable by its
+              title and the byline below is free to link somewhere else. */}
+          <Link
+            href={`/blogs/${post.slug}`}
+            className="transition-colors duration-300 hover:text-blue"
+          >
+            {post.title}
+          </Link>
         </h2>
 
         {post.excerpt && (
@@ -108,7 +160,7 @@ function PostCard({ post }: { post: PostSummary }) {
         <div className="mt-5">
           <Byline post={post} />
         </div>
-      </Link>
+      </article>
     </Reveal>
   );
 }
@@ -119,7 +171,23 @@ function PostCard({ post }: { post: PostSummary }) {
  * Empty when nothing has been written, and it says so rather than showing a
  * page of placeholders - an honest empty state is the better of the two.
  */
-export default function BlogsContent({ posts }: { posts: PostSummary[] }) {
+/**
+ * The blogs.
+ *
+ * Empty when nothing has been written, and it says so rather than showing a
+ * page of placeholders - an honest empty state is the better of the two.
+ *
+ * `now` comes from the server page that renders this, so the relative stamps
+ * are part of the HTML rather than something the browser adds afterwards.
+ */
+export default function BlogsContent({
+  posts,
+  now,
+}: {
+  posts: PostSummary[];
+  /** The server's clock, so "14 min ago" is in the HTML. */
+  now: string;
+}) {
   const t = useSlice(blogs);
   const { profile } = useAuth();
   const router = useRouter();
@@ -201,7 +269,7 @@ export default function BlogsContent({ posts }: { posts: PostSummary[] }) {
           ) : (
             <div className="flex flex-col gap-4">
               {posts.map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} now={now} />
               ))}
             </div>
           )}

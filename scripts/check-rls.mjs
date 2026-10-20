@@ -346,6 +346,95 @@ check(
   `HTTP ${stealPost.status}`,
 );
 
+// 15. The byline carries the author's badges, and a client cannot award
+//     itself one. Same principle as the handle: the trigger overwrites
+//     whatever was sent with what the account actually holds.
+const forgedRoles = await as(jwtA, "posts", {
+  method: "POST",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({
+    author_id: idA,
+    slug: `${stampSlug}-badges`,
+    title: "Badges",
+    excerpt: "",
+    body_md: "x",
+    tags: [],
+    status: "published",
+    published_at: new Date().toISOString(),
+    author_roles: ["leadership", "dev", "staff"],
+  }),
+});
+const forgedRow = Array.isArray(forgedRoles.body) ? forgedRoles.body[0] : null;
+check(
+  "a client cannot award itself badges",
+  Array.isArray(forgedRoles.body) &&
+    forgedRoles.body.length === 1 &&
+    Array.isArray(forgedRow?.author_roles) &&
+    forgedRow.author_roles.length === 0,
+  JSON.stringify(forgedRow?.author_roles ?? `HTTP ${forgedRoles.status}`),
+);
+
+// 16. The public view hands an anonymous reader the publishable fields.
+const anonView = await as(ANON, `public_profiles?select=*&handle=eq.rls-a-${stamp}`);
+const anonPerson = Array.isArray(anonView.body) ? anonView.body[0] : null;
+check(
+  "an anonymous reader can see a public profile",
+  anonView.status < 300 && !!anonPerson,
+  anonPerson ? String(anonPerson.handle) : `HTTP ${anonView.status}`,
+);
+
+// 17. And none of the private columns come with it. This is the whole reason
+//     the view exists rather than a grant on the table.
+const viewCols = anonPerson ? Object.keys(anonPerson) : [];
+const privateLeaked = ["email", "date_of_birth", "verified_at"].filter((c) =>
+  viewCols.includes(c),
+);
+check(
+  "the public view withholds the private columns",
+  privateLeaked.length === 0,
+  privateLeaked.length ? privateLeaked.join(", ") : viewCols.join(", "),
+);
+
+// 18. Asking the view for a private column is refused outright, so it cannot
+//     be reached by naming it either.
+const askEmail = await as(ANON, "public_profiles?select=email&limit=1");
+check(
+  "the view refuses a private column by name",
+  askEmail.status >= 400,
+  `HTTP ${askEmail.status}`,
+);
+
+// 19. The underlying table stays unreadable to an anonymous reader.
+const anonTable = await as(ANON, "profiles?select=handle,email&limit=1");
+check(
+  "the profiles table itself is still closed to anon",
+  anonTable.status >= 400,
+  `HTTP ${anonTable.status}`,
+);
+
+// 20. A person who has published nothing has no public page, and so is not
+//     in the view at all. Account C has a profile and no posts.
+const draftsOnly = await as(ANON, `public_profiles?select=handle&handle=eq.rls-c-${stamp}`);
+check(
+  "a person who has published nothing is not public",
+  Array.isArray(draftsOnly.body) && draftsOnly.body.length === 0,
+  Array.isArray(draftsOnly.body)
+    ? `${draftsOnly.body.length} visible`
+    : `HTTP ${draftsOnly.status}`,
+);
+
+// 21. The duplicate-role guard is a real constraint, not a comment.
+const dupes = await as(jwtA, "posts", {
+  method: "PATCH",
+  headers: { Prefer: "return=representation" },
+  body: JSON.stringify({ author_roles: ["dev", "dev"] }),
+});
+check(
+  "a post cannot carry the same badge twice",
+  dupes.status >= 400,
+  `HTTP ${dupes.status}`,
+);
+
 // Clean up. Deleting the GoTrue user cascades to the profile row, and the
 // profile row cascades to the posts.
 for (const id of made) {
