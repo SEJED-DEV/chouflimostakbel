@@ -16,6 +16,20 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const SOURCE = "https://sejed.dev";
+
+/**
+ * Values that are pinned here rather than taken from the source.
+ *
+ * The photograph on sejed.dev still points at an old file. The real fix is to
+ * change the profile card there; until then, this keeps a re-sync from
+ * putting it back.
+ */
+const OVERRIDES = {
+  image: {
+    "https://cdn.cortexhq.net/f/2cb502ffef0cbca9.jpeg":
+      "https://cdn.cortexhq.net/f/15e86fe1771da9db.jpeg",
+  },
+};
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = join(HERE, "..", "lib", "site.generated.json");
 
@@ -75,13 +89,19 @@ async function main() {
   const socials = Object.fromEntries(found);
 
   // --- 3. Build the record --------------------------------------------------
+  //
+  // The photo is overridden when the source still points at an old one. The
+  // proper fix is to update the profile card on sejed.dev; until then, this
+  // keeps a re-sync from putting the broken photograph back.
+  const image = OVERRIDES.image?.[person.image] ?? person.image ?? null;
+
   const record = {
     _source: SOURCE,
     _syncedAt: new Date().toISOString(),
     name: person.name || "Sejed Trabelsi",
     role: person.jobTitle || "Full Stack Developer",
     url: person.url || SOURCE,
-    image: person.image || null,
+    image,
     email: person.email || null,
     phone: person.telephone || null,
     location: person.address?.addressLocality

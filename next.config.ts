@@ -63,6 +63,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        // The publisher's photograph, in the legal notices. Without this the
+        // image optimiser refuses it and the photo never appears.
+        protocol: "https",
+        hostname: "cdn.cortexhq.net",
+        pathname: "/f/**",
+      },
     ],
   },
 
