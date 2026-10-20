@@ -178,8 +178,16 @@ export const viewport: Viewport = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // The inline script below and the language provider both change <html>
+  // before React can hydrate it, and React cannot reconcile a difference it
+  // never rendered. `suppressHydrationWarning` is the sanctioned way to say
+  // so; it applies to this element's attributes only, not to anything inside.
   return (
-    <html lang="en" className={`${matcha.variable} ${satoshi.variable}`}>
+    <html
+      lang="en"
+      className={`${matcha.variable} ${satoshi.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Applies the stored theme before first paint - without this the page
             flashes light before React hydrates. */}

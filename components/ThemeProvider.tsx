@@ -39,6 +39,11 @@ function resolve(t: Theme): Resolved {
  *
  * Must stay inline and blocking in <head>. It reads the same localStorage key
  * the provider uses, so the two never disagree.
+ *
+ * It sets the class only. `color-scheme` is deliberately left to the provider,
+ * which sets it a moment after hydration: the server cannot know a preference
+ * stored in the browser, and writing it here puts a `style` attribute on
+ * <html> that the server-rendered markup never had.
  */
 export const themeInitScript = `
 (function () {
@@ -46,7 +51,6 @@ export const themeInitScript = `
     var s = localStorage.getItem('${STORAGE_KEY}') || 'system';
     var dark = s === 'dark' || (s === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.classList.toggle('dark', dark);
-    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
   } catch (e) {}
 })();
 `.trim();
