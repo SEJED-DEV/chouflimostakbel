@@ -67,9 +67,12 @@ fi
 # ------------------------------------------------------------- 3. migrations
 say "Migrations"
 # The container is where psql lives. The ledger is a plain table.
+# Arguments are forwarded: the ledger is read with a `-c` query, and each
+# migration is piped in on stdin. Without "$@" the read would pass no query
+# and psql would wait on a stdin that never closes.
 psql_run() {
   sudo docker exec -i "$DB_CONTAINER" psql -U postgres -d postgres \
-    -v ON_ERROR_STOP=1 --quiet
+    -v ON_ERROR_STOP=1 --quiet "$@"
 }
 
 APPLIED="$(psql_run -c "select version from supabase_migrations.schema_migrations order by version;" | grep -E '^[0-9]{14}$' || true)"
