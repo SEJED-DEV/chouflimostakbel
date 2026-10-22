@@ -75,7 +75,11 @@ psql_run() {
     -v ON_ERROR_STOP=1 --quiet "$@"
 }
 
-APPLIED="$(psql_run -c "select version from supabase_migrations.schema_migrations order by version;" | grep -E '^[0-9]{14}$' || true)"
+# `-tA` is what makes the read usable: tuples only, unaligned, so each row is
+# a bare version on its own line. Without it psql pads the column and prefixes
+# every row with a space, and a filter anchored to the start of the line finds
+# nothing - which reads as "nothing has been applied" and re-runs everything.
+APPLIED="$(psql_run -tA -c "select version from supabase_migrations.schema_migrations order by version;" | grep -E '^[0-9]{14}$' || true)"
 
 PENDING=0
 for file in supabase/migrations/*.sql; do
