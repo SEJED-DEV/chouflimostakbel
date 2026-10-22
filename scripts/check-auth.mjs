@@ -83,7 +83,7 @@ const email = `auth-test-${stamp}@example.test`;
 
 // --- Sign up, with no email address -----------------------------------
 // The whole point: a username and a password is enough.
-const signed = await route("/api/auth/register", { handle, password, displayName: "Auth Test" });
+const signed = await route("/api/auth/register", { handle, password, displayName: "Auth Test", acceptedTerms: true });
 check("signs up with a handle and no email", signed.status === 200 && signed.json?.ok === true, `HTTP ${signed.status}`);
 check("the session cookie came back", Boolean(signed.cookie), signed.cookie?.slice(0, 24) || "none");
 
@@ -95,6 +95,11 @@ check(
   me.json?.profile?.email === null,
   String(me.json?.profile?.email),
 );
+
+// And the moment of agreement is kept, so the question "did they?" has an
+// answer months later.
+const termsAt = me.json?.profile?.termsAcceptedAt ?? null;
+check("the agreement is recorded", Boolean(termsAt), String(termsAt));
 
 // --- Edit the profile --------------------------------------------------
 const renamed = `${signed.json?.profile?.displayName} II`;
@@ -116,39 +121,64 @@ const after = await get("/api/auth/me", signed.cookie);
 check("is signed out afterwards", after.json?.profile === null);
 
 // --- Sign back in ------------------------------------------------------
-const back = await route("/api/auth/login", { identifier: handle, password });
+const back = await route("/api/auth/login", { identifier: handle, password, acceptedTerms: true });
 check("signs back in with the handle", back.status === 200 && back.json?.profile?.handle === handle, `HTTP ${back.status}`);
 
 const backOut = await route("/api/auth/logout", undefined, back.cookie);
 
 // The address given later also works.
-const byEmail = await route("/api/auth/login", { identifier: email, password });
+const byEmail = await route("/api/auth/login", { identifier: email, password, acceptedTerms: true });
 check("can sign in with the address it added", byEmail.status === 200, `HTTP ${byEmail.status}`);
 await route("/api/auth/logout", undefined, byEmail.cookie);
 
 // --- The same answer for every failure ---------------------------------
-const wrongPassword = await route("/api/auth/login", { identifier: handle, password: "not-the-password" });
+const wrongPassword = await route("/api/auth/login", { identifier: handle, password: "not-the-password", acceptedTerms: true });
 check(
   "a wrong password is refused",
   wrongPassword.status === 401 && wrongPassword.json?.error === "invalidCredentials",
   `HTTP ${wrongPassword.status} ${wrongPassword.json?.error}`,
 );
 
-const nobody = await route("/api/auth/login", { identifier: `nobody-${stamp}`, password });
+const nobody = await route("/api/auth/login", { identifier: `nobody-${stamp}`, password, acceptedTerms: true });
 check(
   "an unknown handle gives the same answer",
   nobody.status === wrongPassword.status && nobody.json?.error === wrongPassword.json?.error,
   `HTTP ${nobody.status} ${nobody.json?.error}`,
 );
 
+// --- The terms, and the privacy policy ---------------------------------
+// The browser asks for the agreement, and so does the server. A form that
+// can be posted around its own checkbox is a checkbox that is not required.
+const noTerms = await route("/api/auth/register", {
+  handle: `noterms-${stamp}`,
+  password,
+  displayName: "No Terms",
+});
+check(
+  "signing up without agreeing is refused",
+  noTerms.status === 400 && noTerms.json?.error === "mustAgree",
+  `HTTP ${noTerms.status} ${noTerms.json?.error}`,
+);
+
+const noTermsLogin = await route("/api/auth/login", {
+  identifier: handle,
+  password,
+});
+check(
+  "signing in without agreeing is refused",
+  noTermsLogin.status === 400 && noTermsLogin.json?.error === "mustAgree",
+  `HTTP ${noTermsLogin.status} ${noTermsLogin.json?.error}`,
+);
+
 // --- What sign-up refuses ----------------------------------------------
-const taken = await route("/api/auth/register", { handle, password, displayName: "Impostor" });
+const taken = await route("/api/auth/register", { handle, password, displayName: "Impostor", acceptedTerms: true });
 check("a taken handle is refused", taken.status === 409 && taken.json?.error === "handleTaken", `HTTP ${taken.status}`);
 
 const shortPassword = await route("/api/auth/register", {
   handle: `short-${stamp}`,
   password: "short",
   displayName: "Short",
+acceptedTerms: true,
 });
 check("a short password is refused", shortPassword.status === 400 && shortPassword.json?.error === "weakPassword", `HTTP ${shortPassword.status}`);
 
@@ -156,6 +186,7 @@ const badHandle = await route("/api/auth/register", {
   handle: "-starts-with-a-dash",
   password,
   displayName: "Bad Handle",
+acceptedTerms: true,
 });
 check("a bad handle is refused", badHandle.status === 400 && badHandle.json?.error === "invalidHandle", `HTTP ${badHandle.status}`);
 
@@ -164,6 +195,7 @@ const badEmail = await route("/api/auth/register", {
   email: "not-an-address",
   password,
   displayName: "Bad Email",
+acceptedTerms: true,
 });
 check("a malformed address is refused", badEmail.status === 400 && badEmail.json?.error === "invalidEmail", `HTTP ${badEmail.status}`);
 

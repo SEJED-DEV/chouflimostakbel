@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PostContent from "@/components/pages/PostContent";
+import JsonLd from "@/components/JsonLd";
 import { getPostBySlug } from "@/lib/posts";
+import { postJsonLd, postMetadata } from "@/lib/seo";
 
 /** Reads the session cookie, and a draft can only be resolved with one. */
 export const dynamic = "force-dynamic";
@@ -22,18 +24,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     };
   }
 
-  const url = `/community/${post.slug}`;
-  return {
-    title: post.title,
-    description: post.excerpt || `${post.author.name} on Choufli Mosta9bel`,
-    alternates: { canonical: url },
-    openGraph: {
-      url,
-      type: "article",
-      publishedTime: post.publishedAt ?? undefined,
-      authors: [post.author.name],
-    },
-  };
+  return postMetadata(post);
 }
 
 export default async function PostPage({ params }: Params) {
@@ -45,5 +36,13 @@ export default async function PostPage({ params }: Params) {
   // not theirs - which is the point: it does not confirm either way.
   if (!post) notFound();
 
-  return <PostContent post={post} />;
+  return (
+    <>
+      {/* The post, described as what it is: something a person wrote. A
+          search engine reads this to decide that it is an article by an
+          author rather than another page of the site. */}
+      {post.status === "published" && <JsonLd data={postJsonLd(post)} />}
+      <PostContent post={post} />
+    </>
+  );
 }

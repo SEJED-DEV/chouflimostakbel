@@ -134,6 +134,39 @@ export const changelog: Slice<ChangelogCopy> = {
   en: {
     entries: [
       {
+        version: "v1.3",
+        date: "22 October 2026",
+        summary:
+          "The site learns to wear a face, to look after itself, and to say who wrote what.",
+        story: [
+          "It had learned to speak to people at last - accounts, profiles, posts, a whole community of writers - but there was still not one face anywhere in it. Everything said the same thing in the same voice, whoever was reading: Choufli Mosta9bel.",
+          "So it learned to wear one. The blue button in the corner, which used to show a small grey person and a name, shows the reader's own photograph now - and the ring around it is taken from the photograph itself, so a pale picture does not disappear into a pale circle. A name and a face together are a person. Either one alone is a label.",
+          "It learned to be more than a button, too. Press it and a small door opens: your profile, and for the people who look after this place, the room where the platform is looked after. And because a reader should never have to go hunting for a way out, the way out is in there too - on every page, not only on the ones that happened to have a gear.",
+          "Behind that door, the team can see the whole platform at a glance: who is here, what they have written, how much of it is published, and who holds which badge. It says plainly what it cannot do yet - there is no report button, so there is no queue to work through - rather than pretending otherwise.",
+          "There was a smaller fixing, of the kind nobody notices until it is done. The top bar used to vanish on two of the busiest pages, and it was carrying the gear, so on a phone those two pages had no way to sign out at all. Now the way out is the same wherever you are standing. And anyone who looks after the place found a seventh tab waiting for them at the bottom of the screen.",
+          "It learned to ask before it keeps anything. Signing in and signing up now both begin with a box, and a sentence with the terms and the privacy policy linked inside it rather than buried on a page somewhere else. The server asks the same question, because a box that can be posted around is not really a box. And the moment somebody agreed is written down, once, so that the question can still be answered months later.",
+          "Finally it learned to speak when it is passed on. Every post and every person carries their own picture and their own description now, so a link dropped into a group chat shows the thing that was shared instead of a picture of the website. The same facts are there for the machines that read the web: each post says who wrote it and when, and each person says who they are.",
+          "And the roadmap was rewritten to keep only what was still ahead, and to name the two new things - messages between people, and files attached to a post - along with the decisions that came with them. A plan that hides its own decisions is not a plan.",
+        ],
+        changes: [
+          { text: "An admin panel at /admin, for staff. Everyone with an account, everything that has been written, how much of it is published, and who holds which badge. It says what it cannot do yet rather than implying a moderation queue that does not exist.", kind: "added" },
+          { text: "The account button in the navigation now carries the reader's own photograph instead of a generic person icon, and the ring around it is sampled from the photograph so a pale picture does not vanish into a pale circle.", kind: "changed" },
+          { text: "The account button opens a menu: the profile, the admin panel for staff, and signing out. Signing out is now reachable from any page, including on a phone, instead of only from the pages that had a settings gear.", kind: "added" },
+          { text: "A seventh tab for staff in the bottom bar on a phone, for the admin panel. The tab labels scale with the screen, so seven of them fit on a narrow phone where six fixed-size ones did not.", kind: "added" },
+          { text: "Signing in and signing up now ask the reader to agree to the terms of service and the privacy policy, with both documents linked inside the sentence that asks. The server asks as well, so the box cannot be posted around.", kind: "added" },
+          { text: "The moment the terms were agreed is recorded, once, in a new column that only the platform can write - the same guard that stops a reader granting themselves a badge now stops them writing their own consent date.", kind: "added" },
+          { text: "Every post and every person now has its own preview image, drawn with the post's own title or the person's own photograph. A link shared in a chat shows the thing that was shared.", kind: "added" },
+          { text: "Every post carries BlogPosting structured data, and every person carries ProfilePage and Person, so a search engine knows what it is looking at rather than guessing.", kind: "added" },
+          { text: "Posts and profiles now carry full Open Graph and Twitter card metadata, a canonical URL, keywords built from the post's tags, and the author linked so a reader can go from the post to the person.", kind: "changed" },
+          { text: "The navigation was reworked. On a narrow screen the wordmark is gone and the account is the photograph alone, because the capsule was carrying more than a phone could hold.", kind: "changed" },
+          { text: "The top capsule no longer hides on the community index and the admin panel. It is out of the flow and never took any width from anything - what it took was the account, the theme, the language and the gear, on the two pages a reader is most likely to be reading.", kind: "fixed" },
+          { text: "The button on the profile page said \"Write the first one\" to everybody. It now says \"Write another\" once you have written something.", kind: "fixed" },
+          { text: "The upstream Supabase image grants every table to anon by default. A migration revokes what was never asked for and re-asserts exactly the grants each table is meant to have. It only ever removes privileges.", kind: "fixed" },
+          { text: "The roadmap page now lists only what is still to come, and names two new features: direct messages between people, and images and files attached to a post. Both bring a decision with them, and the page says which.", kind: "changed" },
+          { text: "A deploy script, so the live site is fetched, migrated, built and restarted the same way every time, with each migration applied inside a transaction with its ledger row. There is no reset and no delete anywhere in it.", kind: "added" },
+        ],
+      },
+      {
         version: "v1.2",
         date: "19 October 2026",
         summary:
@@ -322,6 +355,39 @@ export const changelog: Slice<ChangelogCopy> = {
   fr: {
     entries: [
       {
+        version: "v1.3",
+        date: "22 octobre 2026",
+        summary:
+          "Le site apprend à porter un visage, à prendre soin de lui-même, et à dire qui a écrit quoi.",
+        story: [
+          "Il avait enfin appris à parler aux gens - des comptes, des profils, des articles, toute une communauté d'auteurs - mais il n'y avait encore aucun visage nulle part. Tout disait la même chose de la même voix, quel que soit le lecteur : Choufli Mosta9bel.",
+          "Alors il a appris à en porter un. Le bouton bleu dans le coin, qui montrait autrefois une petite silhouette grise et un nom, montre désormais la propre photographie du lecteur - et l'anneau qui l'entoure est tiré de la photographie elle-même, pour qu'une image pâle ne disparaisse pas dans un cercle pâle. Un nom et un visage ensemble, c'est une personne. L'un sans l'autre, c'est une étiquette.",
+          "Il a aussi appris à être plus qu'un bouton. Appuyez dessus et une petite porte s'ouvre : votre profil et, pour ceux qui s'occupent de cet endroit, la salle où la plateforme est administrée. Et parce qu'un lecteur ne devrait jamais avoir à chercher une sortie, la sortie est là aussi - sur chaque page, et pas seulement sur celles qui se trouvaient avoir un engrenage.",
+          "Derrière cette porte, l'équipe voit toute la plateforme d'un coup d'œil : qui est là, ce que chacun a écrit, quelle part est publiée, et qui détient quel badge. Il dit franchement ce qu'il ne sait pas encore faire - il n'y a pas de bouton de signalement, donc pas de file à traiter - au lieu de prétendre le contraire.",
+          "Il y a eu une correction plus discrète, de celles que personne ne remarque avant qu'elles soient faites. La barre du haut disparaissait sur deux des pages les plus fréquentées, et elle portait l'engrenage : sur un téléphone, ces deux pages n'offraient donc aucun moyen de se déconnecter. Maintenant, la sortie est la même où que vous soyez. Et ceux qui s'occupent de l'endroit ont trouvé un septième onglet qui les attend en bas de l'écran.",
+          "Il a appris à demander avant de garder quoi que ce soit. Se connecter et s'inscrire commencent désormais par une case à cocher, et une phrase où les conditions et la politique de confidentialité sont liées à l'intérieur même de la phrase plutôt qu'enfouies ailleurs. Le serveur pose la même question, parce qu'une case que l'on peut poster à la main n'est pas vraiment une case. Et le moment où quelqu'un a accepté est consigné, une seule fois, pour que la question ait encore une réponse des mois plus tard.",
+          "Enfin, il a appris à parler quand on le partage. Chaque article et chaque personne porte désormais sa propre image et sa propre description, si bien qu'un lien déposé dans une conversation de groupe montre la chose partagée au lieu d'une image du site. Les mêmes faits sont là pour les machines qui lisent le web : chaque article dit qui l'a écrit et quand, et chaque personne dit qui elle est.",
+          "Et la feuille de route a été réécrite pour ne garder que ce qui reste à venir, et pour nommer les deux nouveautés - les messages entre personnes, et les fichiers joints à un article - avec les décisions qui les accompagnent. Un plan qui cache ses propres décisions n'est pas un plan.",
+        ],
+        changes: [
+          { text: "Un panneau d'administration sur /admin, pour l'équipe. Toutes les personnes ayant un compte, tout ce qui a été écrit, quelle part est publiée, et qui détient quel badge. Il dit ce qu'il ne sait pas encore faire au lieu de laisser croire à une file de modération qui n'existe pas.", kind: "added" },
+          { text: "Le bouton de compte dans la navigation porte désormais la propre photographie du lecteur au lieu d'une icône générique, et l'anneau qui l'entoure est prélevé sur la photographie pour qu'une image pâle ne disparaisse pas dans un cercle pâle.", kind: "changed" },
+          { text: "Le bouton de compte ouvre un menu : le profil, le panneau d'administration pour l'équipe, et la déconnexion. On peut désormais se déconnecter depuis n'importe quelle page, y compris sur téléphone, au lieu des seules pages qui avaient un engrenage de réglages.", kind: "added" },
+          { text: "Un septième onglet pour l'équipe dans la barre du bas sur téléphone, vers le panneau d'administration. Les libellés d'onglet s'adaptent à l'écran, pour que sept tiennent sur un téléphone étroit là où six à taille fixe ne tenaient pas.", kind: "added" },
+          { text: "Se connecter et s'inscrire demandent désormais au lecteur d'accepter les conditions d'utilisation et la politique de confidentialité, les deux documents étant liés dans la phrase qui le demande. Le serveur le demande aussi, pour que la case ne puisse pas être postée à la main.", kind: "added" },
+          { text: "Le moment où les conditions ont été acceptées est enregistré, une seule fois, dans une nouvelle colonne que seule la plateforme peut écrire - le même garde-fou qui empêche un lecteur de s'attribuer un badge l'empêche maintenant d'écrire sa propre date de consentement.", kind: "added" },
+          { text: "Chaque article et chaque personne dispose maintenant de sa propre image d'aperçu, dessinée avec le titre de l'article ou la photographie de la personne. Un lien partagé dans une conversation montre la chose partagée.", kind: "added" },
+          { text: "Chaque article porte des données structurées BlogPosting, et chaque personne porte ProfilePage et Person, pour qu'un moteur de recherche sache ce qu'il regarde au lieu de deviner.", kind: "added" },
+          { text: "Les articles et les profils portent désormais des métadonnées complètes Open Graph et Twitter card, une URL canonique, des mots-clés construits à partir des étiquettes de l'article, et l'auteur lié pour qu'un lecteur puisse passer de l'article à la personne.", kind: "changed" },
+          { text: "La navigation a été retravaillée. Sur un écran étroit, le nom disparaît et le compte se réduit à la photographie seule, parce que la capsule portait plus qu'un téléphone ne peut en contenir.", kind: "changed" },
+          { text: "La capsule du haut ne se cache plus sur l'index de la communauté ni sur le panneau d'administration. Elle est hors du flux et n'a jamais pris de largeur à quoi que ce soit - ce qu'elle prenait, c'était le compte, le thème, la langue et l'engrenage, sur les deux pages qu'un lecteur est le plus susceptible de lire.", kind: "fixed" },
+          { text: "Le bouton de la page de profil disait « Écrivez le premier » à tout le monde. Il dit maintenant « Écrire un autre » dès que vous avez écrit quelque chose.", kind: "fixed" },
+          { text: "L'image Supabase en amont accorde chaque table à anon par défaut. Une migration révoque ce qui n'a jamais été demandé et rétablit exactement les droits que chaque table est censée avoir. Elle ne fait que retirer des privilèges.", kind: "fixed" },
+          { text: "La page de la feuille de route ne liste plus que ce qui reste à venir, et nomme deux nouvelles fonctions : les messages directs entre personnes, et les images et fichiers joints à un article. Les deux apportent une décision avec eux, et la page dit laquelle.", kind: "changed" },
+          { text: "Un script de déploiement, pour que le site en ligne soit récupéré, migré, construit et redémarré de la même façon à chaque fois, chaque migration étant appliquée dans une transaction avec sa ligne de registre. Il n'y a ni remise à zéro ni suppression nulle part.", kind: "added" },
+        ],
+      },
+      {
         version: "v1.2",
         date: "19 octobre 2026",
         summary:
@@ -509,6 +575,39 @@ export const changelog: Slice<ChangelogCopy> = {
 
   ar: {
     entries: [
+      {
+        version: "v1.3",
+        date: "22 أكتوبر 2026",
+        summary:
+          "الموقع يتعلّم أن يحمل وجهاً، وأن يعتني بنفسه، وأن يقول من كتب ماذا.",
+        story: [
+          "كان قد تعلّم أخيرًا أن يخاطب الناس — حسابات وملفّات شخصية ومقالات ومجتمعٌ كامل من الكُتّاب — لكن لم يكن فيه بعد وجهُ أحد. كل شيء كان يقول الشيء نفسه بالصوت نفسه، أيًّا كان القارئ: Choufli Mosta9bel.",
+          "فتعلّم أن يحمل وجهًا. الزرّ الأزرق في الزاوية، الذي كان يعرض سابقًا شخصًا رماديًا صغيرًا واسمًا، يعرض الآن صورة القارئ نفسه — والحلقة حوله مأخوذة من الصورة نفسها، حتى لا تذوب صورةٌ فاتحة في دائرةٍ فاتحة. الاسم والوجه معًا هما شخص؛ وكلٌّ منهما وحده بطاقة.",
+          "وتعلّم أيضًا أن يكون أكثر من زرّ. اضغطه فينفتح بابٌ صغير: ملفّك الشخصي، ولمن يعتنون بالمكان، الغرفة التي تُدار فيها المنصّة. ولأنه لا ينبغي للقارئ أن يبحث عن مخرج، فالمخرج هناك أيضًا — في كل صفحة، لا في الصفحات التي صادف أن كان فيها ترسٌ فحسب.",
+          "وخلف ذلك الباب، يرى الفريق المنصّة كلّها بنظرة واحدة: من هنا، وماذا كتب، وكم منه منشور، ومن يحمل أيّ شارة. ويقول بصراحة ما لا يقدر عليه بعد — فلا زرّ إبلاغ، وبالتالي لا طابور عمل — بدل أن يدّعي غير ذلك.",
+          "وكان هناك إصلاح أصغر، من النوع الذي لا يلاحظه أحد حتى يُفعل. كان الشريط العلوي يختفي في اثنتين من أكثر الصفحات ازدحامًا، وكان يحمل الترس، فلم يكن في تلك الصفحتين على الهاتف أيّ سبيل لتسجيل الخروج. الآن المخرج هو المخرج حيثما وقفت. ومن يعتني بالمكان وجد تبويبًا سابعًا ينتظره أسفل الشاشة.",
+          "وتعلّم أن يسأل قبل أن يحتفظ بأي شيء. صار تسجيل الدخول والتسجيل يبدآن بخانة، وجملةٍ الشروطُ وسياسةُ الخصوصية مرتبطتان داخلها لا مدفونتان في صفحةٍ أخرى. والخادم يسأل السؤال نفسه، لأن خانةً يمكن تمريرها ليست خانة حقًّا. ولحظة الموافقة تُكتب مرّة واحدة، فيبقى للسؤال جوابٌ حتى بعد أشهر.",
+          "وأخيرًا تعلّم أن يتكلّم حين يُشارَك. فكل مقال وكل شخص يحمل الآن صورته ووصفه الخاص، حتى يعرض الرابط الذي يُلقى في مجموعة المحادثة الشيءَ الذي شورك، لا صورةً للموقع. والوقائع نفسها متاحة للآلات التي تقرأ الويب: كل مقال يقول من كتبه ومتى، وكل شخص يقول من هو.",
+          "وأُعيدت كتابة خارطة الطريق لتُبقي فقط ما هو قادم، وتسمّي الجديدين — الرسائل بين الناس، والملفات المرفقة بمقال — مع القرارات التي جاءت معهما. وخطةٌ تخفي قراراتها ليست خطة.",
+        ],
+        changes: [
+          { text: "لوحة إدارة على ‎/admin، للفريق. كل من يملك حسابًا، وكل ما كُتب، وكم منه منشور، ومن يحمل أيّ شارة. وتقول ما لا تقدر عليه بعد بدل أن تُوحي بطابور إشرافٍ غير موجود.", kind: "added" },
+          { text: "زرّ الحساب في التنقّل يحمل الآن صورة القارئ نفسه بدل أيقونة عامة، والحلقة حوله مستخرجة من الصورة حتى لا تذوب صورةٌ فاتحة في دائرةٍ فاتحة.", kind: "changed" },
+          { text: "زرّ الحساب يفتح قائمة: الملفّ الشخصي، ولوحة الإدارة للفريق، وتسجيل الخروج. وصار تسجيل الخروج متاحًا من أيّ صفحة، بما فيها الهاتف، بدل الصفحات التي كان فيها ترسُ إعدادات فقط.", kind: "added" },
+          { text: "تبويب سابع للفريق في الشريط السفلي على الهاتف، إلى لوحة الإدارة. وتتغيّر أحجام عناوين التبويبات مع الشاشة، فتتّسع سبعة على هاتفٍ ضيّق حيث لم تتّسع ستة ثابتة.", kind: "added" },
+          { text: "صار تسجيل الدخول والتسجيل يطلبان من القارئ الموافقة على شروط الاستخدام وسياسة الخصوصية، وكلاهما مرتبط داخل الجملة التي تطلب ذلك. والخادم يسأل أيضًا، فلا يمكن تمرير الخانة يدويًا.", kind: "added" },
+          { text: "لحظة الموافقة على الشروط تُسجَّل مرّة واحدة في عمودٍ جديد لا تكتبه إلا المنصّة — فالحارس نفسه الذي يمنع القارئ من منح نفسه شارة يمنعه الآن من كتابة تاريخ موافقته بنفسه.", kind: "added" },
+          { text: "كل مقال وكل شخص له الآن صورة معاينة خاصة به، مرسومة بعنوان المقال أو بصورة الشخص. فالرابط الذي يُشارَك في محادثة يعرض الشيء الذي شورك.", kind: "added" },
+          { text: "كل مقال يحمل بيانات منظّمة BlogPosting، وكل شخص يحمل ProfilePage وPerson، حتى يعرف محرّك البحث ما ينظر إليه بدل أن يخمّن.", kind: "added" },
+          { text: "المقالات والملفّات الشخصية تحمل الآن بيانات Open Graph وTwitter card كاملة، ورابطًا أساسيًا، وكلمات مفتاحية مبنية على وسوم المقال، والكاتب مرتبطًا لينتقل القارئ من المقال إلى الشخص.", kind: "changed" },
+          { text: "أُعيد العمل على التنقّل. على شاشة ضيّقة يختفي الاسم ويصير الحساب هو الصورة وحدها، لأن الكبسولة كانت تحمل أكثر مما يحتمله هاتف.", kind: "changed" },
+          { text: "لم تعد الكبسولة العلوية تختفي في فهرس المجتمع ولا في لوحة الإدارة. إنها خارج التدفّق ولم تأخذ عرضًا من شيء قطّ — وما كانت تأخذه هو الحساب والمظهر واللغة والترس، في الصفحتين الأرجح أن يقرأهما القارئ.", kind: "fixed" },
+          { text: "كان الزرّ في صفحة الملفّ الشخصي يقول «اكتب الأوّل» للجميع. صار يقول «اكتب مقالاً آخر» بمجرّد أن تكتب شيئًا.", kind: "fixed" },
+          { text: "صورة Supabase الأصلية تمنح كل جدول لـ anon افتراضيًا. وترقيةٌ تلغي ما لم يُطلب قطّ وتعيد بالضبط الصلاحيات التي يُفترض أن يملكها كل جدول. وهي لا تفعل شيئًا سوى سحب الامتيازات.", kind: "fixed" },
+          { text: "صفحة خارطة الطريق لم تعد تسرد إلا ما هو قادم، وتسمّي ميزتين جديدتين: الرسائل المباشرة بين الناس، والصور والملفات المرفقة بمقال. وكلتاهما تجلب قرارًا معها، والصفحة تقول أيّهما.", kind: "changed" },
+          { text: "سكربت نشر، حتى يُجلب الموقع الحيّ وتُطبَّق ترقياته ويُبنى ويُعاد تشغيله بالطريقة نفسها كل مرّة، مع تطبيق كل ترقية داخل معاملة واحدة مع سطر سجلّها. ولا يوجد فيه أيّ إعادة تعيين أو حذف.", kind: "added" },
+        ],
+      },
       {
         version: "v1.2",
         date: "19 أكتوبر 2026",

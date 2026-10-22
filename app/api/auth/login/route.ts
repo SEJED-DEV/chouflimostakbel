@@ -31,7 +31,7 @@ function problem(error: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  let body: { identifier?: unknown; password?: unknown };
+  let body: { identifier?: unknown; password?: unknown; acceptedTerms?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -41,6 +41,14 @@ export async function POST(request: Request) {
   const identifier =
     typeof body.identifier === "string" ? body.identifier.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
+
+  // The terms and the privacy policy are asked for when signing in as well
+  // as when signing up, and the server checks it rather than trusting the
+  // form. An account that predates the terms has no date against them, and
+  // this sign-in is where that date is written.
+  if (body.acceptedTerms !== true && body.acceptedTerms !== "true") {
+    return problem("mustAgree", 400);
+  }
 
   if (!identifier || !password) return problem("invalid", 400);
 
@@ -91,9 +99,22 @@ export async function POST(request: Request) {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, handle, display_name, email, verified_at")
+      .select("id, handle, display_name, email, verified_at, terms_accepted_at")
       .eq("id", data.user.id)
       .maybeSingle();
+
+    // The first agreement is recorded, and only the first: a reader who
+    // already has a date keeps it, because that date is when they agreed,
+    // and a later sign-in does not move it.
+    //
+    // The write goes through the service role, because the guard on the
+    // column allows only the platform to set it.
+    if (profile && !profile.terms_accepted_at) {
+      await createAdminClient()
+        .from("profiles")
+        .update({ terms_accepted_at: new Date().toISOString() })
+        .eq("id", data.user.id);
+    }
 
     return NextResponse.json({
       ok: true,

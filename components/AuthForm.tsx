@@ -30,6 +30,7 @@ export default function AuthForm({
   const { refresh } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   const signingUp = mode === "signUp";
 
@@ -37,12 +38,21 @@ export default function AuthForm({
     event.preventDefault();
     if (busy) return;
 
+    // The box is required in the browser, and the server asks for it too.
+    // Both, because a required attribute is a convenience and a server that
+    // does not ask is a hole.
+    if (!agreed) {
+      setError("mustAgree");
+      return;
+    }
+
     const data = new FormData(event.currentTarget);
     setBusy(true);
     setError(null);
 
     const body: Record<string, string> = {
       password: String(data.get("password") ?? ""),
+      acceptedTerms: "true",
     };
 
     if (signingUp) {
@@ -172,6 +182,45 @@ export default function AuthForm({
             {t.errors[error as keyof typeof t.errors] ?? t.errors.generic}
           </p>
         )}
+
+        {/* The consent.
+            A box that has to be ticked, with both documents linked from the
+            sentence that asks for it - not a link to a page somewhere else
+            that the reader is asked to have read. The server asks for the
+            same thing, so this is not only a gate in the browser. */}
+        <label className="mb-5 flex items-start gap-2.5">
+          <input
+            type="checkbox"
+            name="acceptedTerms"
+            required
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+            className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-blue"
+          />
+          <span className="text-[14px] leading-relaxed text-gray-2">
+            {t.agreeToTerms.split("{terms}")[0]}
+            <Link
+              href="/terms"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-blue hover:underline"
+            >
+              {t.termsOfService}
+            </Link>
+            {t.agreeToTerms
+              .split("{terms}")[1]
+              ?.split("{privacy}")[0] ?? " "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-blue hover:underline"
+            >
+              {t.privacyPolicy}
+            </Link>
+            {t.agreeToTerms.split("{privacy}")[1] ?? ""}
+          </span>
+        </label>
 
         <button
           type="submit"

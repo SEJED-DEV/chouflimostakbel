@@ -33,6 +33,14 @@ export async function GET() {
       bannerUrl: profile.banner_url,
       dateOfBirth: profile.date_of_birth,
       memberSince: profile.created_at,
+      /**
+       * When the reader agreed to the terms and the privacy policy.
+       *
+       * The reader's own row, so this is their own agreement and nobody
+       * else's. It is not shown anywhere on the site - it is a fact about the
+       * person, kept so the question "did they?" has an answer.
+       */
+      termsAcceptedAt: profile.terms_accepted_at,
       roles: normaliseRoles(profile.roles),
     },
   });

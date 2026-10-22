@@ -28,6 +28,34 @@ const KEYS = Object.keys(ROLES) as RoleKey[];
 /** Every role, in badge order. Used to seed and to test. */
 export const ALL_ROLES: RoleKey[] = KEYS;
 
+/**
+ * The roles that make someone part of the team.
+ *
+ * `contributor` is deliberately not one of them. A contributor writes posts
+ * and is credited for it, but they are not staff: they do not moderate, they
+ * do not see the admin panel, and the platform asks nothing of them beyond
+ * the writing they came for.
+ *
+ * `leadership`, `dev`, `staff` and `secret` are the people who run the place.
+ */
+export const STAFF_ROLES: RoleKey[] = [
+  "leadership",
+  "dev",
+  "staff",
+  "secret",
+];
+
+/**
+ * Is this person part of the team?
+ *
+ * The answer decides whether the admin panel is offered at all. It is a
+ * question about the account, not about the page: a reader who navigates to
+ * `/admin` directly gets turned away by the same check that hides the link.
+ */
+export function isStaff(roles: readonly RoleKey[]): boolean {
+  return roles.some((role) => STAFF_ROLES.includes(role));
+}
+
 /** Is this a role the platform knows about? */
 export function isRole(value: unknown): value is RoleKey {
   return typeof value === "string" && (KEYS as string[]).includes(value);

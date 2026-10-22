@@ -106,6 +106,11 @@ const MANIFEST = {
   rocket: "solid/rocket",
   "right-from-bracket": "solid/right-from-bracket",
   bars: "solid/bars",
+  // The door to the admin panel. A shield reads as authority without
+  // claiming to be a badge - the role badges have their own marks, and
+  // reusing one of those here would make the panel look like a privilege
+  // rather than a tool.
+  shield: "solid/shield-halved",
 
   // --- The platform's own ------------------------------------------------
   // The settings control, the roles, and the marks a profile carries.

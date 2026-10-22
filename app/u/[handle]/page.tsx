@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import PersonContent from "@/components/pages/PersonContent";
+import JsonLd from "@/components/JsonLd";
 import { getPublicProfile, listPublishedByAuthor } from "@/lib/people";
+import { personJsonLd, personMetadata } from "@/lib/seo";
 
 /**
  * A person's public page, at `/u/handle`.
@@ -48,13 +50,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     return { title: "Profile", robots: { index: false, follow: false } };
   }
 
-  const url = `/u/${person.handle}`;
-  return {
-    title: person.name,
-    description: `${person.name} (@${person.handle}) on Choufli Mosta9bel.`,
-    alternates: { canonical: url },
-    openGraph: { url, type: "profile", title: person.name },
-  };
+  return personMetadata(person);
 }
 
 export default async function PersonPage({ params }: Params) {
@@ -65,5 +61,17 @@ export default async function PersonPage({ params }: Params) {
 
   const posts = await listPublishedByAuthor(person.id);
 
-  return <PersonContent person={person} posts={posts} now={new Date().toISOString()} />;
+  return (
+    <>
+      {/* The person, described as a person. The page is a profile page; the
+          thing it is about is a Person, and a search engine that reads this
+          can say so. */}
+      <JsonLd data={personJsonLd(person)} />
+      <PersonContent
+        person={person}
+        posts={posts}
+        now={new Date().toISOString()}
+      />
+    </>
+  );
 }

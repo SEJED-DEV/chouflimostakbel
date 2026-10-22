@@ -25,6 +25,12 @@ export interface CurrentProfile {
   avatarUrl: string | null;
   bannerUrl: string | null;
   dateOfBirth: string | null;
+  /**
+   * When the reader agreed to the terms and the privacy policy.
+   *
+   * ISO timestamp, or null for an account that has not agreed yet.
+   */
+  termsAcceptedAt: string | null;
   /** ISO timestamp. */
   memberSince: string;
   roles: string[];

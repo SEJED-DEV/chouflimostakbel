@@ -43,6 +43,13 @@ export interface Profile {
   avatar_url: string | null;
   banner_url: string | null;
   date_of_birth: string | null;
+  /**
+   * When the reader agreed to the terms of service and the privacy policy.
+   *
+   * Null for an account that predates them. The platform is the only thing
+   * allowed to write it - see the `profiles_guard` trigger.
+   */
+  terms_accepted_at: string | null;
   /** The vocabulary the database's constraint allows; see `lib/roles.ts`. */
   roles: string[];
 }
@@ -94,7 +101,7 @@ export async function currentProfile(): Promise<Profile | null> {
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, handle, display_name, email, verified_at, created_at, avatar_url, banner_url, date_of_birth, roles",
+        "id, handle, display_name, email, verified_at, created_at, avatar_url, banner_url, date_of_birth, terms_accepted_at, roles",
       )
       .eq("id", user.id)
       .maybeSingle();

@@ -86,6 +86,7 @@ export const en = {
 
     blogs: "Community",
     profile: "Profile",
+    admin: "Admin",
     login: "Log in",
     signup: "Sign up",
     handle: "Username",  },
@@ -290,6 +291,7 @@ export const fr: Dictionary = {
 
     blogs: "Communauté",
     profile: "Profil",
+    admin: "Admin",
     login: "Connexion",
     signup: "Inscription",
     handle: "Nom d’utilisateur",  },
@@ -482,6 +484,7 @@ export const ar: Dictionary = {
 
     blogs: "المجتمع",
     profile: "الملف الشخصي",
+    admin: "الإدارة",
     login: "تسجيل الدخول",
     signup: "إنشاء حساب",
     handle: "اسم المستخدم",  },

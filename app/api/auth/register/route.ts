@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     email?: unknown;
     password?: unknown;
     displayName?: unknown;
+    acceptedTerms?: unknown;
   };
   try {
     body = await request.json();
@@ -56,6 +57,13 @@ export async function POST(request: Request) {
   const password = typeof body.password === "string" ? body.password : "";
   const displayName =
     typeof body.displayName === "string" ? body.displayName.trim() : "";
+
+  // The terms and the privacy policy are asked for, and the answer is
+  // checked here rather than only in the browser. A form that can be posted
+  // around its own checkbox is a checkbox that is not really required.
+  if (body.acceptedTerms !== true && body.acceptedTerms !== "true") {
+    return problem("mustAgree", 400);
+  }
 
   if (!isHandle(handle)) return problem("invalidHandle", 400);
   if (email !== null && !EMAIL.test(email)) return problem("invalidEmail", 400);
@@ -103,12 +111,15 @@ export async function POST(request: Request) {
     if (!createdUserId) return problem("server", 500);
 
     // 2. The profile row. This is the reader's record; GoTrue's is the
-    //    account. They are joined by id and nothing else.
+    //    account. They are joined by id and nothing else. The moment they
+    //    agreed to the terms is written here, because the platform is the
+    //    only thing allowed to write it.
     const { error: profileError } = await admin.from("profiles").insert({
       id: createdUserId,
       handle,
       email,
       display_name: displayName,
+      terms_accepted_at: new Date().toISOString(),
     });
 
     if (profileError) {

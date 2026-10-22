@@ -16,6 +16,18 @@ export interface AccountCopy {
   signUp: string;
   signOut: string;
 
+  /**
+   * The consent, asked for when signing in and when signing up.
+   *
+   * `agreeToTerms` carries two placeholders, {terms} and {privacy}, which
+   * are the two links. They are placeholders rather than separate sentences
+   * because the sentence has to read correctly in a language where the
+   * order of the two documents is the other way round.
+   */
+  agreeToTerms: string;
+  termsOfService: string;
+  privacyPolicy: string;
+
   displayName: string;
   /** The public name, and the thing you sign in with. */
   handle: string;
@@ -75,6 +87,9 @@ export interface AccountCopy {
   profileSub: string;
   yourPosts: string;
   yourPostsBody: string;
+  /** The account menu, opened from the navigation. */
+  profileLink: string;
+  adminPanel: string;
   /**
    * What each badge is called, in this language.
    *
@@ -97,6 +112,8 @@ export interface AccountCopy {
     server: string;
     invalid: string;
     generic: string;
+    /** The terms were not agreed to. */
+    mustAgree: string;
   };
 }
 
@@ -108,10 +125,15 @@ export const account: Slice<AccountCopy> = {
     signIn: "Sign in",
     signUp: "Create an account",
     signOut: "Sign out",
+    agreeToTerms: "I agree to the {terms} and the {privacy}.",
+    termsOfService: "terms of service",
+    privacyPolicy: "privacy policy",
     displayName: "Name",
 
     profileTitle: "Your profile.",
     profileSub: "This is where your profile lives. What you write appears here, and this is the page people will see.",
+    profileLink: "Profile",
+    adminPanel: "Admin panel",
     yourPosts: "Your posts",
     yourPostsBody: "Nothing here yet. When you write something, it will show up here.",
 
@@ -175,6 +197,7 @@ handleTaken: "That username is taken.",      invalidEmail: "That does not look l
       server: "Something went wrong on our side. Try again.",
       invalid: "Something was missing from that form.",
       generic: "That did not work. Try again.",
+      mustAgree: "You have to agree to the terms before you can continue.",
     },
   },
 
@@ -185,10 +208,15 @@ handleTaken: "That username is taken.",      invalidEmail: "That does not look l
     signIn: "Se connecter",
     signUp: "Créer un compte",
     signOut: "Se déconnecter",
+    agreeToTerms: "J’accepte les {terms} et la {privacy}.",
+    termsOfService: "conditions d’utilisation",
+    privacyPolicy: "politique de confidentialité",
     displayName: "Nom",
 
     profileTitle: "Votre profil.",
     profileSub: "C’est ici que vit votre profil. Ce que vous écrivez apparaît ici, et c’est la page que les gens verront.",
+    profileLink: "Profil",
+    adminPanel: "Panneau d’administration",
     yourPosts: "Vos articles",
     yourPostsBody: "Rien ici pour l’instant. Quand vous écrirez quelque chose, cela apparaîtra ici.",
 
@@ -252,6 +280,7 @@ handleTaken: "Ce nom d’utilisateur est pris.",      invalidEmail: "Cela ne res
       server: "Un problème est survenu de notre côté. Réessayez.",
       invalid: "Il manquait quelque chose dans ce formulaire.",
       generic: "Cela n'a pas fonctionné. Réessayez.",
+      mustAgree: "Il faut accepter les conditions avant de continuer.",
     },
   },
 
@@ -262,10 +291,15 @@ handleTaken: "Ce nom d’utilisateur est pris.",      invalidEmail: "Cela ne res
     signIn: "تسجيل الدخول",
     signUp: "إنشاء حساب",
     signOut: "تسجيل الخروج",
+    agreeToTerms: "أوافق على {terms} و{privacy}.",
+    termsOfService: "شروط الاستخدام",
+    privacyPolicy: "سياسة الخصوصية",
     displayName: "الاسم",
 
     profileTitle: "ملفّك الشخصي.",
     profileSub: "هنا يقيم ملفّك الشخصي. ما تكتبه يظهر هنا، وهذه هي الصفحة التي يراها الناس.",
+    profileLink: "الملفّ الشخصي",
+    adminPanel: "لوحة الإدارة",
     yourPosts: "مقالاتك",
     yourPostsBody: "لا شيء هنا بعد. حين تكتب شيئًا سيظهر هنا.",
 
@@ -329,6 +363,7 @@ handleTaken: "اسم المستخدم هذا محجوز.",      invalidEmail: "�
       server: "حدث خطأ من طرفنا. أعد المحاولة.",
       invalid: "نقص شيء في ذلك النموذج.",
       generic: "لم ينجح ذلك. أعد المحاولة.",
+      mustAgree: "يجب الموافقة على الشروط قبل المتابعة.",
     },
   },
 };

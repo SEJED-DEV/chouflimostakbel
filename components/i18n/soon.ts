@@ -31,8 +31,11 @@ export interface SoonCopy {
   questions: {
     title: string;
     sub: string;
-    /** The calls already made - currently just the backend choice. */
-    decided: { label: string; title: string; body: string };
+    /** The calls already made, kept visible. */
+    decided: {
+      label: string;
+      items: { title: string; body: string }[];
+    };
     items: { q: string; why: string }[];
   };
   stack: {
@@ -82,16 +85,28 @@ export const soon: Slice<SoonCopy> = {
 
     intro: {
       title: "Why this page exists.",
-      body: "The site has grown past the guides it started as. You sign in with a username rather than an address, you keep a profile, and you can write, publish and delete posts in three languages. All of that is done, and so it is not on this page. What is on this page is the rest: the parts still being built, written down in the open while they are still uncertain. Two of them are new to the plan - direct messages between people, and attaching images, files and videos to a post - and both bring a decision with them that this page names rather than hides.",
+      body: "The site has grown past the guides it started as. You sign in with a username rather than an address, you keep a profile, and you can write, publish and delete posts in three languages. All of that is done, and so it is not on this page. What is on this page is the rest: the parts still being built, written down in the open while they are still uncertain. Three decisions have been taken and are kept visible below; three calls are still open.",
     },
 
     questions: {
       title: "Decisions still open",
-      sub: "Four calls we have not made yet.",
+      sub: "Three calls we have not made yet.",
       decided: {
         label: "Decided",
-        title: "Supabase, for the whole backend.",
-        body: "Supabase covers the database and sign-in in one place, so we are not assembling and running two unrelated services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only the author can edit their own post\" cannot be bypassed by a client.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.\n\nA profile row also holds a date of birth and, if one was given, an address. Neither is public, and that was not left to a permission that could be widened by accident. What a stranger may read is a separate view holding the name, the photo, the banner, the badges and the join date, and it is not possible to ask that view for an address because an address is not in it. A person appears there once they have published something, and not before.\n\nOne part of the stack is about to change, and it is worth saying why. Avatars are resized in the browser and stored as data on the profile row, which keeps an image host off the list of things that can be down. That works for one small picture per person and it cannot work for a post carrying several images, a PDF or a video. So a storage bucket is being switched on for attachments - the one place the no-host rule had to bend. It is a real trade, taken deliberately, and it is named here rather than quietly dropped.",
+        items: [
+          {
+            title: "Supabase, for the whole backend.",
+            body: "Supabase covers the database and sign-in in one place, so we are not assembling and running two unrelated services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only the author can edit their own post\" cannot be bypassed by a client.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.\n\nA profile row also holds a date of birth and, if one was given, an address. Neither is public, and that was not left to a permission that could be widened by accident. What a stranger may read is a separate view holding the name, the photo, the banner, the badges and the join date, and it is not possible to ask that view for an address because an address is not in it. A person appears there once they have published something, and not before.",
+          },
+          {
+            title: "A storage bucket, for attachments.",
+            body: "Avatars are resized in the browser and stored as data on the profile row, which keeps an image host off the list of things that can be down. That works for one small picture per person and it cannot work for a post carrying several images, a PDF or a video. So a bucket is being switched on for attachments - the one place the no-host rule had to bend. It is a real trade, taken deliberately, and it is named here rather than quietly dropped. Avatars stay as they are: one small picture per person is not worth a host.",
+          },
+          {
+            title: "Direct messages are private, and reportable.",
+            body: "Messages between two people are private, and nobody here reads them by default. A site that quietly reads private conversations has broken the thing it was built for, and a promise made after the feature ships is worth much less than one made before. The counterweight is abuse: a participant can report a conversation, and a report hands that one thread to moderators and nothing else. Private does not mean unaccountable - it means accountable to the person you are talking to, and to the law, and to nobody else.",
+          },
+        ],
       },
       items: [
         {
@@ -99,12 +114,8 @@ export const soon: Slice<SoonCopy> = {
           why: "A ready-made CMS gives us auth, uploads and an admin panel immediately, but it is opinionated. Hand-rolling everything takes longer and keeps full control.",
         },
         {
-          q: "Are direct messages private, or moderated?",
-          why: "Messages between two people are private, and nobody here reads them by default - a site that quietly reads private conversations has broken the thing it was built for. The counterweight is abuse: a participant can report a conversation, and a report hands that one thread to moderators, and nothing else. Making that promise now, before the feature exists, is the only time it can be made honestly.",
-        },
-        {
           q: "Do posts need a moderation step?",
-          why: "Settled, for now: anyone with an account may publish, with no approval queue and no verified email - an address is optional here, so gating on one would be gating on something the platform does not require. What is genuinely open is what happens the first time a stranger reads the feed and it has something in it they should not see. A report button and a way to hide a post are the answer, and neither is built.",
+          why: "Settled, for now: anyone with an account may publish, with no approval queue and no verified email - an address is optional here, so gating on one would be gating on something the platform does not require. What is genuinely open is what happens the first time a stranger reads the feed and it has something in it they should not see. The admin panel exists now and shows everyone and everything that has been written, but the report button and the queue that goes with it are not built: without a report, there is nothing to moderate.",
         },
         {
           q: "Which languages do posts come in?",
@@ -175,12 +186,12 @@ export const soon: Slice<SoonCopy> = {
         {
           n: "2",
           name: "Reactions and comments",
-          body: "A small fixed set of reactions instead of a generic like, threaded one level deep, plus follows - and reporting from day one.",
+          body: "A small fixed set of reactions instead of a generic like, threaded one level deep, plus follows. The admin panel is already built and shows everyone and everything that has been written; what it cannot do yet is decide anything, because there is no report button and therefore no queue to work through.",
           points: [
             "Meaningful reactions, not just a like",
             "Threaded comments, one level",
             "Follow authors and topics",
-            "Report and moderation queue",
+            "A report button, and the queue that goes with it",
           ],
         },
         {
@@ -280,7 +291,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           risk: "One person becomes the whole moderation team",
-          mitigation: "Report queue with triage and ban tooling, built in from the first release",
+          mitigation: "The admin panel is built, so there is a place to work. What is not built is the report queue and the tooling to decide with - and that is the part that has to arrive before the panel is a moderation team rather than a look-up table",
         },
         {
           risk: "Abuse in private messages, where nobody can see it",
@@ -326,16 +337,28 @@ export const soon: Slice<SoonCopy> = {
 
     intro: {
       title: "Pourquoi cette page existe.",
-      body: "Le site a dépassé les guides par lesquels il a commencé. On se connecte avec un identifiant plutôt qu'avec une adresse, on garde un profil, et on peut écrire, publier et supprimer des articles en trois langues. Tout cela est fait, et ne figure donc pas sur cette page. Ce qui figure ici, c'est le reste : les parties encore en construction, écrites au grand jour tant qu'elles sont encore incertaines. Deux d'entre elles sont nouvelles dans le plan - les messages directs entre personnes, et le fait de joindre des images, des fichiers et des vidéos à un article - et chacune vient avec une décision que cette page nomme au lieu de la cacher.",
+      body: "Le site a dépassé les guides par lesquels il a commencé. On se connecte avec un identifiant plutôt qu'avec une adresse, on garde un profil, et on peut écrire, publier et supprimer des articles en trois langues. Tout cela est fait, et ne figure donc pas sur cette page. Ce qui figure ici, c'est le reste : les parties encore en construction, écrites au grand jour tant qu'elles sont encore incertaines. Trois décisions ont été prises et restent visibles ci-dessous ; trois questions sont encore ouvertes.",
     },
 
     questions: {
       title: "Décisions encore ouvertes",
-      sub: "Quatre choix que nous n'avons pas encore faits.",
+      sub: "Trois choix que nous n'avons pas encore faits.",
       decided: {
         label: "Décidé",
-        title: "Supabase, pour toute la partie serveur.",
-        body: "Supabase couvre la base de données et l'authentification au même endroit, sans avoir à assembler et à exploiter deux services sans lien entre eux. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seul l'auteur peut modifier son propre article » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.\n\nLa ligne du profil contient aussi une date de naissance et, si elle a été donnée, une adresse. Ni l'une ni l'autre n'est publique, et cela n'a pas été laissé à une permission qui pourrait s'élargir par accident. Ce qu'un inconnu peut lire est une vue séparée qui contient le nom, la photo, la bannière, les badges et la date d'inscription, et il n'est pas possible de demander une adresse à cette vue parce qu'une adresse n'y est pas. Une personne y apparaît une fois qu'elle a publié quelque chose, et pas avant.\n\nUne partie de la pile est sur le point de changer, et il vaut la peine d'en dire pourquoi. Les photos de profil sont redimensionnées dans le navigateur et stockées comme données sur la ligne du profil, ce qui retire un hébergeur d'images de la liste de ce qui peut tomber en panne. Cela marche pour une seule petite image par personne, et cela ne peut pas marcher pour un article portant plusieurs images, un PDF ou une vidéo. Un bac de stockage va donc être activé pour les pièces jointes - le seul endroit où la règle « pas d'hébergeur d'images » a dû céder. C'est un vrai compromis, pris exprès, et il est nommé ici plutôt que laissé tomber en silence.",
+        items: [
+          {
+            title: "Supabase, pour toute la partie serveur.",
+            body: "Supabase couvre la base de données et l'authentification au même endroit, sans avoir à assembler et à exploiter deux services sans lien entre eux. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seul l'auteur peut modifier son propre article » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.\n\nLa ligne du profil contient aussi une date de naissance et, si elle a été donnée, une adresse. Ni l'une ni l'autre n'est publique, et cela n'a pas été laissé à une permission qui pourrait s'élargir par accident. Ce qu'un inconnu peut lire est une vue séparée qui contient le nom, la photo, la bannière, les badges et la date d'inscription, et il n'est pas possible de demander une adresse à cette vue parce qu'une adresse n'y est pas. Une personne y apparaît une fois qu'elle a publié quelque chose, et pas avant.",
+          },
+          {
+            title: "Un bac de stockage, pour les pièces jointes.",
+            body: "Les photos de profil sont redimensionnées dans le navigateur et stockées comme données sur la ligne du profil, ce qui retire un hébergeur d'images de la liste de ce qui peut tomber en panne. Cela marche pour une seule petite image par personne, et cela ne peut pas marcher pour un article portant plusieurs images, un PDF ou une vidéo. Un bac de stockage va donc être activé pour les pièces jointes - le seul endroit où la règle « pas d'hébergeur d'images » a dû céder. C'est un vrai compromis, pris exprès, et il est nommé ici plutôt que laissé tomber en silence. Les photos de profil, elles, restent comme elles sont : une petite image par personne ne vaut pas un hébergeur.",
+          },
+          {
+            title: "Les messages directs sont privés, et signalables.",
+            body: "Les messages entre deux personnes sont privés, et personne ici ne les lit par défaut. Un site qui lit discrètement les conversations privées a trahi ce pour quoi il a été construit, et une promesse faite après le lancement vaut bien moins qu'une promesse faite avant. Le contrepoids, c'est l'abus : un participant peut signaler une conversation, et un signalement ne remet que ce fil aux modérateurs, rien d'autre. Privé ne veut pas dire sans compte rendu - cela veut dire responsable devant la personne à qui l'on parle, et devant la loi, et devant personne d'autre.",
+          },
+        ],
       },
       items: [
         {
@@ -343,12 +366,8 @@ export const soon: Slice<SoonCopy> = {
           why: "Un CMS prêt à l'emploi nous donne immédiatement l'authentification, les envois de fichiers et un panneau d'administration, mais il est directeur. Tout construire à la main prend plus de temps et garde le contrôle total.",
         },
         {
-          q: "Les messages directs sont-ils privés, ou modérés ?",
-          why: "Les messages entre deux personnes sont privés, et personne ici ne les lit par défaut - un site qui lit discrètement les conversations privées a trahi ce pour quoi il a été construit. Le contrepoids, c'est l'abus : un participant peut signaler une conversation, et un signalement ne remet que ce fil aux modérateurs, rien d'autre. Promettre cela maintenant, avant que la fonction existe, est le seul moment où la promesse peut être faite honnêtement.",
-        },
-        {
           q: "Les articles ont-ils besoin d'une modération ?",
-          why: "Tranché, pour l'instant : toute personne ayant un compte peut publier, sans file d'approbation et sans adresse vérifiée - l'adresse est facultative ici, donc l'exiger reviendrait à exiger ce que la plateforme ne demande pas. Ce qui reste vraiment ouvert, c'est ce qui se passe le jour où un inconnu lit le fil et y trouve quelque chose qu'il ne devrait pas voir. Un bouton de signalement et un moyen de masquer un article sont la réponse, et ni l'un ni l'autre n'existe.",
+          why: "Tranché, pour l'instant : toute personne ayant un compte peut publier, sans file d'approbation et sans adresse vérifiée - l'adresse est facultative ici, donc l'exiger reviendrait à exiger ce que la plateforme ne demande pas. Ce qui reste vraiment ouvert, c'est ce qui se passe le jour où un inconnu lit le fil et y trouve quelque chose qu'il ne devrait pas voir. Le panneau d'administration existe maintenant et montre tout le monde et tout ce qui a été écrit, mais le bouton de signalement et la file qui va avec ne sont pas construits : sans signalement, il n'y a rien à modérer.",
         },
         {
           q: "Dans quelles langues publie-t-on ?",
@@ -526,7 +545,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           risk: "Une seule personne devient toute l'équipe de modération",
-          mitigation: "File de signalements avec triage et outils de blocage, prévus dès la première version",
+          mitigation: "Le panneau d'administration est construit : il y a donc un endroit où travailler. Ce qui n'est pas construit, c'est la file de signalements et les outils pour décider - et c'est précisément la partie qui doit arriver avant que le panneau soit une équipe de modération plutôt qu'une table de consultation",
         },
         {
           risk: "Les abus dans les messages privés, là où personne ne les voit",
@@ -572,16 +591,28 @@ export const soon: Slice<SoonCopy> = {
 
     intro: {
       title: "لماذا هذه الصفحة.",
-      body: "تجاوز الموقعَ الأدلةَ التي بدأ بها. تسجّل الدخول باسم مستخدم بدل بريد، وتحتفظ بملفّ شخصي، وتستطيع أن تكتب مقالاتك وتنشرها وتحذفها بثلاث لغات. كل ذلك تمّ، ولذلك لا يرد في هذه الصفحة. ما يرد فيها هو الباقي: الأجزاء التي ما تزال قيد الإنشاء، مكتوبةً في العلن ما دامت غير محسومة. اثنان منها جديدان في الخطة - الرسائل المباشرة بين الناس، وإرفاق صور وملفات وفيديوهات بالمقال - وكلٌّ منهما يجلب معه قراراً تسمّيه هذه الصفحة بدل أن تخفيه.",
+      body: "تجاوز الموقعُ الأدلةَ التي بدأ بها. تسجّل الدخول باسم مستخدم بدل بريد، وتحتفظ بملفّ شخصي، وتستطيع أن تكتب مقالاتك وتنشرها وتحذفها بثلاث لغات. كل ذلك تمّ، ولذلك لا يرد في هذه الصفحة. ما يرد فيها هو الباقي: الأجزاء التي ما تزال قيد الإنشاء، مكتوبةً في العلن ما دامت غير محسومة. ثلاثة قرارات اتُّخذت وتبقى ظاهرة أدناه؛ وثلاثة أسئلة ما زالت مفتوحة.",
     },
 
     questions: {
       title: "قرارات لم تُتخذ بعد",
-      sub: "أربعة اختيارات لم نُقرّرها بعد.",
+      sub: "ثلاثة اختيارات لم نُقرّرها بعد.",
       decided: {
         label: "قرّر",
-        title: "Supabase، من أجل كلّ ما في الخلفية.",
-        body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في مكان واحد، فلا نضطر إلى تجميع خدمتين لا صلة بينهما وتشغيلهما. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يعدّل المقال إلّا كاتبه».\n\nويتغيّر جزءٌ من المنظومة قريباً، ومن باب الأمانة يستحقّ أن يُقال لماذا. تبقى صور الملفّ الشخصي بياناتً في صفّ الملفّ الشخصي - تُقصّ وتُضغط إلى WebP داخل المتصفح، فيختفي مضيفُ صورِ الحسابات من قائمة ما قد يتعطّل. وهذا يصلح لصورةٍ صغيرة واحدة لكل شخص، ولا يصلح لمقال يحمل عدّة صور أو ملفّ PDF أو فيديو. لذلك سيُفعَّل دلو تخزين (bucket) للمرفقات - وهو الموضع الوحيد الذي اضطرّت فيه قاعدة «بلا مضيف صور» أن تنحني. إنه مقايضةٌ حقيقية، تُؤخذ عمداً، وتُسمّى هنا بدل أن تُترك تسقط في صمت.\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.\n\nويحمل صفّ الملفّ الشخصي أيضاً تاريخ ميلاد، وبريداً إن أُعطي. لا شيء منهما علني، ولم يُترك الأمر لصلاحية قد تتّسع سهواً. ما يستطيع الغريب قراءته هو عرضٌ منفصل يحمل الاسم والصورة والشعار والشارات وتاريخ الانضمام، ولا يمكن سؤال ذلك العرض عن بريد لأن البريد ليس فيه. ولا يظهر الشخص فيه إلّا بعد أن ينشر شيئاً، لا قبل ذلك.",
+        items: [
+          {
+            title: "Supabase، من أجل كلّ ما في الخلفية.",
+            body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في مكان واحد، فلا نضطر إلى تجميع خدمتين لا صلة بينهما وتشغيلهما. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يعدّل المقال إلّا كاتبه».\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.\n\nويحمل صفّ الملفّ الشخصي أيضاً تاريخ ميلاد، وبريداً إن أُعطي. لا شيء منهما علني، ولم يُترك الأمر لصلاحية قد تتّسع سهواً. ما يستطيع الغريب قراءته هو عرضٌ منفصل يحمل الاسم والصورة والشعار والشارات وتاريخ الانضمام، ولا يمكن سؤال ذلك العرض عن بريد لأن البريد ليس فيه. ولا يظهر الشخص فيه إلّا بعد أن ينشر شيئاً، لا قبل ذلك.",
+          },
+          {
+            title: "دلو تخزين، للمرفقات.",
+            body: "تبقى صور الملفّ الشخصي تُقصّ داخل المتصفح وتُخزَّن كبيانات في صفّه، فيختفي مضيفُ صورِ الحسابات من قائمة ما قد يتعطّل. وهذا يصلح لصورةٍ صغيرة واحدة لكل شخص، ولا يصلح لمقال يحمل عدّة صور أو ملفّ PDF أو فيديو. لذلك سيُفعَّل دلو تخزين للمرفقات - وهو الموضع الوحيد الذي اضطرّت فيه قاعدة «بلا مضيف صور» أن تنحني. إنه مقايضةٌ حقيقية، تُؤخذ عمداً، وتُسمّى هنا بدل أن تُترك تسقط في صمت. أمّا صور الملفّ الشخصي فتبقى كما هي: صورةٌ صغيرة واحدة لكل شخص لا تستحقّ مضيفاً.",
+          },
+          {
+            title: "الرسائل المباشرة خاصة، ويمكن الإبلاغ عنها.",
+            body: "الرسائل بين شخصين خاصة، ولا يقرأها أحدٌ هنا افتراضياً. فموقعٌ يقرأ المحادثات الخاصة في الخفاء يكون قد خان الشيء الذي بُني لأجله، والوعدُ الذي يُقال بعد الإطلاق أقلّ قيمةً بكثير من وعدٍ يُقال قبله. والميزان في المقابل هو الإساءة: يستطيع أحد الطرفين إبلاغ محادثة، والإبلاغ لا يسلّم لصاندي الإشراف إلّا ذلك الخيط ولا شيء غيره. الخاصة لا تعني بلا محاسبة - بل تعني محاسبةً أمام الشخص الذي تحادثه، وأمام القانون، وأمام لا أحدٍ سواهما.",
+          },
+        ],
       },
       items: [
         {
@@ -589,12 +620,8 @@ export const soon: Slice<SoonCopy> = {
           why: "نظام إدارة محتوى جاهز يمنحنا المصادقة ورفع الملفات ولوحة تحكّم فوراً، لكنه يفرض مقاربة خاصة به. وبناء كل شيء يدوياً يستغرق وقتاً أطول ويحافظ على التحكّم الكامل.",
         },
         {
-          q: "هل الرسائل المباشرة خاصة أم مُراجَعة؟",
-          why: "الرسائل بين شخصين خاصة، ولا يقرأها أحدٌ هنا افتراضياً - فموقعٌ يقرأ المحادثات الخاصة في الخفاء يكون قد خان الشيء الذي بُني لأجله. والميزان في المقابل هو الإساءة: يستطيع أحد الطرفين إبلاغ محادثة، والإبلاغ لا يسلّم لصاندي الإشراف إلّا ذلك الخيط ولا شيء غيره. والوعدُ بأن يُقال الآن، قبل أن توجد الميزة، هو الوقت الوحيد الذي يمكن أن يُقال فيه بصدق.",
-        },
-        {
           q: "هل تحتاج المقالات إلى خطوة مراجعة؟",
-          why: "حُسم الأمر مؤقتاً: كل من يملك حساباً يستطيع النشر، بلا طابور موافقات وبلا بريد موثّق - فالبريد اختياري هنا، واشتراطه يعني اشتراط ما لا تطلبه المنصّة أصلاً. وما يبقى مفتوحاً فعلاً هو ما سيحدث أول مرة يقرأ فيها غريبٌ الخلاصة فيجد فيها ما لا ينبغي أن يراه. الجواب زرّ إبلاغ وطريقةٌ لإخفاء مقال، ولم يُبنَ أيٌّ منهما.",
+          why: "حُسم الأمر مؤقتاً: كل من يملك حساباً يستطيع النشر، بلا طابور موافقات وبلا بريد موثّق - فالبريد اختياري هنا، واشتراطه يعني اشتراط ما لا تطلبه المنصّة أصلاً. وما يبقى مفتوحاً فعلاً هو ما سيحدث أول مرة يقرأ فيها غريبٌ الخلاصة فيجد فيها ما لا ينبغي أن يراه. لوحة الإدارة موجودة الآن وتُظهر الجميع وكل ما كُتب، لكن زرّ الإبلاغ والطابور الذي معه غير مبنيَّين: بلا إبلاغ، لا شيء يُراجَع.",
         },
         {
           q: "بأي لغات تُكتب المقالات؟",
@@ -771,7 +798,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           risk: "شخص واحد يصبح فريق الإشراف كلّه",
-          mitigation: "قائمة إبلاغات مع فرز وأدوات حظر، مبنيّة منذ الإصدار الأول",
+          mitigation: "لوحة الإدارة مبنيّة، فهناك مكانٌ للعمل. والذي لم يُبنَ هو طابور الإبلاغ وأدوات القرار - وهي تحديدًا القطعة التي يجب أن تصل قبل أن تكون اللوحة فريقَ إشرافٍ بدل أن تكون جدولَ استعلام",
         },
         {
           risk: "الإساءة في الرسائل الخاصة، حيث لا يراها أحد",

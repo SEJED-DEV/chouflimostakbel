@@ -18,6 +18,8 @@ export interface BlogsCopy {
   empty: string;
   emptyBody: string;
   writeOne: string;
+  /** The same button, for someone who has already written something. */
+  writeAnother: string;
   soonNote: string;
 
   /** The list. */
@@ -130,6 +132,7 @@ export const blogs: Slice<BlogsCopy> = {
     emptyBody:
       "The first posts are on their way. If you have an account, yours will be the first.",
     writeOne: "Write the first one",
+    writeAnother: "Write another",
     soonNote: "What is being built is written down on the roadmap.",
 
     write: "Write a post",
@@ -226,6 +229,7 @@ export const blogs: Slice<BlogsCopy> = {
     emptyBody:
       "Les premiers articles arrivent. Si vous avez un compte, le vôtre sera le premier.",
     writeOne: "Écrire le premier",
+    writeAnother: "Écrire un autre",
     soonNote: "Ce qui est en construction est écrit sur la feuille de route.",
 
     write: "Écrire un article",
@@ -326,6 +330,7 @@ export const blogs: Slice<BlogsCopy> = {
     emptyBody:
       "المقالات الأولى في الطريق. إن كان لك حساب فمقالك سيكون الأول.",
     writeOne: "اكتب الأول",
+    writeAnother: "اكتب مقالًا آخر",
     soonNote: "ما يُبنى مكتوب في خارطة الطريق.",
 
     write: "اكتب مقالاً",

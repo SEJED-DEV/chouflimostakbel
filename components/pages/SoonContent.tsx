@@ -86,20 +86,23 @@ export default function SoonContent() {
             </p>
           </Reveal>
 
-          {/* What has already been settled - kept visible, not buried. */}
-          <Reveal delay={0.05}>
-            <div className="mt-9 rounded-2xl border border-blue/25 bg-blue/[0.06] p-6 sm:p-7">
-              <span className="inline-flex items-center rounded-full bg-blue/10 px-3 py-1 text-[12px] font-semibold text-blue">
-                {t.questions.decided.label}
-              </span>
-              <h3 className="mt-3.5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
-                {t.questions.decided.title}
-              </h3>
-              <p className="mt-2.5 max-w-2xl text-[16px] leading-relaxed text-gray-2">
-                {t.questions.decided.body}
-              </p>
-            </div>
-          </Reveal>
+          {/* What has already been settled - kept visible, not buried.
+              One card per decision, because there is more than one now. */}
+          {t.questions.decided.items.map((decision, i) => (
+            <Reveal key={decision.title} delay={0.05}>
+              <div className="mt-9 rounded-2xl border border-blue/25 bg-blue/[0.06] p-6 sm:p-7">
+                <span className="inline-flex items-center rounded-full bg-blue/10 px-3 py-1 text-[12px] font-semibold text-blue">
+                  {t.questions.decided.label}
+                </span>
+                <h3 className="mt-3.5 text-[20px] font-semibold tracking-[-0.02em] text-ink">
+                  {decision.title}
+                </h3>
+                <p className="mt-2.5 max-w-2xl text-[16px] leading-relaxed text-gray-2">
+                  {decision.body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
 
           <div className="mt-10 grid gap-5 sm:grid-cols-2">
             {t.questions.items.map((item, i) => (

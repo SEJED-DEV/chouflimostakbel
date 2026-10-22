@@ -469,7 +469,7 @@ export default function ProfileContent() {
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-bg-alt px-4 py-2 text-[14px] font-medium text-ink transition-colors duration-300 hover:bg-sep/60"
             >
               <Icon name="square-pen" size={15} />
-              {b.writeOne}
+              {posts && posts.length > 0 ? b.writeAnother : b.writeOne}
             </Link>
           </div>
         </div>

@@ -7,6 +7,34 @@ generated from `components/i18n/changelog.ts`, which is the single source - do n
 edit it by hand. The site carries the same record in English, French and Arabic at
 [/changelog](https://www.chouflimostakbel/changelog).
 
+## v1.3 - 22 October 2026
+
+The site learns to wear a face, to look after itself, and to say who wrote what.
+
+### Added
+
+- An admin panel at /admin, for staff. Everyone with an account, everything that has been written, how much of it is published, and who holds which badge. It says what it cannot do yet rather than implying a moderation queue that does not exist.
+- The account button opens a menu: the profile, the admin panel for staff, and signing out. Signing out is now reachable from any page, including on a phone, instead of only from the pages that had a settings gear.
+- A seventh tab for staff in the bottom bar on a phone, for the admin panel. The tab labels scale with the screen, so seven of them fit on a narrow phone where six fixed-size ones did not.
+- Signing in and signing up now ask the reader to agree to the terms of service and the privacy policy, with both documents linked inside the sentence that asks. The server asks as well, so the box cannot be posted around.
+- The moment the terms were agreed is recorded, once, in a new column that only the platform can write - the same guard that stops a reader granting themselves a badge now stops them writing their own consent date.
+- Every post and every person now has its own preview image, drawn with the post's own title or the person's own photograph. A link shared in a chat shows the thing that was shared.
+- Every post carries BlogPosting structured data, and every person carries ProfilePage and Person, so a search engine knows what it is looking at rather than guessing.
+- A deploy script, so the live site is fetched, migrated, built and restarted the same way every time, with each migration applied inside a transaction with its ledger row. There is no reset and no delete anywhere in it.
+
+### Fixed
+
+- The top capsule no longer hides on the community index and the admin panel. It is out of the flow and never took any width from anything - what it took was the account, the theme, the language and the gear, on the two pages a reader is most likely to be reading.
+- The button on the profile page said "Write the first one" to everybody. It now says "Write another" once you have written something.
+- The upstream Supabase image grants every table to anon by default. A migration revokes what was never asked for and re-asserts exactly the grants each table is meant to have. It only ever removes privileges.
+
+### Changed
+
+- The account button in the navigation now carries the reader's own photograph instead of a generic person icon, and the ring around it is sampled from the photograph so a pale picture does not vanish into a pale circle.
+- Posts and profiles now carry full Open Graph and Twitter card metadata, a canonical URL, keywords built from the post's tags, and the author linked so a reader can go from the post to the person.
+- The navigation was reworked. On a narrow screen the wordmark is gone and the account is the photograph alone, because the capsule was carrying more than a phone could hold.
+- The roadmap page now lists only what is still to come, and names two new features: direct messages between people, and images and files attached to a post. Both bring a decision with them, and the page says which.
+
 ## v1.2 - 19 October 2026
 
 The roadmap page, a contact form that actually delivers, and a site that survives its own updates.
