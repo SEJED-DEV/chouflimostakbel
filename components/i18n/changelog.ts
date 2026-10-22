@@ -134,6 +134,19 @@ export const changelog: Slice<ChangelogCopy> = {
   en: {
     entries: [
       {
+        version: "v1.3.1",
+        date: "22 October 2026",
+        summary:
+          "A fix for the preview images: they were drawing from an address the site does not answer on.",
+        story: [
+          "The site had just learned to draw its own preview images, and they were good pictures - except that nobody could see them. Every address it wrote into a page pointed at the domain the project intends to live at one day, and that domain still answers with an older site. So a link to a post arrived in a chat as a broken picture or as the wrong one entirely.",
+          "The addresses are built from the place the site is actually served from now, and from the intended domain only when there is nothing better to go on. The preview images, the canonical addresses, the sitemap and the structured data all follow the same rule, so a page describes itself at the address where it can actually be reached.",
+        ],
+        changes: [
+          { text: "Preview images, canonical URLs, the sitemap and the structured data are now built from the address the site is actually served at, instead of a domain that still answers with a different, older site. Shared links show the right picture again.", kind: "fixed" },
+        ],
+      },
+      {
         version: "v1.3",
         date: "22 October 2026",
         summary:
@@ -356,6 +369,19 @@ export const changelog: Slice<ChangelogCopy> = {
   fr: {
     entries: [
       {
+        version: "v1.3.1",
+        date: "22 octobre 2026",
+        summary:
+          "Une correction pour les images d'aperçu : elles étaient dessinées depuis une adresse sur laquelle le site ne répond pas.",
+        story: [
+          "Le site venait d'apprendre à dessiner ses propres images d'aperçu, et c'étaient de belles images - sauf que personne ne pouvait les voir. Chaque adresse qu'il inscrivait dans une page pointait vers le domaine où le projet compte vivre un jour, et ce domaine répond encore avec un site plus ancien. Un lien vers un article arrivait donc dans une conversation sous forme d'image cassée, ou de la mauvaise image.",
+          "Les adresses sont désormais construites à partir de l'endroit où le site est réellement servi, et d'après le domaine prévu seulement quand il n'y a rien de mieux. Les images d'aperçu, les adresses canoniques, le plan du site et les données structurées suivent tous la même règle : une page se décrit à l'adresse où on peut réellement l'atteindre.",
+        ],
+        changes: [
+          { text: "Les images d'aperçu, les URL canoniques, le plan du site et les données structurées sont désormais construits à partir de l'adresse où le site est réellement servi, au lieu d'un domaine qui répond encore avec un autre site, plus ancien. Les liens partagés montrent à nouveau la bonne image.", kind: "fixed" },
+        ],
+      },
+      {
         version: "v1.3",
         date: "22 octobre 2026",
         summary:
@@ -577,6 +603,19 @@ export const changelog: Slice<ChangelogCopy> = {
 
   ar: {
     entries: [
+      {
+        version: "v1.3.1",
+        date: "22 أكتوبر 2026",
+        summary:
+          "إصلاح لصور المعاينة: كانت تُرسم من عنوانٍ لا يستجيب الموقع عليه.",
+        story: [
+          "كان الموقع قد تعلّم للتوّ أن يرسم صور معاينته بنفسه، وكانت صورًا جميلة — إلا أنّ أحدًا لم يستطع رؤيتها. فكل عنوانٍ كان يكتبه في صفحةٍ يشير إلى النطاق الذي يطمح المشروع أن يسكنه يومًا، وذلك النطاق لا يزال يستجيب بموقعٍ أقدم. فكان رابطُ مقالٍ يصل في محادثة كصورةٍ مكسورة، أو كالصورة الخطأ تمامًا.",
+          "والعناوين الآن تُبنى من المكان الذي يُقدَّم منه الموقع فعلًا، ومن النطاق المقصود فقط حين لا يوجد ما هو أفضل. فصور المعاينة والعناوين الأساسية وخريطة الموقع والبيانات المنظّمة تتبع كلّها القاعدة نفسها: أن تصف الصفحة نفسها على العنوان الذي يمكن بلوغها عنده فعلًا.",
+        ],
+        changes: [
+          { text: "صور المعاينة والعناوين الأساسية وخريطة الموقع والبيانات المنظّمة تُبنى الآن من العنوان الذي يُقدَّم منه الموقع فعلًا، بدل نطاقٍ لا يزال يستجيب بموقعٍ آخر أقدم. فالروابط المشارَكة تعرض الصورة الصحيحة مرّة أخرى.", kind: "fixed" },
+        ],
+      },
       {
         version: "v1.3",
         date: "22 أكتوبر 2026",

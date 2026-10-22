@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/site";
+import { publicBaseUrl } from "@/lib/site";
 
 export default function robots(): MetadataRoute.Robots {
+  const base = publicBaseUrl();
   return {
     rules: [{ userAgent: "*", allow: "/" }],
-    sitemap: `${site.domain}/sitemap.xml`,
-    host: site.domain,
+    sitemap: `${base}/sitemap.xml`,
+    host: base,
   };
 }

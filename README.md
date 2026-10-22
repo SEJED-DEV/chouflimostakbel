@@ -632,6 +632,15 @@ The production domain lives in **one place** — `site.domain` in `lib/site.ts`.
 Sitemap, robots, canonical URLs, Open Graph and the structured data all read
 from it, so moving the domain is a one-line change.
 
+There is one override, and it is deliberate. `SITE_URL`, when it is set in the
+environment, wins over `site.domain` for every absolute link — canonical,
+preview image, sitemap and structured data. `publicBaseUrl()` in `lib/site.ts`
+resolves it, and the site is currently served from `https://loujayn.sejed.dev`
+while `chouflimostakbel.tn` still answers with an older deployment. Without the
+override, a shared link would carry preview and canonical URLs pointing at the
+other site, and the picture would be missing. Leave `SITE_URL` unset and the
+intended domain is used.
+
 Two things do not move with it, because they are not ours to change:
 
 - **The apex certificate.** `chouflimostakbel.tn` and `www.chouflimostakbel.tn`

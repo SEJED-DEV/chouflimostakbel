@@ -7,6 +7,14 @@ generated from `components/i18n/changelog.ts`, which is the single source - do n
 edit it by hand. The site carries the same record in English, French and Arabic at
 [/changelog](https://www.chouflimostakbel/changelog).
 
+## v1.3.1 - 22 October 2026
+
+A fix for the preview images: they were drawing from an address the site does not answer on.
+
+### Fixed
+
+- Preview images, canonical URLs, the sitemap and the structured data are now built from the address the site is actually served at, instead of a domain that still answers with a different, older site. Shared links show the right picture again.
+
 ## v1.3 - 22 October 2026
 
 The site learns to wear a face, to look after itself, and to say who wrote what.

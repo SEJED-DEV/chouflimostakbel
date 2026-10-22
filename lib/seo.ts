@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { site } from "./site";
+import { site, publicBaseUrl } from "./site";
 import type { Post } from "./posts";
 import type { PublicProfile } from "./people";
 
@@ -145,7 +145,8 @@ export function postMetadata(post: Post): Metadata {
  * rather than a page of the site.
  */
 export function postJsonLd(post: Post) {
-  const url = `${site.domain}/community/${post.slug}`;
+  const base = publicBaseUrl();
+  const url = `${base}/community/${post.slug}`;
 
   return {
     "@context": "https://schema.org",
@@ -164,15 +165,15 @@ export function postJsonLd(post: Post) {
     author: {
       "@type": "Person",
       name: post.author.name,
-      url: `${site.domain}/u/${post.author.handle}`,
+      url: `${base}/u/${post.author.handle}`,
     },
     publisher: {
       "@type": "Organization",
-      "@id": `${site.domain}/#organization`,
+      "@id": `${base}/#organization`,
       name: site.name,
       logo: {
         "@type": "ImageObject",
-        url: `${site.domain}/logo.svg`,
+        url: `${base}/logo.svg`,
       },
     },
   };
@@ -221,7 +222,7 @@ export function personMetadata(person: PublicProfile): Metadata {
  * whose it is, which is what the two types together say.
  */
 export function personJsonLd(person: PublicProfile) {
-  const url = `${site.domain}/u/${person.handle}`;
+  const url = `${publicBaseUrl()}/u/${person.handle}`;
 
   return {
     "@context": "https://schema.org",

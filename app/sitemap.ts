@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { site } from "@/lib/site";
+import { publicBaseUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/server";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = site.domain;
+  const base = publicBaseUrl();
   const lastModified = new Date();
 
   const routes = [

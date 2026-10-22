@@ -188,3 +188,25 @@ export function isLiveHost(hostname: string): boolean {
   const host = hostname.toLowerCase().split(":")[0];
   return (site.liveHosts as readonly string[]).includes(host);
 }
+
+/**
+ * The base URL every absolute link is built from - canonical URLs, Open
+ * Graph images, the sitemap, the structured data.
+ *
+ * `site.domain` is the address the project intends to live at. The site is
+ * currently served from a preview host, and the two are not the same
+ * machine: the domain still answers with an older deployment. Building
+ * preview and canonical URLs from the intended domain while the site is
+ * served somewhere else is how a shared link ends up pointing at a picture
+ * that is not there.
+ *
+ * So the base is taken from `SITE_URL` when it is set - which is what the
+ * deployment sets, to the host it is actually reachable at - and from
+ * `site.domain` otherwise. The trailing slash is stripped so a base and a
+ * path cannot meet as `//`.
+ */
+export function publicBaseUrl(): string {
+  const configured = process.env.SITE_URL?.trim();
+  const raw = configured && configured.length > 0 ? configured : site.domain;
+  return raw.replace(/\/+$/, "");
+}

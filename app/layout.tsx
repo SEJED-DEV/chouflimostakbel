@@ -13,7 +13,7 @@ import ChunkErrorRecovery from "@/components/ChunkErrorRecovery";
 import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import ContextMenu from "@/components/ContextMenu";
-import { site } from "@/lib/site";
+import { site, publicBaseUrl } from "@/lib/site";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -47,7 +47,7 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.domain),
+  metadataBase: new URL(publicBaseUrl()),
   title: {
     default: "Choufli Mosta9bel | Find your path",
     template: "%s | Choufli Mosta9bel",
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: site.domain,
+    url: publicBaseUrl(),
     siteName: "Choufli Mosta9bel",
     title: "Choufli Mosta9bel | Find your path",
     description:
@@ -131,20 +131,21 @@ export const metadata: Metadata = {
  * Organization + WebSite structured data so Google can render a rich
  * knowledge panel (logo, social links, site name) instead of a bare blue link.
  */
+const base = publicBaseUrl();
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      "@id": `${site.domain}/#organization`,
+      "@id": `${base}/#organization`,
       name: site.name,
       alternateName: "شوفلي مستقبلك",
-      url: site.domain,
+      url: base,
       logo: {
         "@type": "ImageObject",
-        url: `${site.domain}/logo.svg`,
+        url: `${base}/logo.svg`,
       },
-      image: `${site.domain}/og-image.png`,
+      image: `${base}/og-image.png`,
       email: site.email,
       description:
         "A Tunisian guidance project helping school dropouts, undecided students, and graduates find real, practical paths to a stable future.",
@@ -152,14 +153,14 @@ const jsonLd = {
     },
     {
       "@type": "WebSite",
-      "@id": `${site.domain}/#website`,
-      url: site.domain,
+      "@id": `${base}/#website`,
+      url: base,
       name: site.name,
       description:
         "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
       inLanguage: "en",
       publisher: {
-        "@id": `${site.domain}/#organization`,
+        "@id": `${base}/#organization`,
       },
     },
   ],
