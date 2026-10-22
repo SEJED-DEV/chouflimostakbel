@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
 import { getPublicProfile } from "@/lib/people";
+import { LogoMark } from "@/lib/og-logo";
 
 /**
  * The preview image for one person.
@@ -100,6 +101,7 @@ export async function GET(_request: Request, { params }: Params) {
           background: "#ffffff",
           padding: "0 88px",
           fontFamily: "Matcha",
+          position: "relative",
         }}
       >
         {/* The photograph, or the initials in its place. */}
@@ -192,6 +194,11 @@ export async function GET(_request: Request, { params }: Params) {
           >
             Choufli Mosta9bel
           </div>
+        </div>
+
+        {/* The site's mark, in the corner of the card. */}
+        <div style={{ position: "absolute", bottom: 48, right: 72, display: "flex" }}>
+          <LogoMark />
         </div>
       </div>
     ),

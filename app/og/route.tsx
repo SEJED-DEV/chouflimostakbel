@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { LogoMark } from "@/lib/og-logo";
 
 /**
  * The preview image for a page of the site itself.
@@ -114,17 +115,27 @@ export async function GET(request: Request) {
           ) : null}
         </div>
 
-        {/* The section, when the page belongs to one. */}
+        {/* The section, when the page belongs to one, and the site's own mark
+            in the corner, so a shared card is recognisable before it is read. */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            fontSize: 28,
-            color: "#6e6e73",
-            letterSpacing: 1,
+            justifyContent: "space-between",
           }}
         >
-          {kicker}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: 28,
+              color: "#6e6e73",
+              letterSpacing: 1,
+            }}
+          >
+            {kicker}
+          </div>
+          <LogoMark />
         </div>
       </div>
     ),

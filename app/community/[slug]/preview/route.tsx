@@ -2,6 +2,7 @@ import { ImageResponse } from "next/og";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { getPostBySlug } from "@/lib/posts";
+import { LogoMark } from "@/lib/og-logo";
 
 /**
  * The preview image for one post.
@@ -109,22 +110,33 @@ export async function GET(_request: Request, { params }: Params) {
           {title}
         </div>
 
-        {/* Who wrote it, and when. */}
+        {/* Who wrote it, and when, with the site's mark in the corner. */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            fontSize: 28,
-            color: "#6e6e73",
+            justifyContent: "space-between",
           }}
         >
-          {author}
-          {author && date ? <span style={{ margin: "0 14px" }}>·</span> : null}
-          {date}
-          {date && read ? (
-            <span style={{ margin: "0 14px" }}>·</span>
-          ) : null}
-          {read}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: 28,
+              color: "#6e6e73",
+            }}
+          >
+            {author}
+            {author && date ? (
+              <span style={{ margin: "0 14px" }}>·</span>
+            ) : null}
+            {date}
+            {date && read ? (
+              <span style={{ margin: "0 14px" }}>·</span>
+            ) : null}
+            {read}
+          </div>
+          <LogoMark />
         </div>
       </div>
     ),
