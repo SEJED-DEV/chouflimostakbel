@@ -14,6 +14,7 @@ import { ThemeProvider, themeInitScript } from "@/components/ThemeProvider";
 import { AuthProvider } from "@/components/AuthProvider";
 import ContextMenu from "@/components/ContextMenu";
 import { site, publicBaseUrl } from "@/lib/site";
+import { previewImageUrl } from "@/lib/seo";
 
 // Matcha Style - display font for hero headlines only. Free for personal &
 // commercial use (Khurasan Studio). Exposed as --font-matcha.
@@ -79,7 +80,7 @@ export const metadata: Metadata = {
       "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
     images: [
       {
-        url: "/og-image.png",
+        url: previewImageUrl("/og-image.png"),
         width: 1200,
         height: 630,
         alt: "Choufli Mosta9bel - find your path",
@@ -91,7 +92,7 @@ export const metadata: Metadata = {
     title: "Choufli Mosta9bel | Find your path",
     description:
       "Real, practical paths to a stable future for Tunisian youth, with or without a Bac.",
-    images: ["/og-image.png"],
+    images: [previewImageUrl("/og-image.png")],
   },
   robots: {
     index: true,

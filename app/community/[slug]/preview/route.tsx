@@ -12,26 +12,29 @@ import { getPostBySlug } from "@/lib/posts";
  * image with its own title on it.
  *
  * The image is generated, not stored: a post can be edited, and an edited
- * post with an old picture on it is a lie. The cost is that the image is
- * drawn when a chat app asks for it, and the answer is cached by the CDN
- * afterwards.
+ * post with an old picture on it is a lie.
+ *
+ * This is an ordinary route rather than the `opengraph-image.tsx` file
+ * convention. The convention injects its own `og:image` tags into the page,
+ * and it emits `og:image:alt` and `og:image:type` BEFORE `og:image` - a
+ * shape a chat app's parser can read as properties with no image to hang
+ * them on, and the preview then comes out empty. Declaring the image in the
+ * page's own metadata puts the tags in the order every parser expects.
  *
  * The type is the site's own display face - the one the hero headlines use,
  * because a preview is a headline.
  */
-
-export const alt = "Choufli Mosta9bel";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 
 /** Satori reads TTF, OTF and WOFF. It cannot read WOFF2. */
 const font = readFileSync(
   join(process.cwd(), "app", "fonts", "MatchaStyle.ttf"),
 );
 
+export const runtime = "nodejs";
+
 type Params = { params: Promise<{ slug: string }> };
 
-export default async function OpengraphImage({ params }: Params) {
+export async function GET(_request: Request, { params }: Params) {
   const { slug } = await params;
   const post = await getPostBySlug(decodeURIComponent(slug));
 
@@ -126,7 +129,8 @@ export default async function OpengraphImage({ params }: Params) {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
       fonts: [{ name: "Matcha", data: font, style: "normal", weight: 400 }],
     },
   );

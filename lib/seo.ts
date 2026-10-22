@@ -22,6 +22,39 @@ import type { PublicProfile } from "./people";
 const DESCRIPTION_LIMIT = 200;
 
 /**
+ * A cache-busting token for the preview images.
+ *
+ * Chat apps and social platforms cache a link's preview by URL and will not
+ * fetch it again until the URL changes. That is normally a good thing, but
+ * it means a preview that was cached while the image was wrong stays wrong
+ * forever - editing the page does nothing, because the platform never asks
+ * again. Putting the build in the image URL gives every deploy a new address
+ * for every preview, so a fixed picture actually reaches the people who saw
+ * the broken one.
+ *
+ * It is the commit the site was built from, which changes on every deploy,
+ * and a timestamp as a fallback for a local run where there is no commit.
+ */
+const PREVIEW_VERSION =
+  process.env.BUILD_SHORT_SHA || String(Date.now());
+
+/** Add the cache-busting token to an image path that may already have a query. */
+function versioned(path: string): string {
+  return `${path}${path.includes("?") ? "&" : "?"}v=${PREVIEW_VERSION}`;
+}
+
+/**
+ * A static preview image path with the same cache-busting token.
+ *
+ * Used for the site-wide picture, which is a plain file rather than a drawn
+ * route. It is exported so the layout can version it the same way every
+ * other image is versioned.
+ */
+export function previewImageUrl(path: string): string {
+  return versioned(path);
+}
+
+/**
  * The preview image for a page of the site itself.
  *
  * The site draws one picture per page from that page's own title, so a link
@@ -34,7 +67,7 @@ function pageImage(title: string, subtitle?: string, kicker?: string): string {
   const params = new URLSearchParams({ title });
   if (subtitle) params.set("subtitle", clamp(subtitle));
   if (kicker) params.set("kicker", kicker);
-  return `/og?${params.toString()}`;
+  return versioned(`/og?${params.toString()}`);
 }
 
 /**
@@ -106,6 +139,7 @@ export function postMetadata(post: Post): Metadata {
     post.excerpt ||
       `${post.title} — written by ${post.author.name} on Choufli Mosta9bel.`,
   );
+  const image = versioned(`/community/${post.slug}/preview`);
 
   return {
     title: post.title,
@@ -128,11 +162,15 @@ export function postMetadata(post: Post): Metadata {
       authors: [post.author.name],
       tags: post.tags.length ? post.tags : undefined,
       section: "Community",
+      images: [
+        { url: image, width: 1200, height: 630, alt: post.title },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description,
+      images: [image],
     },
   };
 }
@@ -195,21 +233,25 @@ export function personMetadata(person: PublicProfile): Metadata {
         : ""
     }.`,
   );
+  const title = `${person.name} (@${person.handle})`;
+  const image = versioned(`/u/${person.handle}/preview`);
 
   return {
-    title: `${person.name} (@${person.handle})`,
+    title,
     description,
     alternates: { canonical: url },
     openGraph: {
       type: "profile",
       url,
-      title: `${person.name} (@${person.handle})`,
+      title,
       description,
+      images: [{ url: image, width: 1200, height: 630, alt: person.name }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${person.name} (@${person.handle})`,
+      title,
       description,
+      images: [image],
     },
   };
 }

@@ -13,8 +13,12 @@ import { getPublicProfile } from "@/lib/people";
  * empty box and better than the site's generic picture, which would say
  * nothing about whose page this is.
  *
- * The photo is a data URL - the browser cropped and compressed it before it
- * was stored - so it can be drawn here without fetching anything.
+ * This is an ordinary route rather than the `opengraph-image.tsx` file
+ * convention. The convention injects its own `og:image` tags into the page,
+ * and it emits `og:image:alt` and `og:image:type` BEFORE `og:image` - a
+ * shape a chat app's parser can read as properties with no image to hang
+ * them on, and the preview then comes out empty. Declaring the image in the
+ * page's own metadata puts the tags in the order every parser expects.
  *
  * ONE CONVERSION, AND WHY
  *
@@ -24,10 +28,6 @@ import { getPublicProfile } from "@/lib/people";
  * handed over. A photo that cannot be converted is not a reason to fail -
  * the initials are drawn instead.
  */
-
-export const alt = "Choufli Mosta9bel";
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
 
 /** The image renderer runs on Node, because it needs the converter. */
 export const runtime = "nodejs";
@@ -69,7 +69,7 @@ async function drawableAvatar(
 
 type Params = { params: Promise<{ handle: string }> };
 
-export default async function OpengraphImage({ params }: Params) {
+export async function GET(_request: Request, { params }: Params) {
   const { handle } = await params;
   const person = await getPublicProfile(decodeURIComponent(handle));
   const avatar = await drawableAvatar(person?.avatar);
@@ -196,7 +196,8 @@ export default async function OpengraphImage({ params }: Params) {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
       fonts: [{ name: "Matcha", data: font, style: "normal", weight: 400 }],
     },
   );
