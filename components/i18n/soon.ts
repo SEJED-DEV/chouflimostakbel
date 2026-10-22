@@ -78,7 +78,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "On the way",
       title: "A bigger",
       titleAccent: "platform.",
-      sub: "What is here now - guides, accounts, profiles and a community you can write in - is the floor, not the plan. What is still being built: reactions and comments, direct messages between people, images and files attached to posts, and a feed that learns what you actually came here for.",
+      sub: "What is here now - guides, accounts, profiles and a community you can write in - is the floor, not the plan. What is still being built: keeping the platform patched and its backups tested, reactions and comments, direct messages between people, images and files attached to posts, and a feed that learns what you actually came here for.",
       cta: "See the roadmap",
       ctaSecondary: "Follow along on GitHub",
     },
@@ -96,7 +96,7 @@ export const soon: Slice<SoonCopy> = {
         items: [
           {
             title: "Supabase, for the whole backend.",
-            body: "Supabase covers the database and sign-in in one place, so we are not assembling and running two unrelated services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades and uptime are ours to handle rather than a provider's. Permissions are still enforced in the database itself, through Row Level Security: a rule like \"only the author can edit their own post\" cannot be bypassed by a client.\n\nThe accounts came first, and they shaped one part of this. Supabase Auth owns them: the password, the sessions, the recovery flow. What it does not have is a username - GoTrue insists on an address - so a reader chooses a handle, and an address built from that handle is handed to it behind the scenes. The reader never sees it and nothing is ever sent to it. Their own address, if they gave one, is stored separately and is optional: the platform does not need one, and asking for something you do not need is a good way to lose people.\n\nA profile row also holds a date of birth and, if one was given, an address. Neither is public, and that was not left to a permission that could be widened by accident. What a stranger may read is a separate view holding the name, the photo, the banner, the badges and the join date, and it is not possible to ask that view for an address because an address is not in it. A person appears there once they have published something, and not before.",
+            body: "Supabase covers the database and sign-in in one place, so we are not assembling and running two unrelated services. Because we host it ourselves, the data never leaves our own infrastructure, and no third-party bill grows as engagement grows. The trade is that backups, upgrades, uptime and patching are ours to handle rather than a provider's. Permissions are enforced in the database itself, through Row Level Security, so a rule like \"only the author can edit their own post\" cannot be bypassed by a client. Most of what Supabase also ships - file storage, Realtime, analytics - stays switched off until a feature needs it, rather than being run because it is there.",
           },
           {
             title: "A storage bucket, for attachments.",
@@ -115,7 +115,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           q: "Do posts need a moderation step?",
-          why: "Settled, for now: anyone with an account may publish, with no approval queue and no verified email - an address is optional here, so gating on one would be gating on something the platform does not require. What is genuinely open is what happens the first time a stranger reads the feed and it has something in it they should not see. The admin panel exists now and shows everyone and everything that has been written, but the report button and the queue that goes with it are not built: without a report, there is nothing to moderate.",
+          why: "Settled, for now: anyone with an account may publish, with no approval queue and no verified email - an address is optional here, so gating on one would be gating on something the platform does not require. What is genuinely open is what happens the first time a stranger reads the feed and it has something in it they should not see. The report button and the queue that goes with it are not built yet: without a report, there is nothing to moderate.",
         },
         {
           q: "Which languages do posts come in?",
@@ -174,6 +174,17 @@ export const soon: Slice<SoonCopy> = {
       items: [
         {
           n: "1",
+          name: "Security updates",
+          body: "Keeping the platform patched is work, not a state. Supabase runs in containers we host, so the images have to be rebuilt and the dependencies kept current on a schedule rather than once. What is being worked on now: automated dependency and image scanning, a documented patch cadence, and turning the nightly database backup into something that is actually restored and tested instead of hoped for. None of it adds a feature, and all of it is the price of running the backend ourselves.",
+          points: [
+            "Automated dependency and container scanning",
+            "A written patch cadence, and someone to follow it",
+            "Nightly backups, and a restore that is tested",
+            "Least-privilege review of every database grant",
+          ],
+        },
+        {
+          n: "2",
           name: "Attachments",
           body: "Images and files on a post - a photo of a certificate, a scanned form, a course brochure. This is the first feature to need a real storage bucket: a post carrying several files cannot be squeezed onto a database row the way an avatar can, so Supabase Storage is switched on for it, with a ceiling on size and a short list of allowed types. Video is named separately below, because it is the one attachment this project is least sure it can carry.",
           points: [
@@ -184,7 +195,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "2",
+          n: "3",
           name: "Reactions and comments",
           body: "A small fixed set of reactions instead of a generic like, threaded one level deep, plus follows. The admin panel is already built and shows everyone and everything that has been written; what it cannot do yet is decide anything, because there is no report button and therefore no queue to work through.",
           points: [
@@ -195,7 +206,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "3",
+          n: "4",
           name: "Direct messages",
           body: "Private conversation between two people, one to one to begin with. Private means private: nobody here reads a thread by default, and the promise is written down before the feature exists because that is the only honest time to make it. The counterweight is abuse - a participant can report a conversation, and a report hands that one thread to moderators and nothing else. A block, a mute and a way to leave a thread come with it, not after it.",
           points: [
@@ -206,7 +217,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "4",
+          n: "5",
           name: "Preferences and the feed",
           body: "Ask once what someone cares about, understand what each post is about, and show it to the people most likely to want it.",
           points: [
@@ -217,7 +228,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "5",
+          n: "6",
           name: "Notifications",
           body: "Beyond release notes: replies, follows, new posts on topics you chose, and messages, in the app and by weekly email.",
           points: [
@@ -330,7 +341,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "En préparation",
       title: "Une plateforme",
       titleAccent: "plus grande.",
-      sub: "Ce qui est en ligne aujourd'hui - les guides, les comptes, les profils et une communauté où l'on peut écrire - c'est le plancher, pas le plan. Ce qui reste à construire : les réactions et les commentaires, les messages directs entre personnes, les images et les fichiers joints aux articles, et un fil qui comprend ce que vous êtes vraiment venu chercher ici.",
+      sub: "Ce qui est en ligne aujourd'hui - les guides, les comptes, les profils et une communauté où l'on peut écrire - c'est le plancher, pas le plan. Ce qui reste à construire : garder la plateforme à jour et ses sauvegardes testées, les réactions et les commentaires, les messages directs entre personnes, les images et les fichiers joints aux articles, et un fil qui comprend ce que vous êtes vraiment venu chercher ici.",
       cta: "Voir la feuille de route",
       ctaSecondary: "Suivre sur GitHub",
     },
@@ -348,7 +359,7 @@ export const soon: Slice<SoonCopy> = {
         items: [
           {
             title: "Supabase, pour toute la partie serveur.",
-            body: "Supabase couvre la base de données et l'authentification au même endroit, sans avoir à assembler et à exploiter deux services sans lien entre eux. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau et la disponibilité sont notre affaire, et non celle d'un fournisseur. Les permissions restent appliquées dans la base de données elle-même, grâce aux Row Level Security : une règle comme « seul l'auteur peut modifier son propre article » ne peut pas être contournée par un client.\n\nLes comptes sont venus en premier, et ils ont façonné une partie de ce choix. C'est l'authentification de Supabase qui les porte : le mot de passe, les sessions, la récupération. Ce qu'elle n'a pas, en revanche, c'est le nom d'utilisateur - GoTrue exige une adresse - donc le lecteur choisit un identifiant, et une adresse construite à partir de cet identifiant lui est remise en coulisses. Le lecteur ne la voit jamais et rien ne lui est jamais envoyé. S'il a donné la sienne, elle est stockée à part et reste facultative : la plateforme n'en a pas besoin, et demander ce dont on n'a pas besoin, c'est perdre des gens.\n\nLa ligne du profil contient aussi une date de naissance et, si elle a été donnée, une adresse. Ni l'une ni l'autre n'est publique, et cela n'a pas été laissé à une permission qui pourrait s'élargir par accident. Ce qu'un inconnu peut lire est une vue séparée qui contient le nom, la photo, la bannière, les badges et la date d'inscription, et il n'est pas possible de demander une adresse à cette vue parce qu'une adresse n'y est pas. Une personne y apparaît une fois qu'elle a publié quelque chose, et pas avant.",
+            body: "Supabase couvre la base de données et l'authentification au même endroit, sans avoir à assembler et à exploiter deux services sans lien entre eux. Comme nous l'hébergeons nous-mêmes, les données ne quittent jamais notre propre infrastructure, et aucune facture d'un tiers ne grossit avec l'audience. En échange, les sauvegardes, les mises à niveau, la disponibilité et les correctifs sont notre affaire, et non celle d'un fournisseur. Les permissions sont appliquées dans la base de données elle-même, grâce aux Row Level Security, donc une règle comme « seul l'auteur peut modifier son propre article » ne peut pas être contournée par un client. La plupart de ce que Supabase fournit en plus - stockage de fichiers, Realtime, analytique - reste désactivé jusqu'à ce qu'une fonction en ait besoin, plutôt que d'être exploité parce que c'est là.",
           },
           {
             title: "Un bac de stockage, pour les pièces jointes.",
@@ -367,7 +378,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           q: "Les articles ont-ils besoin d'une modération ?",
-          why: "Tranché, pour l'instant : toute personne ayant un compte peut publier, sans file d'approbation et sans adresse vérifiée - l'adresse est facultative ici, donc l'exiger reviendrait à exiger ce que la plateforme ne demande pas. Ce qui reste vraiment ouvert, c'est ce qui se passe le jour où un inconnu lit le fil et y trouve quelque chose qu'il ne devrait pas voir. Le panneau d'administration existe maintenant et montre tout le monde et tout ce qui a été écrit, mais le bouton de signalement et la file qui va avec ne sont pas construits : sans signalement, il n'y a rien à modérer.",
+          why: "Tranché, pour l'instant : toute personne ayant un compte peut publier, sans file d'approbation et sans adresse vérifiée - l'adresse est facultative ici, donc l'exiger reviendrait à exiger ce que la plateforme ne demande pas. Ce qui reste vraiment ouvert, c'est ce qui se passe le jour où un inconnu lit le fil et y trouve quelque chose qu'il ne devrait pas voir. Le bouton de signalement et la file qui va avec ne sont pas encore construits : sans signalement, il n'y a rien à modérer.",
         },
         {
           q: "Dans quelles langues publie-t-on ?",
@@ -428,6 +439,17 @@ export const soon: Slice<SoonCopy> = {
       items: [
         {
           n: "1",
+          name: "Mises à jour de sécurité",
+          body: "Garder la plateforme à jour est un travail, pas un état. Supabase tourne dans des conteneurs que nous hébergeons, donc les images doivent être reconstruites et les dépendances tenues à jour selon un calendrier, et non une seule fois. Ce sur quoi nous travaillons en ce moment : l'analyse automatique des dépendances et des images, une cadence de correctifs écrite noir sur blanc, et une sauvegarde nocturne de la base qui est réellement restaurée et testée au lieu d'être espérée. Rien de tout cela n'ajoute une fonction, et tout cela est le prix d'exploiter nous-mêmes la partie serveur.",
+          points: [
+            "Analyse automatique des dépendances et des conteneurs",
+            "Une cadence de correctifs écrite, et quelqu'un pour la suivre",
+            "Des sauvegardes nocturnes, et une restauration testée",
+            "Révision des droits accordés en base, au strict nécessaire",
+          ],
+        },
+        {
+          n: "2",
           name: "Pièces jointes",
           body: "Des images et des fichiers sur un article - la photo d'un certificat, un formulaire scanné, une brochure de formation. C'est la première fonction à avoir besoin d'un vrai bac de stockage : un article portant plusieurs fichiers ne peut pas être tassé sur une ligne de base de données comme le peut une photo de profil, donc Supabase Storage est activé pour cela, avec un plafond de taille et une courte liste de types autorisés. La vidéo est traitée à part ci-dessous, car c'est la pièce jointe que ce projet est le moins sûr de pouvoir porter.",
           points: [
@@ -438,18 +460,18 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "2",
+          n: "3",
           name: "Réactions et commentaires",
-          body: "Un petit jeu fixe de réactions plutôt qu'un « j'aime » générique, des commentaires imbriqués sur un seul niveau, plus les abonnements - et le signalement dès le premier jour.",
+          body: "Un petit jeu fixe de réactions plutôt qu'un « j'aime » générique, des commentaires imbriqués sur un seul niveau, plus les abonnements. Le panneau d'administration est déjà construit et montre tout le monde et tout ce qui a été écrit ; ce qu'il ne peut pas encore faire, c'est décider quoi que ce soit, parce qu'il n'y a pas de bouton de signalement et donc pas de file à traiter.",
           points: [
             "Des réactions qui veulent dire quelque chose, pas seulement un « j'aime »",
             "Commentaires imbriqués, un niveau",
             "Suivre des auteurs et des thèmes",
-            "File de signalement et de modération",
+            "Un bouton de signalement, et la file qui va avec",
           ],
         },
         {
-          n: "3",
+          n: "4",
           name: "Messages directs",
           body: "Une conversation privée entre deux personnes, d'abord à deux. Privée veut dire privée : personne ici ne lit un fil par défaut, et la promesse est écrite avant que la fonction existe, parce que c'est le seul moment où elle peut être faite honnêtement. Le contrepoids, c'est l'abus - un participant peut signaler une conversation, et un signalement ne remet que ce fil aux modérateurs, rien d'autre. Bloquer, silencier et quitter un fil viennent avec, pas après.",
           points: [
@@ -460,7 +482,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "4",
+          n: "5",
           name: "Préférences et le fil",
           body: "Demander une fois ce qui intéresse la personne, comprendre de quoi parle chaque article, et le montrer à ceux qui ont le plus de chances de le vouloir.",
           points: [
@@ -471,7 +493,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "5",
+          n: "6",
           name: "Notifications",
           body: "Au-delà des notes de version : réponses, abonnements, nouveaux articles sur les thèmes que vous avez choisis, et messages, dans l'application et par e-mail hebdomadaire.",
           points: [
@@ -584,7 +606,7 @@ export const soon: Slice<SoonCopy> = {
       eyebrow: "قريباً",
       title: "منصة",
       titleAccent: "أكبر.",
-      sub: "ما هو قائم اليوم - الأدلة والحسابات والملفّات الشخصية ومجتمعٌ يمكن الكتابة فيه - هو الحدّ الأدنى، لا الخطة. وما يزال قيد البناء: التفاعلات والتعليقات، والرسائل المباشرة بين الناس، وصور وملفات تُرفَق بالمقالات، وخلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً.",
+      sub: "ما هو قائم اليوم - الأدلة والحسابات والملفّات الشخصية ومجتمعٌ يمكن الكتابة فيه - هو الحدّ الأدنى، لا الخطة. وما يزال قيد البناء: إبقاء المنصّة محدَّثة ونسخها الاحتياطية مُختبرة، والتفاعلات والتعليقات، والرسائل المباشرة بين الناس، وصور وملفات تُرفَق بالمقالات، وخلاصة تتعلّم ما جئت إلى هنا من أجله فعلاً.",
       cta: "اطّلع على خارطة الطريق",
       ctaSecondary: "تابعنا على GitHub",
     },
@@ -602,7 +624,7 @@ export const soon: Slice<SoonCopy> = {
         items: [
           {
             title: "Supabase، من أجل كلّ ما في الخلفية.",
-            body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في مكان واحد، فلا نضطر إلى تجميع خدمتين لا صلة بينهما وتشغيلهما. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يعدّل المقال إلّا كاتبه».\n\nالحسابات جت أوّلًا، وهي وضعت جزءًا من هذا الاختيار. تسجيل الدخول في Supabase هو ما يحملها: كلمة السر والجلسات والاسترجاع. لكنه لا يعرف اسم المستخدم - GoTrue يشترط بريدًا - فيختار القارئ اسمًا، ثم تُبنى من ذلك الاسم بريدًا في الكواليس. لا يراه القارئ أبداً، ولا يُرسل إليه منه شيء أبداً. أمّا بريده هو إن أعطاه، فيُخزَّن جانباً وما يزال اختيارياً: فالمنصّة لا تحتاجه، وطلب شيءٍ لا تحتاجه طريقةٌ جيدة لتفقد الناس.\n\nويحمل صفّ الملفّ الشخصي أيضاً تاريخ ميلاد، وبريداً إن أُعطي. لا شيء منهما علني، ولم يُترك الأمر لصلاحية قد تتّسع سهواً. ما يستطيع الغريب قراءته هو عرضٌ منفصل يحمل الاسم والصورة والشعار والشارات وتاريخ الانضمام، ولا يمكن سؤال ذلك العرض عن بريد لأن البريد ليس فيه. ولا يظهر الشخص فيه إلّا بعد أن ينشر شيئاً، لا قبل ذلك.",
+            body: "Supabase يجمع قاعدة البيانات وتسجيل الدخول في مكان واحد، فلا نضطر إلى تجميع خدمتين لا صلة بينهما وتشغيلهما. وبما أننا نستضيفه بأنفسنا، فإن البيانات لا تغادر بنيتنا التحتية أبداً، ولا توجد فاتورة طرف ثالث تكبر مع نمو التفاعل. والمقابل أن النسخ الاحتياطي والترقيات وجاهزية الخدمة وتصحيح الثغرات مسؤوليتنا نحن، لا مسؤولية مزوّد. أمّا الصلاحيات فتُطبَّق داخل قاعدة البيانات نفسها عبر أمان مستوى الصفوف، فلا يستطيع أيّ تطبيق عميل تجاوز قاعدة مثل «لا يعدّل المقال إلّا كاتبه». ومعظم ما يقدّمه Supabase أيضاً - تخزين الملفات وRealtime والتحليلات - يبقى معطّلاً حتى تحتاجه ميزة، بدل أن يُشغَّل لأنه موجود.",
           },
           {
             title: "دلو تخزين، للمرفقات.",
@@ -621,7 +643,7 @@ export const soon: Slice<SoonCopy> = {
         },
         {
           q: "هل تحتاج المقالات إلى خطوة مراجعة؟",
-          why: "حُسم الأمر مؤقتاً: كل من يملك حساباً يستطيع النشر، بلا طابور موافقات وبلا بريد موثّق - فالبريد اختياري هنا، واشتراطه يعني اشتراط ما لا تطلبه المنصّة أصلاً. وما يبقى مفتوحاً فعلاً هو ما سيحدث أول مرة يقرأ فيها غريبٌ الخلاصة فيجد فيها ما لا ينبغي أن يراه. لوحة الإدارة موجودة الآن وتُظهر الجميع وكل ما كُتب، لكن زرّ الإبلاغ والطابور الذي معه غير مبنيَّين: بلا إبلاغ، لا شيء يُراجَع.",
+          why: "حُسم الأمر مؤقتاً: كل من يملك حساباً يستطيع النشر، بلا طابور موافقات وبلا بريد موثّق - فالبريد اختياري هنا، واشتراطه يعني اشتراط ما لا تطلبه المنصّة أصلاً. وما يبقى مفتوحاً فعلاً هو ما سيحدث أول مرة يقرأ فيها غريبٌ الخلاصة فيجد فيها ما لا ينبغي أن يراه. زرّ الإبلاغ والطابور الذي معه لم يُبنَيا بعد: بلا إبلاغ، لا شيء يُراجَع.",
         },
         {
           q: "بأي لغات تُكتب المقالات؟",
@@ -681,6 +703,17 @@ export const soon: Slice<SoonCopy> = {
       items: [
         {
           n: "1",
+          name: "تحديثات الأمان",
+          body: "إبقاء المنصّة مصحَّحةً عملٌ مستمر، لا حالةٌ تُنجَز مرة. Supabase يعمل في حاويات نستضيفها بأنفسنا، فالصور يجب أن تُعاد بناؤها والاعتماديات أن تبقى محدَّثة وفق جدول، لا مرة واحدة. وما نعمل عليه الآن: فحصٌ آليّ للاعتماديات وصور الحاويات، وإيقاعٌ مكتوب لتصحيح الثغرات، وتحويل النسخة الاحتياطية الليلية إلى شيء يُستعاد ويُختبر فعلاً بدل أن يُرجى. لا شيء من هذا يضيف ميزة، وكلّه ثمن أن نُشغّل الخلفية بأنفسنا.",
+          points: [
+            "فحص آليّ للاعتماديات والحاويات",
+            "إيقاع مكتوب لتصحيح الثغرات، ومن يلتزم به",
+            "نسخ احتياطي ليلي، واستعادة مُختبرة",
+            "مراجعة الصلاحيات في قاعدة البيانات بأقلّ قدر لازم",
+          ],
+        },
+        {
+          n: "2",
           name: "المرفقات",
           body: "صور وملفات على مقال - صورة شهادة، أو استمارة ممسوحة، أو دليل تكوين. وهذه أول ميزة تحتاج حاوية تخزين حقيقية: فمقال يحمل عدّة ملفات لا يمكن أن يُدسّ في صفّ واحد من قاعدة البيانات كما يمكن أن تُدسّ صورةُ ملفٍّ شخصي، لذلك يُفعَّل Supabase Storage من أجلها، بسقفٍ للحجم وقائمةٍ قصيرة للأنواع المسموحة. أمّا الفيديو فمذكور على حدة أدناه، لأنه المرفق الذي يقلّ يقين المشروع في حمله.",
           points: [
@@ -691,18 +724,18 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "2",
+          n: "3",
           name: "التفاعلات والتعليقات",
-          body: "مجموعة صغيرة وثابتة من التفاعلات بدل «إعجاب» عام، وتعليقات متداخلة في مستوى واحد فقط، إضافة إلى المتابعة - والإبلاغ منذ اليوم الأول.",
+          body: "مجموعة صغيرة وثابتة من التفاعلات بدل «إعجاب» عام، وتعليقات متداخلة في مستوى واحد فقط، إضافة إلى المتابعة. لوحة الإدارة مبنيّة بالفعل وتُظهر الجميع وكل ما كُتب؛ وما لا تستطيع فعله بعد هو أن تقرّر شيئاً، لأنه لا يوجد زرّ إبلاغ وبالتالي لا طابور لمعالجته.",
           points: [
             "تفاعلات ذات معنى، لا مجرد إعجاب",
             "تعليقات متداخلة، مستوى واحد",
             "متابعة المؤلّفين والمواضيع",
-            "قائمة إبلاغ وإشراف",
+            "زرّ إبلاغ، والطابور الذي معه",
           ],
         },
         {
-          n: "3",
+          n: "4",
           name: "الرسائل المباشرة",
           body: "محادثة خاصة بين شخصين، اثنان في البداية. الخاصة تعني خاصة: لا يقرأ أحدٌ هنا الخيط افتراضياً، والوعد مكتوبٌ قبل أن توجد الميزة، لأن ذلك هو الوقت الوحيد الذي يمكن أن يُقال فيه بصدق. والميزان في المقابل هو الإساءة - يستطيع أحد الطرفين إبلاغ محادثة، والإبلاغ لا يسلّم لصاندي الإشراف إلّا ذلك الخيط ولا شيء غيره. الحظرُ والكتمُ ومغادرةُ الخيط تأتي معه، لا بعده.",
           points: [
@@ -713,7 +746,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "4",
+          n: "5",
           name: "التفضيلات والخلاصة",
           body: "نسأل مرة واحدة عمّ يهمّ الشخص، ونفهم عمّ يتحدث كل مقال، ونعرضه على من هم أكثر احتمالاً لرغبته فيه.",
           points: [
@@ -724,7 +757,7 @@ export const soon: Slice<SoonCopy> = {
           ],
         },
         {
-          n: "5",
+          n: "6",
           name: "الإشعارات",
           body: "أبعد من مجرّد إشعارات الإصدارات: الردود والمتابعات والمقالات الجديدة في المواضيع التي اخترتها، والرسائل، داخل التطبيق وعبر بريد أسبوعي.",
           points: [
