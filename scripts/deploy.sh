@@ -46,7 +46,11 @@ die() { printf '\033[31mxx   %s\033[0m\n' "$1" >&2; exit 1; }
 say "Moving to origin/main"
 git fetch origin main --quiet
 git reset --hard origin/main --quiet
-git clean -fd --quiet --exclude=.env.local
+# Untracked build leftovers are removed, but two things are never touched:
+# the environment file, and the start script pm2 runs. `start.sh` is tracked
+# in the repository, which is the real protection; excluding it as well is
+# what saves a machine whose copy predates that.
+git clean -fd --quiet --exclude=.env.local --exclude=start.sh
 COMMIT="$(git rev-parse --short HEAD)"
 echo "    at $COMMIT"
 
@@ -119,6 +123,10 @@ npm run build --silent
 
 # ----------------------------------------------------------------- 5. restart
 say "Restarting"
+# pm2 runs start.sh. If it is missing the restart would leave the site down,
+# so it is checked before the process is touched, not after.
+[ -f start.sh ] || die "start.sh is missing from $APP; refusing to restart into a broken state"
+chmod +x start.sh 2>/dev/null || true
 pm2 restart "$PM2_NAME" --update-env >/dev/null 2>&1 || die "pm2 could not restart $PM2_NAME"
 
 # Wait for the port to answer. A restart that returns before the server is
