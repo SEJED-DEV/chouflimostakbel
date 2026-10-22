@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import PrivacyContent from "@/components/pages/PrivacyContent";
+import { pageMetadata } from "@/lib/seo";
 
 /**
  * The privacy policy. A server component, so the metadata is static; the
@@ -9,13 +10,14 @@ import PrivacyContent from "@/components/pages/PrivacyContent";
  * per page and no per-locale routes, so there is nothing to vary them by.
  * Per-locale routes would be the only way to do it properly.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Privacy Policy",
   description:
     "How Choufli Mosta9bel collects, uses and protects your personal data.",
-  alternates: { canonical: "/privacy" },
-  openGraph: { url: "/privacy" },
-};
+  path: "/privacy",
+  subtitle: "What we collect, why, and how to have it removed.",
+  section: "Legal",
+});
 
 export default function PrivacyPage() {
   return <PrivacyContent />;

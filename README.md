@@ -39,8 +39,13 @@ npm run start
 | `npm run sync:site` | Refresh `lib/site.generated.json` from sejed.dev |
 | `npm run check:site` | Fail if the generated profile is out of date (CI) |
 | `npm run icons` | Regenerate `public/icons/` from `favicon.png` |
-| `npm run test` | The chunk-error detector's own test suite |
+| `npm run icons:build` | Regenerate the Font Awesome subset in `components/icons/data.ts` |
+| `npm run test` | The test suites (chunk-error, push-prompt, redirects, deploy status) |
 | `npm run check:encoding` | Fail if any translated file has been corrupted |
+| `npm run check:translations` | Fail if a French or Arabic string is still English |
+| `npm run check:auth` | Sign-up, sign-in, consent and profile flow against a running server |
+| `npm run db:check` | Prove the Row Level Security policies actually bind |
+| `npm run changelog:md` | Regenerate `CHANGELOG.md` from `components/i18n/changelog.ts` |
 | `npm run verify:deploy [url]` | Check a live deployment; exits non-zero on failure |
 | `npm run vapid` | Generate a web-push key pair |
 | `npm run notify:push` | Announce the newest release to push subscribers |
@@ -141,9 +146,17 @@ cannot be bypassed by anything on the client.
 
 ### The schema
 
-`supabase/migrations/`, one table:
+`supabase/migrations/`, two tables and one view:
 
-- **profiles** — a person: a handle, a display name, an optional address
+- **profiles** — a person: a handle, a display name, an optional address, a
+  date of birth, an avatar and a banner (data URLs), roles, and the moment the
+  terms were accepted
+- **posts** — a post: a slug, a title, a body, a language, tags, a draft or
+  published state, and the author it belongs to
+- **public_profiles** (view) — what a stranger may read: the name, the photo,
+  the banner, the badges and the join date. It does **not** carry an address,
+  so an address cannot be asked for through it. A person appears there once
+  they have published something.
 
 There is deliberately **no password column**. Supabase Auth holds the hash in
 its own schema, behind its own API, and SQL cannot reach it. There are no
@@ -151,10 +164,29 @@ its own schema, behind its own API, and SQL cannot reach it. There are no
 recovery are what GoTrue already does well, and reimplementing them is how
 sessions end up leaky.
 
-There is no public read on `profiles` either. When the blogs have authors, the
-post will carry the author's handle with it, so nobody needs to look a person
-up — which keeps a profile private by default, which is the right default for
-a site used by teenagers.
+There is no public read on `profiles` itself. A reader sees their own row and
+the public view of everyone else, which keeps an address private by default —
+the right default for a site used by teenagers.
+
+### Accounts and roles
+
+Everyone signs in with a **username**. A reader may hold one or more roles;
+`contributor` is anyone who writes, and `leadership`, `dev`, `staff` and
+`secret` are the staff who look after the place (`lib/roles.ts`). Staff see an
+**Admin panel** in their account menu and a seventh tab on a phone.
+
+`/admin` is a server component: it reads the session, refuses anyone who is
+not staff, and reads the platform through the service role in `lib/admin.ts`.
+It is read-only and `noindex`, and it says plainly what it cannot do yet — the
+report queue does not exist, so there is nothing to moderate through it.
+
+### Consent
+
+Signing in and signing up both require agreement to `/terms` and `/privacy`.
+The client asks with a checkbox; the server asks again on register and login,
+because a checkbox a request can be posted around is not consent. The moment
+of agreement is stored once in `profiles.terms_accepted_at`, a column the
+`profiles_guard` trigger will not let a reader write itself.
 
 ### Accounts
 
@@ -177,6 +209,26 @@ with no address, sign in with the handle, sign in again with the address
 added later, edit the profile, sign out — and confirm that every failure gives
 exactly the same answer, whether the password is wrong or the handle does not
 exist, so the endpoint cannot be used to work out which usernames are taken.
+
+---
+
+## Deploying
+
+`scripts/deploy.sh` is the deploy pipeline. It fetches the branch, resets to it
+and cleans the tree; reinstalls dependencies only when the lockfile changed;
+applies any pending `supabase/migrations` through `psql`, each inside a
+transaction with its ledger row; builds; restarts the `pm2` process; and runs
+the health check. There is **no `db:reset` and no `DELETE` anywhere in it** —
+the live database is only ever migrated forward.
+
+```bash
+sudo bash scripts/deploy.sh
+npm run verify:deploy https://loujayn.sejed.dev
+```
+
+`/api/status` reports the commit the running build came from, so
+`verify:deploy` can tell a fresh deploy from a process still serving the
+previous build.
 
 ---
 
@@ -367,12 +419,16 @@ Rendered in the **footer** and the **contact section** on every page.
 | `/dropouts` | ATFP certifications + second chance schools |
 | `/divisions` | Tunisian high school divisions, compared |
 | `/graduates` | University orientation + the score calculator |
-| `/blogs` | The blogs. Empty for now, and honest about it |
+| `/community` | The community: everything a reader may see, plus people and search |
+| `/community/[slug]` | One post, in three languages |
+| `/community/new` | Write a post |
+| `/u/[handle]` | A person's public profile |
 | `/about` | About the project + contact form (`#contact`) |
 | `/contact` | The contact form on a page of its own |
 | `/login` | Sign in |
 | `/signup` | Create an account — a username and a password is enough |
 | `/profile` | Your own profile |
+| `/admin` | Read-only admin panel, staff only, `noindex` |
 | `/changelog` | Release history, newest first, with the deploy status |
 | `/privacy` | Privacy policy |
 | `/terms` | Terms of service |
@@ -460,10 +516,10 @@ All tokens live in the `@theme` block, so Tailwind generates utilities like
 | Font | Role | Source |
 |---|---|---|
 | **Matcha Style** | Hero headlines only | Local, `app/fonts/MatchaStyle.ttf` (free for personal + commercial) |
-| **Patrick Hand** | Everything else | Google Fonts |
+| **Satoshi** | Everything else | Local, `app/fonts/Satoshi-Variable.woff2` (ITF Free Font License v2.0) |
 
 Loaded via `next/font` in `app/layout.tsx`, exposed as `--font-matcha` and
-`--font-patrick`. Swap or remove them in the same file.
+`--font-satoshi`. Swap or remove them in the same file.
 
 ### Custom utilities
 
@@ -560,9 +616,13 @@ screens so content never hides behind the bar.
 Built from scratch — we own every URL, there is no legacy HTML to preserve.
 
 - **Metadata** — per-page `title`, `description`, and `canonical`
-- **Open Graph + Twitter cards** — per-page `og:url` and `og:title`, with a
-  1200×630 image
-- **JSON-LD** — `Organization` and `WebSite` schema for a Google knowledge panel
+- **Open Graph + Twitter cards** — every page carries a 1200×630 image
+- **Per-page preview images** — a post is drawn with its own title, a person
+  with their own photograph, and every other page from its own title through
+  `/og` (`app/og/route.tsx`), so a shared link shows the page that was shared
+  rather than the same site picture every time
+- **JSON-LD** — `Organization` and `WebSite` for the whole site, `BlogPosting`
+  for each post, and `ProfilePage` + `Person` for each person
 - **`sitemap.xml` / `robots.txt`** — generated from `app/sitemap.ts` and
   `app/robots.ts`
 
@@ -624,11 +684,11 @@ live in `lib/site.ts`.
 
 ## Contact
 
-**contact@chouflimostakbel.tn** (currently live at https://loujayn.sejed.dev
+**contact@chouflimostakbel.tn** (currently live at https://loujayn.sejed.dev)
 
-> The contact form is a front-end stub — it currently shows a success state
-> locally without sending. Wire it to an API route or form service before
-> launch.
+> The contact form delivers through `/api/contact`. It opens only on the
+> project's own domains (see below) and stays closed on a preview build, so a
+> half-finished version never collects a message it cannot send.
 
 ---
 
@@ -639,7 +699,8 @@ live in `lib/site.ts`.
 | Framework | Next.js 15.5 (App Router, React 19) |
 | Styling | Tailwind CSS v4 |
 | Animation | `motion` (Framer Motion) |
-| Icons | `@phosphor-icons/react` + custom SVGs |
+| Icons | Font Awesome Free SVG subset + custom SVGs (`components/icons/`) |
+| Backend | Supabase (self-hosted): Postgres, Auth, Row Level Security |
 | Language | TypeScript |
 
 ---

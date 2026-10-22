@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TermsContent from "@/components/pages/TermsContent";
+import { pageMetadata } from "@/lib/seo";
 
 /**
  * The terms of service. A server component, so the metadata is static; the
@@ -9,13 +10,14 @@ import TermsContent from "@/components/pages/TermsContent";
  * per page and no per-locale routes, so there is nothing to vary them by.
  * Per-locale routes would be the only way to do it properly.
  */
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Terms of Service",
   description:
     "The terms that govern your use of the Choufli Mosta9bel website.",
-  alternates: { canonical: "/terms" },
-  openGraph: { url: "/terms" },
-};
+  path: "/terms",
+  subtitle: "The rules for using Choufli Mosta9bel.",
+  section: "Legal",
+});
 
 export default function TermsPage() {
   return <TermsContent />;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import BlogsContent from "@/components/pages/BlogsContent";
 import { listVisiblePosts } from "@/lib/posts";
 import { listPublicPeople } from "@/lib/people";
+import { pageMetadata } from "@/lib/seo";
 
 /**
  * The community.
@@ -16,13 +17,14 @@ import { listPublicPeople } from "@/lib/people";
  */
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Community",
   description:
     "What people have written about orientation, school and what comes next.",
-  alternates: { canonical: "/community" },
-  openGraph: { url: "/community" },
-};
+  path: "/community",
+  subtitle: "What people have written.",
+  section: "Community",
+});
 
 export default async function CommunityPage() {
   const [posts, people] = await Promise.all([

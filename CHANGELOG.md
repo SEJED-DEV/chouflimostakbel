@@ -19,6 +19,7 @@ The site learns to wear a face, to look after itself, and to say who wrote what.
 - Signing in and signing up now ask the reader to agree to the terms of service and the privacy policy, with both documents linked inside the sentence that asks. The server asks as well, so the box cannot be posted around.
 - The moment the terms were agreed is recorded, once, in a new column that only the platform can write - the same guard that stops a reader granting themselves a badge now stops them writing their own consent date.
 - Every post and every person now has its own preview image, drawn with the post's own title or the person's own photograph. A link shared in a chat shows the thing that was shared.
+- The rest of the site got preview images too. The roadmap, the changelog, the legal pages and the guides each draw their own picture from their own title, so a link to the terms and a link to the changelog no longer show the same site banner.
 - Every post carries BlogPosting structured data, and every person carries ProfilePage and Person, so a search engine knows what it is looking at rather than guessing.
 - A deploy script, so the live site is fetched, migrated, built and restarted the same way every time, with each migration applied inside a transaction with its ledger row. There is no reset and no delete anywhere in it.
 

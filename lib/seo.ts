@@ -21,6 +21,70 @@ import type { PublicProfile } from "./people";
 /** How long a description may be before a search engine stops reading it. */
 const DESCRIPTION_LIMIT = 200;
 
+/**
+ * The preview image for a page of the site itself.
+ *
+ * The site draws one picture per page from that page's own title, so a link
+ * to the terms and a link to the changelog do not show the same thing. The
+ * route lives at /og and takes the title, a short subtitle and the section
+ * as query parameters, which is what makes one engine serve every static
+ * page without a file next to each of them.
+ */
+function pageImage(title: string, subtitle?: string, kicker?: string): string {
+  const params = new URLSearchParams({ title });
+  if (subtitle) params.set("subtitle", clamp(subtitle));
+  if (kicker) params.set("kicker", kicker);
+  return `/og?${params.toString()}`;
+}
+
+/**
+ * The metadata for a static page of the site.
+ *
+ * Every page that is not a post or a person is described here, once, so the
+ * title, the canonical URL, the preview image and the Twitter card are the
+ * same shape everywhere. A page that set only `openGraph.url` of its own
+ * used to lose the site's image, because a page's `openGraph` replaces the
+ * layout's rather than merging with it; going through this keeps the image.
+ */
+export function pageMetadata(options: {
+  title: string;
+  description: string;
+  path: string;
+  /** A short line under the title on the preview image. */
+  subtitle?: string;
+  /** The section name shown at the foot of the preview image. */
+  section?: string;
+  /** Set false for pages that should not be indexed, such as /profile. */
+  index?: boolean;
+}): Metadata {
+  const description = clamp(options.description);
+  const image = pageImage(options.title, options.subtitle, options.section);
+  const robots =
+    options.index === false
+      ? { index: false, follow: true }
+      : undefined;
+
+  return {
+    title: options.title,
+    description,
+    alternates: { canonical: options.path },
+    robots,
+    openGraph: {
+      type: "website",
+      url: options.path,
+      title: options.title,
+      description,
+      images: [{ url: image, width: 1200, height: 630, alt: options.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: options.title,
+      description,
+      images: [image],
+    },
+  };
+}
+
 /** A description, trimmed to what a search engine will actually show. */
 function clamp(text: string): string {
   const clean = text.replace(/\s+/g, " ").trim();

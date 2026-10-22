@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import ProfileContent from "@/components/pages/ProfileContent";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Your profile",
   description: "Your Choufli Mosta9bel profile.",
-  alternates: { canonical: "/profile" },
-  openGraph: { url: "/profile" },
+  path: "/profile",
+  subtitle: "Your account, your posts, your choices.",
+  section: "Account",
   // A personal page has nothing to index.
-  robots: { index: false, follow: true },
-};
+  index: false,
+});
 
 export default function ProfilePage() {
   return <ProfileContent />;
